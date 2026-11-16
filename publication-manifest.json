@@ -1,0 +1,86 @@
+{
+  "schema": "automethods-publication/1",
+  "project": "obd-2",
+  "version": "0.9.10",
+  "publicationFiles": [
+    "README.md",
+    "assets/favicon.svg",
+    "assets/i18n.js",
+    "assets/language.js",
+    "assets/obd-diagnostics.glb",
+    "assets/obd-diagnostics.png",
+    "assets/obd.css",
+    "downloads/OBDII_Lab.zip",
+    "downloads/SHA256SUMS.txt",
+    "downloads/START_HERE.txt",
+    "downloads/run.sh",
+    "index.html"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1137,
+      "sha256": "572f1620eea75e89dc30a3de109983c44af875b8065d30e01b93d2d10a55c9a6"
+    },
+    {
+      "path": "assets/favicon.svg",
+      "bytes": 3071,
+      "sha256": "1e7f39c2d9262f825c91b51b677343479d7ea2e2bfba44d9864519400a6999ca"
+    },
+    {
+      "path": "assets/i18n.js",
+      "bytes": 7784,
+      "sha256": "3ecc08b25ac1cd139a039c15fae5c87f635830a4a443c318654767421551f19c"
+    },
+    {
+      "path": "assets/language.js",
+      "bytes": 2149,
+      "sha256": "648fd3371d78adffa521882361b0866f58d2cb85eedf8958277c0420d3cd5341"
+    },
+    {
+      "path": "assets/obd-diagnostics.glb",
+      "bytes": 147152,
+      "sha256": "115e69edc5b6dee06068ca2321490c3eaaea8c28c24321e35f81343e5bd34f7d"
+    },
+    {
+      "path": "assets/obd-diagnostics.png",
+      "bytes": 150827,
+      "sha256": "61d9285feea924d7968ff02ca90822860bc315e94e46d86a25548ce9c728c4be"
+    },
+    {
+      "path": "assets/obd.css",
+      "bytes": 3665,
+      "sha256": "a4755685cd46b416ee303900d669d329da03555d2cd05bd3d864aeb0204f9633"
+    },
+    {
+      "path": "downloads/OBDII_Lab.zip",
+      "bytes": 6077883,
+      "sha256": "f7a39a5a02b01e1844c68fbfc40807bc5277a1d66010e9f32d21776ca427f3fe"
+    },
+    {
+      "path": "downloads/SHA256SUMS.txt",
+      "bytes": 153,
+      "sha256": "64369f0aa3c872176db3e7b7c48322d0de5a4c1ee2ad8e5226d736606654c4cf"
+    },
+    {
+      "path": "downloads/START_HERE.txt",
+      "bytes": 50210,
+      "sha256": "0719d547f7f427b3312f88fee4c4dc0b7d024a4e50f8fc8f52cf229a4ca36aee"
+    },
+    {
+      "path": "downloads/run.sh",
+      "bytes": 8215046,
+      "sha256": "1c068e6cc976c3af9c92af0e9f49d1e16e2c07bb7198fa05ad7bcb26a761f2da"
+    },
+    {
+      "path": "index.html",
+      "bytes": 6792,
+      "sha256": "e1950f0b1bfa15c732d11c5ba024cc5a8164b349d1bcd9e3c6701a84b5085188"
+    },
+    {
+      "path": "tests/language.test.cjs",
+      "bytes": 5113,
+      "sha256": "c73501366b824604a2b8959cd820b89a7fec6f9a35970a4943d168238560c9a3"
+    }
+  ]
+}
