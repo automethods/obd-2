@@ -1,0 +1,144 @@
+{
+  "schema": "obdii-lab.vehicle-bindings.v1",
+  "model": "training_vehicle.glb",
+  "description": "Original contoured training crossover with selectable systems; not a manufacturer service model.",
+  "coordinate_system": {
+    "up": "+Y",
+    "front": "-Z",
+    "left": "-X",
+    "units": "metres"
+  },
+  "body_nodes": [
+    "body_hood",
+    "body_tail",
+    "body_side_-1",
+    "body_sill_-1",
+    "trim_sill_-1",
+    "mirror_-1",
+    "mirror_glass_-1",
+    "door_handle_-1_-0.31",
+    "door_handle_-1_0.74",
+    "glass_front_-1",
+    "glass_rear_-1",
+    "body_b_pillar_-1",
+    "headlamp_-1",
+    "lamp_brow_-1",
+    "tail_lamp_-1",
+    "body_side_1",
+    "body_sill_1",
+    "trim_sill_1",
+    "mirror_1",
+    "mirror_glass_1",
+    "door_handle_1_-0.31",
+    "door_handle_1_0.74",
+    "glass_front_1",
+    "glass_rear_1",
+    "body_b_pillar_1",
+    "headlamp_1",
+    "lamp_brow_1",
+    "tail_lamp_1",
+    "body_roof",
+    "glass_front",
+    "glass_rear",
+    "body_front",
+    "body_rear",
+    "front_grille",
+    "grille_bar_0.63",
+    "grille_bar_0.69",
+    "grille_bar_0.75",
+    "grille_bar_0.81",
+    "front_license",
+    "rear_fascia",
+    "rear_license"
+  ],
+  "components": {
+    "engine": {
+      "node": "engine",
+      "object_id": "engine"
+    },
+    "ecu": {
+      "node": "ecu",
+      "object_id": "ecu"
+    },
+    "coolant_sensor": {
+      "node": "coolant_sensor",
+      "object_id": "coolant_sensor"
+    },
+    "battery": {
+      "node": "battery",
+      "object_id": "battery"
+    },
+    "bmu": {
+      "node": "bmu",
+      "object_id": "bmu"
+    },
+    "abs": {
+      "node": "abs",
+      "object_id": "abs"
+    },
+    "supervisor": {
+      "node": "supervisor",
+      "object_id": "supervisor"
+    },
+    "dlc": {
+      "node": "dlc",
+      "object_id": "dlc"
+    },
+    "scan_tool": {
+      "node": "scan_tool",
+      "object_id": "scan_tool"
+    }
+  },
+  "wheels": [
+    {
+      "node": "wheel_fl",
+      "object_id": "wheel_fl",
+      "signal_path": "wheel_speeds_kph.0",
+      "measurement_path": "sensors.wheel_speeds_kph.0",
+      "axis": "x",
+      "direction": -1,
+      "radius_m": 0.31
+    },
+    {
+      "node": "wheel_fr",
+      "object_id": "wheel_fr",
+      "signal_path": "wheel_speeds_kph.1",
+      "measurement_path": "sensors.wheel_speeds_kph.1",
+      "axis": "x",
+      "direction": -1,
+      "radius_m": 0.31
+    },
+    {
+      "node": "wheel_rl",
+      "object_id": "wheel_rl",
+      "signal_path": "wheel_speeds_kph.2",
+      "measurement_path": "sensors.wheel_speeds_kph.2",
+      "axis": "x",
+      "direction": -1,
+      "radius_m": 0.31
+    },
+    {
+      "node": "wheel_rr",
+      "object_id": "wheel_rr",
+      "signal_path": "wheel_speeds_kph.3",
+      "measurement_path": "sensors.wheel_speeds_kph.3",
+      "axis": "x",
+      "direction": -1,
+      "radius_m": 0.31
+    }
+  ],
+  "signals": {
+    "coolant_sensor": "sensors.ect_voltage_v",
+    "battery": "soc_pct",
+    "engine": "rpm",
+    "bmu": "sensors.bmu_message_age_ms"
+  },
+  "connections": {
+    "coolant_sensor": "ect",
+    "dlc": "dlc",
+    "scan_tool": "dlc",
+    "bmu": "bmu",
+    "wheel_fl": "wheel_fl"
+  },
+  "animation": "Wheel angles integrate physical wheel-speed samples. Intermediate frames interpolate completed simulation steps. Signal dots show information flow, not electrical timing."
+}

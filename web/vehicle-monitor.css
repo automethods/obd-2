@@ -1,0 +1,74 @@
+/* The vehicle dashboard is outside the independently scrolling service tools. */
+.vehicle-monitor{container-type:inline-size;flex:none;margin:10px 14px 8px;border:1px solid #3a5167;border-radius:9px;background:radial-gradient(ellipse at 28% 0,#233847,#111d2a 65%);overflow:hidden;color:#d7e8f3}
+.vm-header{display:flex;align-items:center;gap:15px;padding:7px 12px;border-bottom:1px solid #2a3e50;min-height:32px;background:#142431}
+.vm-header>div{display:flex;align-items:baseline;gap:11px;min-width:0;flex:1}.vm-header strong{font-size:11px;white-space:nowrap;letter-spacing:.25px}.vm-header span{font-size:10px;color:#92b3c6}.vm-header>div span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.vm-clock{white-space:nowrap}.vm-header button{font-size:10px;min-height:24px;padding:3px 6px;color:#a9d9d2}
+.vm-layout{display:grid;grid-template-columns:minmax(250px,.95fr) minmax(240px,1.15fr) minmax(140px,.63fr);gap:15px;align-items:center;padding:8px 13px 10px}
+.vm-instruments{display:block;width:100%;max-width:365px;max-height:145px;overflow:visible;justify-self:center}.vm-rim{fill:#0c1622;stroke:#6a8da2;stroke-width:1}.vm-face{fill:#142330;stroke:#2a4050;stroke-width:1}.vm-track{fill:none;stroke:#203b4c;stroke-width:2}.vm-redzone{fill:none;stroke:#ff5b5f;stroke-width:4;stroke-linecap:butt}.vm-tick{stroke:#4b6a80;stroke-width:.7}.vm-tick.major{stroke:#a5bdcc;stroke-width:1}.vm-tick-label{fill:#a9c1cf;text-anchor:middle;font:7px ui-monospace,monospace}.vm-needle{fill:#ffa277}.vm-hub{fill:#c0d3de;stroke:#506d83;stroke-width:2}.vm-gauge-value{fill:#e3f5fb;font:700 16px ui-monospace,monospace;text-anchor:middle}.vm-gauge-unit{fill:#88a9bc;font:8px ui-monospace,monospace;text-anchor:middle}.vm-dial-title{fill:#84a6bc;font:7px system-ui,sans-serif;letter-spacing:.6px;text-anchor:middle}.vm-gear{fill:#b9f7e7;font:600 30px ui-monospace,monospace;text-anchor:middle}.vm-gear-detail{fill:#91b1c3;font:8px ui-monospace,monospace;text-anchor:middle}.vm-road{fill:none;stroke:#325669;stroke-width:1.5}.vm-car{fill:#59baa9;stroke:#bcf2e6;stroke-width:.7}
+.vm-live-status{min-width:0}.vm-live-status>strong{font-size:12px;color:#9ce9d6;font-weight:600;display:block;margin-bottom:7px}.vm-lamps{display:flex;align-items:center;flex-wrap:wrap;gap:6px 11px;min-height:25px}.vm-lamp{display:inline-flex;align-items:center;gap:4px;color:#526d7f;font-size:9px;font-weight:600;line-height:1.3}.vm-lamp svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}.vm-lamp.lit{color:#ff6b70;filter:drop-shadow(0 0 4px #ff55551c)}.vm-lamp.lit.warning{color:#ffcb70}.vm-text-lamp{min-height:24px;border:1px solid currentColor;border-radius:4px;padding:1px 4px;font-size:10px}.vm-readings{display:flex;flex-wrap:wrap;gap:7px 16px;margin-top:9px}.vm-readings>span{display:flex;align-items:baseline;gap:7px}.vm-readings small{font-size:9px;color:#84a4b8}.vm-readings b{font:11px ui-monospace,monospace;font-weight:500;color:#c6dfec}.vm-live-status p{font-size:10px;line-height:1.4;margin:8px 0 0;color:#93b2c4}.vm-live-status p.danger{color:#ff9b97}.vm-parking-blocked{border-color:#a35a57}
+.vm-controls{display:flex;flex-direction:column;gap:7px;min-width:0}.vm-controls button{font-size:10px;min-height:27px;padding:5px 7px;white-space:normal;line-height:1.3}.vm-controls button:disabled{opacity:.45;cursor:default}.vm-controls button svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}.vm-power-controls{display:flex;gap:5px;flex-wrap:wrap}.vm-power-controls button{flex:1;background:#24483f;color:#baf4df;border-color:#477c6a}.vm-controls .vm-release{color:#ffb1a7;background:#3d2728;border-color:#905854;justify-content:flex-start}.vm-body-controls{display:flex;gap:5px;flex-wrap:wrap}.vm-body-controls button{justify-content:flex-start;flex:1 1 100%;color:#a8c5d8;background:#182d3c;border-color:#355064}.vm-body-controls [data-vm-action=seatbelt][aria-pressed=false],.vm-body-controls [data-vm-action=door][aria-pressed=true]{color:#ffb0a5;border-color:#965b55}.vehicle-monitor button:focus-visible{outline:2px solid #7fe1c4;outline-offset:2px}
+.service-navigation::before{content:'TOOLS';font-size:9px;font-weight:600;letter-spacing:1px;color:#7798ad;margin-right:6px}.service-workspace{border-top:1px solid #2b4051}.service-navigation{padding-top:7px;padding-bottom:7px}
+@container(max-width:760px){.vm-layout{grid-template-columns:minmax(230px,1fr) minmax(190px,1fr);gap:8px 12px}.vm-instruments{max-height:128px}.vm-controls{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;gap:6px;align-items:center;border-top:1px solid #2b4151;padding-top:7px}.vm-body-controls{flex-wrap:nowrap}.vm-body-controls button{flex:initial}.vm-lamp span{display:none}.vm-lamp svg{width:25px;height:25px}.vm-controls .vm-release{max-width:180px}}
+@container(max-width:470px){.vm-header{gap:6px;padding:7px 8px}.vm-header>div{display:block}.vm-header>div span{display:block;font-size:9px}.vm-header .vm-clock{display:none}.vm-header button{max-width:104px;white-space:normal;line-height:1.3}.vm-layout{grid-template-columns:minmax(150px,1fr) minmax(110px,.85fr);gap:7px;padding:7px}.vm-instruments{min-width:0}.vm-live-status>strong{font-size:10px;margin-bottom:4px}.vm-lamps{gap:3px 5px}.vm-lamp svg{width:21px;height:21px}.vm-readings{gap:4px 7px;margin-top:4px}.vm-readings>span{gap:4px}.vm-readings b{font-size:10px}.vm-live-status p{font-size:9px;margin-top:5px}.vm-controls button{font-size:9px;padding:4px 6px}.vm-body-controls button{gap:3px}.vm-body-controls button svg{width:15px;height:15px}}
+@media(max-height:800px) and (min-width:1000px){.vm-layout{padding-top:4px;padding-bottom:6px;gap:12px}.vm-instruments{max-height:116px}.vm-header{min-height:28px;padding-top:4px;padding-bottom:4px}.vm-readings{margin-top:5px}.vehicle-monitor{margin-top:7px;margin-bottom:6px}.vm-live-status p{margin-top:5px}.vm-controls{gap:5px}.vm-controls button{min-height:25px}}
+
+/* On short laptop screens, expanded messages overlay the lower tool area.
+ * The dashboard and the usable tool viewport keep their space. */
+@media(max-height:850px){
+ .application:not(.mode-drive):not(.mode-setup) .app-main{position:relative}
+ .application:not(.mode-drive):not(.mode-setup) .message-dock{position:absolute;bottom:0;left:0;right:0;z-index:45;box-shadow:0 -7px 18px #0004}
+ .application:not(.mode-drive):not(.mode-setup) .app-view-stack{padding-bottom:34px}
+ .application:not(.mode-drive):not(.mode-setup) .message-dock:not(.expanded) .dock-content{height:min(150px,22vh);min-height:100px;max-height:150px}
+}
+@media(max-width:900px){.vehicle-monitor{margin:6px 8px}.service-navigation::before{display:none}}
+/* An inset instrument readout; both counters come from the shared vehicle snapshot. */
+.vm-distance-display{display:flex;align-items:center;flex-wrap:wrap;gap:5px 12px;margin-top:8px;padding:5px 8px;background:#0c1921;border:1px solid #34505c;border-radius:3px;box-shadow:inset 0 1px 3px #0005;color:#c0e4dc}
+.vm-distance-display>span{display:flex;align-items:baseline;gap:5px;min-width:0}
+.vm-distance-display small{font:600 8px ui-monospace,monospace;letter-spacing:.6px;color:#8ba8b0;white-space:nowrap}
+.vm-distance-display b{font:500 12px ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:.2px;white-space:nowrap}
+.vm-distance-display em{font:8px ui-monospace,monospace;color:#8aa5ae;font-style:normal}
+.vm-distance-display button{display:inline-flex;align-items:center;justify-content:center;gap:3px;margin-left:auto;min-height:24px;padding:3px 5px;flex:none;font-size:9px;background:#192c37;border:1px solid #3c5664;border-radius:4px;color:#a2bec8;cursor:pointer;line-height:1.2}
+.vm-distance-display button svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.vm-distance-display button:hover{background:#29414d;border-color:#75959e;color:#def1ee}
+.vm-distance-display button:disabled{opacity:.45;cursor:default}
+@container(max-width:760px){.vm-distance-display{gap:5px 8px;padding:4px 6px;margin-top:6px}.vm-distance-display b{font-size:11px}.vm-distance-display button>span{display:none}}
+@container(max-width:470px){.vm-distance-display{gap:4px;margin-top:5px;padding:4px}.vm-distance-display>span{flex-basis:100%;gap:4px}.vm-distance-display button{margin-left:0;min-height:22px}.vm-distance-display button>span{display:inline}.vm-distance-display small{font-size:8px}.vm-distance-display b{font-size:10px}}
+@media(max-height:800px) and (min-width:1000px){.vm-distance-display{margin-top:5px;padding-top:3px;padding-bottom:3px}}
+
+/* Small physical controls share the full cockpit's momentary input controller. */
+.vm-layout{grid-template-columns:minmax(215px,.9fr) minmax(210px,1.05fr) minmax(165px,.68fr) minmax(135px,.6fr);gap:12px}
+.vm-driver-controls{min-width:0;border-left:1px solid #2b4151;padding-left:11px}
+.vm-driver-heading{display:flex;align-items:center;justify-content:space-between;gap:5px;color:#a9c7d6;font-size:10px}
+.vm-driver-heading>strong{font-weight:600}.vm-driver-heading button{font-size:9px;padding:2px 5px;min-height:20px}
+.vm-pedals{display:flex;justify-content:center;align-items:flex-start;gap:9px;margin:3px 0}
+.vm-pedal{flex:1;min-width:0;max-width:92px}.vm-pedal-heading{display:flex;align-items:baseline;justify-content:space-between;gap:3px;font-size:9px;color:#9bb9ca}
+.vm-pedal-heading b{font:600 11px ui-monospace,monospace;color:#8ee9cf}.vm-pedal[data-vm-pedal=brake] .vm-pedal-heading b{color:#eabe7f}
+.vm-pedal-input{display:flex;justify-content:center;align-items:center;gap:2px}
+.vm-pedal-input button{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;gap:0;min-width:0;width:58px;background:transparent;border:1px solid transparent;touch-action:none;user-select:none;-webkit-user-select:none}
+.vm-pedal-input button:hover{background:#203442;border-color:#3a5b6e}.vm-pedal-input button[aria-pressed=true]{background:#22433f;border-color:#4c9c8a}.vm-pedal-input button:disabled{opacity:.55}
+.vm-pedal-input svg{width:55px;height:66px;display:block}.vm-pedal-input kbd{padding:0 3px;border:0;background:transparent;font:8px ui-monospace,monospace;line-height:12px;color:#9ebbc9}
+.vm-pedal-arm{stroke:#6b8492;stroke-width:5}.vm-pedal-pivot{fill:#233e4c;stroke:#91aebb;stroke-width:1.4}.vm-pedal-face{fill:#283b47;stroke:#aac0c9;stroke-width:2.5}.vm-pedal-groove{fill:none;stroke:#8aa5b3;stroke-width:2.2}.vm-pedal-shadow{fill:#070e16;opacity:.8}
+.vm-pedal-input input[type=range]{writing-mode:vertical-lr;direction:rtl;appearance:auto;width:16px;height:66px;min-width:0;min-height:0;margin:0;padding:0;accent-color:#5cceba;touch-action:none}.vm-pedal[data-vm-pedal=brake] input[type=range]{accent-color:#e6b473}
+.vm-gear-controls{display:flex;gap:4px;margin-top:3px;align-items:center}.vm-gear-controls select{width:44px;min-height:24px;height:24px;padding:2px 4px;font:600 11px ui-monospace,monospace}.vm-gear-controls button{flex:1;min-height:24px;padding:3px 5px;font-size:9px;line-height:1.2;white-space:normal}
+.vm-pedal-note{display:block;color:#84a6ba;font-size:8px;line-height:1.4;margin-top:5px}
+@container(max-width:1000px){.vm-layout{grid-template-columns:minmax(210px,.9fr) minmax(210px,1fr) minmax(135px,.65fr)}.vm-driver-controls{grid-column:1/-1;grid-row:2;display:grid;grid-template-columns:minmax(100px,.6fr) minmax(190px,1fr) minmax(180px,1fr);gap:4px 14px;align-items:center;border-left:0;border-top:1px solid #2b4151;padding:5px 0 0}.vm-driver-heading{flex-wrap:wrap}.vm-pedals{grid-column:2;grid-row:1/3;margin:0}.vm-pedal-input svg{height:49px;width:45px}.vm-pedal-input input[type=range]{height:49px}.vm-pedal-note{grid-column:3;margin:0}.vm-controls{grid-column:3;grid-row:1}}
+@container(max-width:760px){.vm-layout{grid-template-columns:minmax(205px,1fr) minmax(190px,1fr)}.vm-controls{grid-column:1/-1;grid-row:2;flex-direction:row;flex-wrap:wrap}.vm-driver-controls{grid-row:3;grid-template-columns:minmax(90px,.6fr) minmax(170px,1fr) minmax(130px,.85fr)}.vm-body-controls button{flex:initial}.vm-pedal-note{font-size:8px}}
+@container(max-width:470px){.vm-layout{grid-template-columns:minmax(150px,1fr) minmax(110px,.85fr)}.vm-driver-controls{grid-template-columns:minmax(90px,.7fr) minmax(140px,1fr);gap:5px 8px}.vm-driver-heading{grid-column:1;grid-row:1}.vm-pedals{grid-column:2;grid-row:1/4;gap:5px}.vm-gear-controls{grid-column:1;grid-row:2}.vm-pedal-note{grid-column:1;grid-row:3}.vm-pedal-heading{font-size:8px}.vm-pedal-heading b{font-size:10px}}
+
+@media(max-height:850px) and (min-width:901px){
+ .vehicle-monitor{margin-top:6px;margin-bottom:5px}.vm-header{min-height:26px;padding:3px 10px;gap:9px}.vm-header strong{font-size:10px}
+ .vm-layout{padding:5px 10px;gap:9px}.vm-instruments{max-height:108px}.vm-live-status>strong{font-size:11px;margin-bottom:4px}
+ .vm-lamps{gap:3px 8px}.vm-lamp span{display:none}.vm-lamp svg{width:21px;height:21px}
+ .vm-readings{gap:4px 9px;margin-top:5px}.vm-readings small{font-size:8px}.vm-readings b{font-size:10px}.vm-live-status p{font-size:9px;line-height:1.3;max-height:24px;overflow:auto;margin-top:4px}
+ .vm-driver-controls{padding-left:8px}.vm-pedals{margin:2px 0}.vm-pedal-input svg{height:47px;width:41px}.vm-pedal-input input[type=range]{height:47px}.vm-pedal-note{display:none}
+ .vm-gear-controls select,.vm-gear-controls button{min-height:23px;height:auto;font-size:9px}.vm-controls{gap:4px}.vm-controls button{min-height:23px;font-size:9px;padding:4px 5px}.vm-distance-display{margin-top:4px;padding:3px 5px}
+}
+@container(max-width:470px){
+ .vm-layout{grid-template-columns:minmax(135px,1fr) minmax(135px,1fr);align-items:start}
+ .vm-instruments{grid-column:1;grid-row:1;align-self:center}
+ .vm-live-status{grid-column:1;grid-row:2}.vm-live-status p:not(.danger){display:none}
+ .vm-lamp svg{width:18px;height:18px}.vm-lamps{gap:3px;min-height:20px}.vm-readings{gap:3px;font-size:9px}
+ .vm-distance-display>span{flex-basis:auto}.vm-distance-display button{min-height:20px}.vm-distance-display button>span{display:none}
+ .vm-driver-controls{grid-column:2;grid-row:1/3;display:flex;flex-direction:column;gap:4px;border:0;padding:0 0 0 7px;margin:0;align-self:center;min-width:0}
+ .vm-driver-heading,.vm-pedals,.vm-gear-controls{width:100%;margin:0}.vm-pedal-note{display:none}.vm-driver-heading{font-size:9px}
+ .vm-controls{grid-column:1/-1;grid-row:3;display:grid;grid-template-columns:1fr 1fr;gap:4px;padding-top:5px}.vm-power-controls,.vm-body-controls{display:contents}.vm-controls button{font-size:9px;min-height:25px}
+}

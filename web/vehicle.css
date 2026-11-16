@@ -1,0 +1,130 @@
+.vehicle-view { --vv-ink:#23314d; --vv-muted:#6d7b92; --vv-line:#dce4ef; --vv-indigo:#565bd9; color:var(--vv-ink); min-width:0; font:14px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+.vehicle-view *, .vehicle-view *::before, .vehicle-view *::after {box-sizing:border-box;}
+.vehicle-view button, .vehicle-view input {font:inherit;}
+.vehicle-view button {background:#fff;color:var(--vv-ink);border:1px solid var(--vv-line);border-radius:7px;cursor:pointer;padding:7px 11px;font-size:12px;line-height:1.3;}
+.vehicle-view button:hover {border-color:#a7aedf;background:#f4f5ff;}
+.vehicle-view button:focus-visible, .vehicle-view a:focus-visible, .vv-canvas:focus-visible {outline:3px solid #969af0;outline-offset:3px;}
+.vehicle-view [hidden] {display:none!important;}
+.vv-toolbar {display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 18px;border:1px solid var(--vv-line);border-bottom:0;border-radius:12px 12px 0 0;background:#fff;}
+.vv-view-title {display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;}
+.vv-view-title strong {font-size:16px;letter-spacing:-.025em;}
+.vv-kicker {font-size:9px;font-weight:750;letter-spacing:.13em;color:#7c88a1;}
+.vv-tools {display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end;}
+.vv-tools button {font-size:11px;padding:6px 9px;}
+.vv-renderer {font-size:10px;border-radius:5px;background:#eef8f8;color:#24807c;padding:4px 7px;white-space:nowrap;margin-right:4px;font-weight:650;}
+.vv-stage {position:relative;width:100%;height:clamp(390px,48vw,555px);min-height:390px;overflow:hidden;background:#f2f6fc;border:1px solid var(--vv-line);border-top:0;border-bottom:0;}
+.vv-ground,.vv-canvas,.vv-overlay,.vv-labels {position:absolute;inset:0;width:100%;height:100%;display:block;}
+.vv-canvas {touch-action:none;cursor:grab;outline-offset:-5px!important;}
+.vv-canvas.vv-dragging {cursor:grabbing;}
+.vv-overlay {pointer-events:none;}
+.vv-labels {pointer-events:none;}
+.vv-labels .vv-label {position:absolute;pointer-events:auto;white-space:nowrap;font-size:10px;font-weight:620;line-height:1.3;background:rgba(255,255,255,.94);border:1px solid rgba(190,205,224,.92);box-shadow:0 2px 5px #3047610a;border-radius:5px;padding:5px 8px;max-width:135px;overflow:hidden;text-overflow:ellipsis;}
+.vv-labels .vv-label.selected {border-color:#777be7;background:#f0f0ff;color:#4147b9;box-shadow:0 0 0 2px #5e63dc15;}
+.vv-orbit-hint {position:absolute;left:18px;top:10px;font-size:10px;color:#7a8ba2;pointer-events:none;}
+.vv-orbit-hint span {padding:0 6px;color:#a5b3c5;}
+.vv-orientation {position:absolute;font-size:9px;letter-spacing:.15em;font-weight:750;color:#8e9bb0;pointer-events:none;}
+.vv-orientation span {font-size:15px;vertical-align:baseline;}
+.vv-selection {position:absolute;left:16px;bottom:14px;right:16px;background:rgba(255,255,255,.96);border:1px solid #d7e1ef;border-radius:9px;box-shadow:0 3px 12px #35516b08;padding:11px 13px;display:grid;grid-template-columns:1fr auto;gap:2px 14px;max-width:520px;}
+.vv-selection strong {font-size:12px;line-height:1.5;}
+.vv-selection span {font-size:11px;color:var(--vv-muted);grid-column:1;}
+.vv-selection button {grid-column:2;grid-row:1/3;align-self:center;background:#f8f9fe;border-color:#d5d9ef;font-size:11px;}
+.vv-loading {position:absolute;inset:0;display:grid;place-content:center;padding:40px;color:#61738e;font-size:13px;background:#f3f7fc;}
+.vv-display-controls {display:flex;align-items:center;gap:18px;flex-wrap:wrap;min-height:54px;padding:12px 18px;background:#fff;border:1px solid var(--vv-line);border-top:1px solid #e3eaf3;border-radius:0 0 12px 12px;}
+.vv-display-controls label {display:flex;align-items:center;gap:6px;margin:0;font-size:11px;color:#586981;font-weight:500;}
+.vv-display-controls input[type=checkbox] {width:13px;height:13px;accent-color:var(--vv-indigo);margin:0;}
+.vv-opacity {gap:8px!important;}
+.vv-opacity input[type=range] {width:92px;height:14px;accent-color:var(--vv-indigo);padding:0;margin:0;}
+.vv-opacity output {font-size:10px;color:#7c88a1;min-width:28px;}
+.vv-legend {display:flex;align-items:center;gap:12px;margin-left:auto;font-size:10px;color:#7d8aa0;}
+.vv-legend span {display:flex;align-items:center;gap:6px;white-space:nowrap;}
+.vv-legend i {width:6px;height:6px;display:inline-block;border-radius:50%;background:#00a9b5;}
+.vv-legend .vv-missing-dot {background:#98a4b5;}
+.vv-part-list {display:flex;flex-wrap:wrap;gap:6px;padding:13px 0 5px;}
+.vv-part-list button {font-size:10px;padding:5px 8px;background:#fbfcfe;color:#64738a;border-color:#e0e6ef;border-radius:6px;}
+.vv-part-list button.selected {background:#eeefff;color:#4c51bd;border-color:#acafe9;}
+.vv-part-list button.vv-not-installed,.vv-labels button.vv-not-installed {color:#9ba6b6;background:#f5f7fa;border-style:dashed;}
+.vv-signal-note {font-size:10px!important;line-height:1.6;color:#7f8ca0;margin:8px 0 14px!important;max-width:none!important;}
+.vv-model-details {border:1px solid var(--vv-line);border-radius:9px;background:#fff;overflow:hidden;}
+.vv-model-details summary {cursor:pointer;list-style-position:inside;padding:11px 14px;font-size:11px;font-weight:650;color:#52627d;}
+.vv-model-details summary span {float:right;font-size:9px;font-weight:550;color:#8a97a9;letter-spacing:.02em;}
+.vv-model-body {border-top:1px solid #e7ecf4;padding:12px 14px 10px;}
+.vv-model-body p {font-size:11px!important;line-height:1.65!important;margin:0 0 9px!important;color:#718098;max-width:none!important;}
+.vv-model-actions {display:flex;gap:7px 12px;align-items:center;flex-wrap:wrap;margin:10px 0;}
+.vv-model-actions button {font-size:10px;padding:6px 9px;}
+.vv-model-actions a {font-size:10px;color:#5f65bc;text-decoration:none;}
+.vv-model-actions a:hover {text-decoration:underline;}
+.vv-model-status {font-weight:650;color:#4a6e8c!important;overflow-wrap:anywhere;}
+.vv-limit-note {color:#8692a4!important;font-size:10px!important;}
+@media(max-width:760px) {
+  .vv-toolbar {align-items:flex-start;padding:12px;gap:8px;}
+  .vv-view-title {display:block;}
+  .vv-view-title strong {display:block;font-size:14px;}
+  .vv-kicker {font-size:8px;}
+  .vv-tools {max-width:245px;gap:4px;}
+  .vv-tools button {font-size:10px;padding:5px 7px;}
+  .vv-renderer {font-size:8px;margin:0;}
+  .vv-stage {height:420px;min-height:360px;}
+  .vv-display-controls {gap:10px 14px;padding:10px 12px;}
+  .vv-legend {margin-left:0;}
+  .vv-selection {left:10px;right:10px;bottom:10px;}
+  .vv-labels .vv-label {font-size:9px;padding:4px 6px;}
+}
+@media(prefers-reduced-motion:reduce) {.vehicle-view * {scroll-behavior:auto!important;}}
+
+/* Original contoured vehicle, lit studio floor and compact dashboard presentation. */
+.vv-ground {pointer-events:none;}
+.vv-stage {background:#f1f5f7;isolation:isolate;}
+.vv-orbit-hint {top:15px;color:#728390;letter-spacing:.01em;}
+.vv-orientation {color:#81929d;}
+.vv-body-modes {display:flex;gap:2px;padding:3px;border:1px solid #dce4e9;border-radius:7px;background:#f3f6f8;}
+.vv-body-modes button {border:0;background:transparent;font-size:11px;padding:5px 9px;color:#71818e;}
+.vv-body-modes button[aria-pressed=true] {color:#194b67;background:white;box-shadow:0 1px 4px #19374b1a;}
+.vv-display-controls {gap:12px;}
+.vv-display-controls .vv-opacity input {width:70px;accent-color:#287a9f;}
+.vv-labels .vv-label {backdrop-filter:blur(7px);box-shadow:0 3px 9px #30476112;border-color:#c8d9e3;color:#3e5a6b;}
+.vv-labels .vv-label.selected {background:#edf7fb;border-color:#4e9bbd;color:#236886;}
+.vv-selection {box-shadow:0 6px 20px #25435a0c;}
+.vv-compact .vv-toolbar {padding:12px 14px;border:0;border-radius:0;gap:8px;}
+.vv-compact .vv-view-title {display:block;}
+.vv-compact .vv-view-title strong {display:block;font-size:14px;}
+.vv-compact .vv-kicker {font-size:8px;letter-spacing:.14em;color:#82919a;}
+.vv-compact .vv-tools [data-action=top],.vv-compact .vv-tools [data-action=side] {display:none;}
+.vv-compact .vv-tools button {font-size:10px;padding:5px 7px;}
+.vv-compact .vv-renderer {font-size:8px;padding:3px 5px;background:#f1f6f6;color:#54847f;}
+.vv-compact .vv-stage {height:330px;min-height:280px;border:0;}
+.vv-compact .vv-display-controls {padding:10px 13px;border:0;border-top:1px solid #e6ecef;border-radius:0;gap:10px;min-height:46px;}
+.vv-compact .vv-legend,.vv-compact .vv-part-list,.vv-compact .vv-signal-note,.vv-compact .vv-model-details {display:none;}
+.vv-compact .vv-opacity {font-size:10px;}
+.vv-compact .vv-opacity input {width:58px;}
+.vv-compact .vv-display-controls > label:not(.vv-opacity) {font-size:10px;}
+.vv-compact .vv-orbit-hint {font-size:9px;left:14px;top:11px;}
+.vv-compact .vv-selection {left:10px;right:10px;bottom:10px;padding:8px 10px;border-radius:7px;gap:2px 8px;}
+.vv-compact .vv-selection strong {font-size:11px;}
+.vv-compact .vv-selection span {font-size:10px;}
+.vv-compact .vv-selection button {font-size:10px;padding:5px 8px;}
+.vv-compact .vv-orientation {font-size:8px;}
+@media(max-width:760px) {
+ .vv-stage {height:440px;}
+ .vv-compact .vv-stage {height:320px;min-height:260px;}
+ .vv-compact .vv-display-controls {gap:8px;}
+ .vv-compact .vv-opacity {display:none;}
+}
+
+.vehicle-view.vv-dark {--vv-ink:#d6e0e9;--vv-muted:#98a8b9;--vv-line:#303b48;--vv-indigo:#59a7bd;}
+.vv-dark .vv-toolbar,.vv-dark .vv-display-controls,.vv-dark .vv-model-details {background:#171e27;border-color:#303b48;}
+.vv-dark .vv-stage {background:#171d25;}
+.vv-dark button {background:#202b37;color:#bac9d7;border-color:#344250;}
+.vv-dark button:hover {background:#293949;border-color:#526c82;}
+.vv-dark .vv-kicker,.vv-dark .vv-orbit-hint {color:#8596a8;}
+.vv-dark .vv-display-controls label,.vv-dark .vv-opacity output {color:#9dadbc;}
+.vv-dark .vv-body-modes {background:#111821;border-color:#303d4b;}
+.vv-dark .vv-body-modes button {background:transparent;color:#8da0b2;}
+.vv-dark .vv-body-modes button[aria-pressed=true] {background:#2c3b4a;color:#d4e5ef;box-shadow:0 1px 4px #0005;}
+.vv-dark .vv-renderer {background:#1b3036;color:#71b5bc;}
+.vv-dark .vv-selection {background:#17212deb;border-color:#3e5366;box-shadow:0 6px 20px #0002;}
+.vv-dark .vv-selection button {background:#263545;border-color:#42556b;color:#c4d9e6;}
+.vv-dark .vv-labels .vv-label {background:#1b2a38eb;border-color:#506575;color:#d3e1ec;}
+.vv-dark .vv-labels .vv-label.selected {background:#234553;border-color:#69aabd;color:#e6f4f5;}
+.vv-dark .vv-loading {background:#171d25;color:#9caebf;}
+.vv-dark .vv-model-body {border-color:#303b48;}
+.vv-dark .vv-model-body p,.vv-dark .vv-signal-note {color:#92a6b8;}
