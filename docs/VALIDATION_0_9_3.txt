@@ -1,0 +1,101 @@
+OBD Lab 0.9.3 — service controls, odometer and diagnostic console
+10 November 2026
+
+COMPLETED SOURCE CHECKS
+
+Python: 261 distinct model/API checks passed.
+The full unittest-discover run passed 258 tests in 134.706 seconds (exit 0).
+Three additional configured-vehicle identity/catalog checks passed after the
+presentation fixes. The final focused odometer and identity runs also passed.
+
+Frontend and configured model-view contracts: 302 passed, zero failures.
+  session                               15
+  application                           13
+  setup_cycle                           12
+  start_shift                            8
+  staged_workflow                       13
+  sensor_purpose                         9
+  cockpit_units                         50
+  scanner                               19
+  live_data                              9
+  diagnosis                             11
+  connections                           18
+  sensor_characteristics_map            26
+  schematic_characteristics_faults      19
+  dashboard_warnings                    15
+  service_dashboard                     13
+  odometer_ui                           11
+  service_controls                      19
+  compact_scanner                       10
+  configured_vehicle_identity            6
+  configured_vehicle_visibility          6
+
+These are actual-source checks. The integration suites use the real Python
+simulation/HTTP API where stated, with a parsed DOM and CPU Canvas. The
+existing scanner suite uses real model fixtures through an API-shaped adapter;
+the new compact-scanner suite uses the whole app and actual HTTP.
+The configured visibility suite parses the real GLB/bindings and verifies
+filtered built-in/imported component geometry through the CPU Canvas path.
+The existing GLB geometry/animation suite also passed.
+Suite filenames retaining earlier versions identify their origin, not a
+claim that old source was substituted.
+
+A 240-second limit in the batch runner interrupted the setup/cycle suite.
+It was rerun without that artificial limit and passed all 12 cases in
+415.236 seconds. No assertion was bypassed. The new service-control suite
+caught a stale-context bug after Drive-to-service navigation; the application
+now prevents an older synchronous render from overwriting newer released
+inputs. Its retained regression passes.
+
+WHAT THE NEW CHECKS ESTABLISH
+
+- Service W/Up and S/Down inputs change the same physical model used by Drive.
+  Repeated updates and service-tool navigation preserve held keys. Multiple
+  keyboard/pointer sources release independently. Blur, hidden documents,
+  Help and global setup release manual controls. Text entry and native UI
+  arrows do not drive the car. Gear assistance and parking release use the
+  existing command queue. WLTC owns input until explicit takeover.
+- Odometer is the configured starting reading plus positive physical travel
+  in either direction. Trip A has a separate baseline. Resetting Trip A does
+  not advance time or reset vehicle state, total distance or prior history.
+  The actual setup form, Cancel and explicit Apply behave consistently.
+- Scan tool tabs retain real connection state, request/reply decoding and
+  fault clearing. A numeric trend uses actual reply timestamps and preserves
+  missing-value gaps. Raw details and the trace dock are opt-in. An explicit
+  Expand trace control provides more inspection space when requested.
+- Basic petrol -> PHEV -> basic petrol commits the chosen configuration.
+  Configured unit labels replace inherited hybrid labels. Unfitted hybrid
+  or combustion components are omitted from configured location views;
+  disconnected fitted hardware remains present and fault-marked.
+- Diesel defaults to the extended teaching set. Its 13-channel inventory,
+  sampling periods and the four channels omitted in Basic were checked
+  against the code. No Euro 4/5/6 compliance or fixed sensor-count rule is
+  claimed; docs/DIESEL_SENSORS.html explains the scope and primary references.
+
+PACKAGED DOWNLOAD ACCEPTANCE
+
+The release process runs tests/check_download.py against the generated
+standalone run.sh and its exact embedded ZIP before updating Google Drive.
+That test checks checksums and extraction, startup in an otherwise empty
+read-only folder with spaces, a Python-only executable search path, real
+HTTP/diagnostic/fault/vehicle/WLTC requests, odometer/trip behavior, shipped
+service/scanner assets, repeated launch, Ctrl+C/SIGTERM cleanup, corrupted
+file rejection, and source-ZIP startup. The final external release record
+stores the packaged result and Google Drive byte-for-byte readback hashes.
+
+LIMITS
+
+No native browser layout/event test, native GPU rendering test, or test on
+the user's particular Linux Mint installation was performed. CPU SVG checks
+of the odometer layout and parsed DOM tests are not browser screenshots.
+WebGL consumes the same fitted-component list, but GPU pixels were not tested.
+The 45 local acceptance checks in the current guide are blank observations
+for the user's machine, not pre-filled results. The earlier PDF books remain
+theory references with older UI screenshots.
+
+DELIVERY
+
+The OBD folder contains only run.sh and START_HERE.txt. Complete source,
+models, guides and tests are embedded in run.sh. Runtime is Python 3.10+
+standard library plus the browser; Vite, React, Node and Electron are not
+runtime requirements. Export wanted logs before shutdown or replacing a run.

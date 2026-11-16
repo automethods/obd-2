@@ -1,0 +1,30 @@
+OBD Lab 0.9.5 — 13 November 2026
+
+Resulting behavior
+- Connect names the target control unit and changes to Connected to <unit> after connecting. It reads only that unit's fault memory and opens its live parameters. A redundant reconnect is disabled.
+- The selected-unit fault-code action uses a scoped API call. Reading gearbox faults does not request engine codes or refresh a whole-vehicle report.
+- Vehicle scan is independent discovery over the chosen transport. It works without opening a unit session and preserves the existing selected unit, connection, clock and diagnostic session. Each result offers Connect to open that unit.
+- Live-data cards repeat at Refresh intervals of 0.25 s, 1 s or 1 min of simulation time. Pause freezes the readings with the model.
+- The single-parameter control is labelled Read. Numeric Read starts repeating automatically at the displayed interval. Identity and service operations execute individually; they do not accidentally repeat clear/session commands.
+- Fault/discovery replies are recorded in the trace without replacing the selected parameter response.
+- The earlier speed trace, shared WLTC controls, persistent pedals, Numbers/Graphs and add-parameter features remain available.
+
+Checks completed for this revision: 53 passed
+- test_scanner_scope.py: 5 passed against production HTTP handlers in memory.
+- test_live_parameters.py: 4 passed against production HTTP handlers in memory.
+- test_scanner.py: 18 existing scanner regressions passed.
+- test_scanner_flow_v095.cjs: 7 passed using the actual AppSession, ScannerView and production handlers via JSON lines.
+- test_scan_tool_v07.cjs: 19 scanner-view regressions passed. Expectations updated for named connection buttons and independent discovery.
+- JavaScript syntax and Python compilation checked.
+- Launcher and source archive rebuilt together; embedded archive and all bundled file checksums independently verified, with packaged files compared to source.
+- Bundled launcher --help runs successfully through checksum validation and temporary extraction without needing a listening socket.
+
+Reproduce from extracted source
+python3 -m unittest discover -s tests -p test_scanner_scope.py -v
+python3 -m unittest discover -s tests -p test_live_parameters.py -v
+python3 -m unittest discover -s tests -p test_scanner.py -v
+node tests/test_scanner_flow_v095.cjs
+node tests/test_scan_tool_v07.cjs
+
+Verification boundaries
+The task environment restricts local socket binding. Handler checks invoke the production HTTP handler methods with in-memory streams, and the JavaScript integration test communicates with them through JSON lines. Vehicle, scanner, sensor and clock implementations are real; the DOM harness is parsed nodes rather than a native browser. Native browser layout was not rechecked for 0.9.5. See VALIDATION_0_9_4.txt for the earlier desktop/mobile snapshot layout checks. Legacy Canvas/socket suites were not rerun; their unavailable dependencies and transport needs are documented there.

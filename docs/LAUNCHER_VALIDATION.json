@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "checks": [
+    "Standalone file passes sh and bash syntax checks",
+    "Flat source ZIP, complete file checksums and identical embedded payload",
+    "Only run.sh in an otherwise empty folder; launched from a different directory and path with spaces",
+    "No executable permission needed; read-only file/directory modes; PATH contains only Python",
+    "Live page, twelve theory documents, all three PDFs and reader script served from bundled files",
+    "Bundled simulator advances and injected temperature-sensor fault changes the live state",
+    "Custom port, no-browser option, Ctrl+C exit, socket close and temporary-folder cleanup",
+    "Repeated launch and SIGTERM cleanup leave downloaded folder and file unchanged",
+    "Occupied port produces an actionable error and cleans its temporary files",
+    "Truncated or corrupted downloads fail clearly before starting the simulator",
+    "Help and invalid-port exits clean up bundled files",
+    "Browser handoff occurs once and only after the bundled server is ready",
+    "Direct executable launcher also works when executable permission is available",
+    "Flat source ZIP launches after extraction, without creating bytecode/history folders"
+  ],
+  "browser_check": "A recorder executable verified browser handoff; the actual Mint desktop and browser were not available.",
+  "permission_check": "Read-only file and directory mode bits were used; a physical noexec shared-drive mount was not available."
+}

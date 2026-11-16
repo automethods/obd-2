@@ -1,0 +1,31 @@
+OBD Lab 0.9.4 — 12 November 2026
+
+Requested behavior
+- Shared toolbar: digital actual speed and a rolling 120-second graph, with a separate WLTC target trace.
+- Shared driving task: WLTC status and start/stop/takeover are visible in Drive and Diagnostics. Workspace changes retain the same run.
+- Selected-module Live data opens by default with main values. Numbers/Graphs and + Add parameter work for each fitted module.
+- Automatic ECU reads every 0.25 s of simulation time, through the existing command queue and clock. Read now was removed from the main UI.
+- Pedals remain visible during diagnostics. Show gauges expands auxiliary instruments. Accelerator increases actual RPM/speed; brake reduces speed. Pressure releases on pointer/key release and window/visibility changes.
+- A manual pedal takes over from WLTC without changing whether the shared clock is running or paused. The explicit Take over / pause action still stops and pauses.
+- Selected-module fault memory is separate from the explicitly whole-vehicle scan.
+- Engine values are decoded from actual OBD replies. Other modules show their own labelled sampled model measurements. The external charging interface remains reference-only, with no invented live measurements.
+
+Checks completed
+- Python scanner regression suite: 18 passed.
+- Python drive-cycle regression suite: 11 passed, including full-cycle completion.
+- Python configured vehicle-system regression suite: 20 passed.
+- Python live-parameter batch API checks: 4 passed.
+- Existing ScannerView/AppSession regression suite: 19 passed.
+- New live workspace integration suite: 14 passed. Uses actual Session, ScannerView, CockpitView, VehicleMonitor and the real HTTP handler methods over JSON lines. Covers automatic cadence, hidden/paused polling, decoded values, graph controls, add/remove parameters, missing readings, unit scope, actual gas/brake response, WLTC continuation/takeover and every fitted module.
+- JavaScript syntax and Python compilation checks passed.
+- Native browser layout and actions checked with actual model/API snapshot fixtures. Numbers/Graphs, add parameter, selected transmission data, selected-unit tab keyboard navigation and absence of old ECU values checked. At 1600x1000, 1366x768 and 390x844: no document horizontal overflow; accelerator/brake visible; diagnostic viewport remains independently scrollable. No page script errors observed.
+- Standalone launcher and flat source archive rebuilt together. Embedded archive and per-file checksums independently verified against the source files.
+
+Reproduce the new checks from the extracted source folder
+python3 -m unittest discover -s tests -p test_live_parameters.py -v
+node tests/test_live_workspace_v094.cjs
+node tests/test_scan_tool_v07.cjs
+
+Verification boundaries
+This task's execution sandbox does not permit binding local HTTP sockets. The new test transport invokes the production HTTP handlers with in-memory streams; it does not replace scanner, vehicle, sensor or cycle logic. Native browser checks use saved outputs from these same model/handler classes for layout and native interactions, not a claim of an end-to-end running localhost server. Native-browser physical response is covered by the actual-model interaction contract test, rather than by the snapshot-based layout checks.
+The older application/Canvas integration suites require an unavailable @napi-rs/canvas dependency and localhost sockets, so they were not rerun here. Their scanner-tab expectations were updated for the new default and four tabs. Physical OBD hardware and certified WLTP testing are outside this simulator's scope.

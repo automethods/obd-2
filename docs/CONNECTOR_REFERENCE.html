@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Connector Reference</title>
+  
+<link rel="stylesheet" href="guide.css"></head>
+<body><header><a href="../START_HERE.html">OBD II Lab</a><a href="BEGINNER_HANDBOOK.html">Beginner book</a><a href="SCHEMATIC_WORKSPACE.html">Schematics</a><a href="CONNECTOR_REFERENCE.html">Connectors</a><a href="LEARNING_GUIDE.html">Concepts</a><a href="WORKED_CASES.html">Working cases</a><a href="PROTOCOL.html">Bytes</a><a href="FIRMWARE_ROADMAP.html">Firmware</a></header><main class="page">
+<aside class="note" style="padding:15px 19px;background:#edf4fa;border-left:3px solid #3856b8;border-radius:0 7px 7px 0"><strong>Recovered v0.4.0 scope.</strong> The pin diagrams and electrical calculations below describe the preserved Instruments view. The new Workbench adds logical connection properties and a nominal supply reference. See <a href="VISUAL_WORKBENCH.html">Visual Workbench</a>.</aside>
+
+<header id="title-block-header">
+<h1 class="title">Connector Reference</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#connectors-pin-numbering-and-live-probes"
+id="toc-connectors-pin-numbering-and-live-probes">Connectors, pin
+numbering and live probes</a>
+<ul>
+<li><a href="#vehicle-diagnostic-connector"
+id="toc-vehicle-diagnostic-connector">1. Vehicle diagnostic
+connector</a></li>
+<li><a href="#lesson-sensor-and-ecu-assignments"
+id="toc-lesson-sensor-and-ecu-assignments">2. Lesson sensor and ECU
+assignments</a></li>
+<li><a href="#a-numerical-circuit-example"
+id="toc-a-numerical-circuit-example">3. A numerical circuit
+example</a></li>
+<li><a href="#sources" id="toc-sources">Sources</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="connectors-pin-numbering-and-live-probes">Connectors, pin
+numbering and live probes</h1>
+<p>Version 0.3.0 · 9 November 2026</p>
+<p>The <strong>Connectors</strong> screen separates a referenced vehicle
+diagnostic connector from the invented connector assignments used by
+this lesson. A connector drawing is useful only when its viewing
+direction and applicability are clear. Every view therefore identifies
+its orientation, function and evidence status.</p>
+<h2 id="vehicle-diagnostic-connector">1. Vehicle diagnostic
+connector</h2>
+<p>The default drawing shows the <strong>mating face of a J1962 Type A
+vehicle socket</strong>, looking into the socket with its wide edge at
+the top. Pin 1 is at the upper left, pin 8 at the upper right, pin 9 at
+the lower left and pin 16 at the lower right. Elm Electronics
+illustrates this vehicle-connector numbering in Figure 8 of its ELM327
+data sheet. [C1]</p>
+<p><strong>Show rear / wire side</strong> mirrors the drawing left to
+right to show the opposite side of the <em>same connector</em>. A view
+of a mating cable plug is a different reference. Before using an actual
+connector, check its own drawing and whether the manufacturer labels the
+mating face or wire side. The lab’s rear view is an orientation aid, not
+a dimensioned harness assembly drawing.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Pin</th>
+<th>Reference function</th>
+<th>Treatment in this lab</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>4</td>
+<td>Chassis ground</td>
+<td>Role identified; electrical ground offsets not solved</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>Signal ground</td>
+<td>Role identified; not the separately named ECT sensor-return
+cavity</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>CAN High for ISO 15765-4</td>
+<td>Diagnostic frames; analog voltage not modeled</td>
+</tr>
+<tr class="even">
+<td>14</td>
+<td>CAN Low for ISO 15765-4</td>
+<td>Diagnostic frames; analog voltage not modeled</td>
+</tr>
+<tr class="odd">
+<td>16</td>
+<td>Vehicle battery positive</td>
+<td>No supply-voltage plant; Workbench exposes nominal 12.6 V as reference only</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>J1850 Bus +</td>
+<td>Legacy reference; inactive</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>J1850 PWM Bus −</td>
+<td>Legacy reference; inactive</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>ISO K-line</td>
+<td>Legacy reference; inactive</td>
+</tr>
+<tr class="odd">
+<td>15</td>
+<td>ISO L-line where applicable</td>
+<td>Legacy reference; inactive</td>
+</tr>
+<tr class="even">
+<td>1, 3, 8, 9, 11, 12, 13</td>
+<td>No vehicle-specific role assigned here</td>
+<td>No simulated signal</td>
+</tr>
+</tbody>
+</table>
+<p>The manufacturer pin guide supports these reference functions and
+distinguishes the protocols. Pins 6 and 14 belong to the selected CAN
+profile; their use must not be generalized to every OBD-II protocol.
+[C2] Figure 9 of the Elm data sheet provides a corresponding adapter
+circuit. [C1]</p>
+<p>In the preserved Instruments connector view, selecting a CAN pin explains its frame-layer boundary and pin 16 has no numerical voltage probe. The recovered Workbench adds logical wire signals and a nominal 12.6 V supply property marked as a reference, not a measurement. Neither view models dominant/recessive voltage waveforms, termination measurements, supply-battery dynamics or bus arbitration. The hybrid traction-pack voltage is never assigned to pin 16.</p>
+<h2 id="lesson-sensor-and-ecu-assignments">2. Lesson sensor and ECU
+assignments</h2>
+<p><strong>J-ECT and X1 are fictional teaching labels.</strong> They do
+not identify Toyota connector part numbers or establish a cavity
+assignment for any real ECU. “THW” is used only as an ECT signal label
+in this circuit. Applying the lesson to an actual vehicle requires the
+applicable electrical wiring diagram and component documentation.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Lesson point</th>
+<th>Meaning</th>
+<th>Live signal</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>J-ECT.1</td>
+<td>Harness-side ECT input, joined to X1.2</td>
+<td><code>sensors.ect_node_v</code></td>
+</tr>
+<tr class="even">
+<td>J-ECT.2</td>
+<td>Sensor return, joined to X1.3</td>
+<td><code>sensors.sensor_return_v</code></td>
+</tr>
+<tr class="odd">
+<td>X1.1</td>
+<td>Internal reference test point</td>
+<td><code>sensors.ect_reference_v</code></td>
+</tr>
+<tr class="even">
+<td>X1.2</td>
+<td>Physical ECU input node</td>
+<td><code>sensors.ect_node_v</code></td>
+</tr>
+<tr class="odd">
+<td>X1.3</td>
+<td>Ideal sensor-return reference</td>
+<td><code>sensors.sensor_return_v</code></td>
+</tr>
+</tbody>
+</table>
+<p>J-ECT shows the cavities of the harness-side connector. The open-path
+switch lies after J-ECT.1 toward the thermistor; the harness remains
+connected to the ECU pull-up. An isolated sensor-side terminal is not
+separately modeled. X1.1 is an internal reference test point, not an
+assertion that a real ECU exposes a 5 V supply at cavity 1.</p>
+<p>Select a pin with the mouse, or focus it and press Enter or Space.
+<strong>Add this signal to scope</strong> adds its channel to the task
+workspace. The ECT input also offers <strong>Probe ADC voltage
+instead</strong>, because the physical voltage and its digital
+reconstruction are different quantities. The mapping table provides an
+equivalent keyboard-accessible route. <strong>Export connector
+SVG</strong> saves the displayed orientation and selection.</p>
+<h2 id="a-numerical-circuit-example">3. A numerical circuit example</h2>
+<p>The default teaching model uses a 5 V reference, a 2,200 Ω pull-up
+and a beta-model NTC with 2,500 Ω at 25°C and beta 3,500 K. The return
+is an ideal 0 V reference. These are selected model parameters, not
+Toyota calibration values. See <code>obdii_lab/core.py</code>,
+<code>Parameters</code> and <code>ect_circuit</code>, for the executable
+definition. With absolute temperature <code>T</code> in kelvin,
+resistance follows:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>T</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>2500</mn><mo>exp</mo><mrow><mo stretchy="true" form="prefix">[</mo><mn>3500</mn><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mn>1</mn><mi>T</mi></mfrac><mo>−</mo><mfrac><mn>1</mn><mn>298.15</mn></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow><mspace width="0.222em"></mspace><mi>Ω</mi><mi>.</mi></mrow><annotation encoding="application/x-tex">
+R(T)=2500\exp\left[3500\left(\frac{1}{T}-\frac{1}{298.15}\right)\right]\ \Omega.
+</annotation></semantics></math></p>
+<p>At 25°C, the thermistor is 2,500 Ω. The divider gives</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>V</mi><mrow><mi>n</mi><mi>o</mi><mi>d</mi><mi>e</mi></mrow></msub><mo>=</mo><mn>5</mn><mfrac><mn>2500</mn><mrow><mn>2200</mn><mo>+</mo><mn>2500</mn></mrow></mfrac><mo>=</mo><mn>2.659574</mn><mspace width="0.222em"></mspace><mi mathvariant="normal">V</mi><mi>.</mi></mrow><annotation encoding="application/x-tex">
+V_{node}=5\frac{2500}{2200+2500}=2.659574\ \mathrm{V}.
+</annotation></semantics></math></p>
+<p>The branch current is 1.06383 mA. A 12-bit ADC gives
+<code>round(2.659574 / 5 × 4095) = 2178</code>, reconstructed as
+<strong>2.659341 V</strong>. That small difference is quantization, not
+a voltage drop along the wire. J-ECT.1 and X1.2 therefore show the same
+physical value, while the ADC channel shows the reconstruction.</p>
+<p>For a valid reconstructed voltage <code>Vm</code>, recover resistance
+as <code>Rm = 2200 × Vm / (5 − Vm)</code> and temperature as
+<code>1 / [1/298.15 + ln(Rm/2500)/3500] − 273.15</code> °C. Validity
+checks precede this inverse calculation; the open circuit is not
+interpreted by dividing by zero.</p>
+<p>Opening the path makes current zero and pulls the harness node to
+<strong>5.000 V</strong>, giving ADC count <strong>4095</strong>.
+Version 0.2 replaces the earlier 4.98 V placeholder with this ideal
+open-circuit result. The temperature channel becomes invalid; the
+displayed −40°C is a diagnostic sentinel, not evidence that the coolant
+suddenly froze. The controller’s later 80°C fallback is a third,
+explicitly separate value. The <a
+href="SCHEMATIC_WORKSPACE.html">workspace guide</a> follows this
+transition through the diagnostic monitor.</p>
+<h2 id="sources">Sources</h2>
+<ul>
+<li><strong>[C1] Elm Electronics, ELM327 data sheet, version
+2.3:</strong> printed page 82, Figure 8, vehicle connector; printed page
+84, Figure 9, reference circuit. <a
+href="https://elmelectronics.com/wp-content/uploads/2020/05/ELM327DSL.pdf">Manufacturer
+PDF</a>.</li>
+<li><strong>[C2] ScanTool.net / OBD Solutions, “Which OBD-II protocol is
+supported by my vehicle?”:</strong> connector illustrations, protocol
+assignments and ground/supply notes. <a
+href="https://www.scantool.net/blog/which-obd-ii-protocol-is-supported-by-my-vehicle/">Manufacturer
+guide</a>. Its historical market/date statements are not used as current
+applicability guidance here.</li>
+</ul>
+<footer>OBD II Lab v0.3.0 · 9 November 2026 · Synthetic educational models. See Sources for evidence boundaries.</footer></main></body>
+</html>

@@ -1,0 +1,100 @@
+OBD Lab 0.9 — staged workflow validation
+10 November 2026
+
+This release changes the entry flow and operational navigation. First choose
+and configure a vehicle, explicitly Continue, then choose Drive or Diagnostics
+& service. Vehicle units and the global configuration summary are service tools.
+
+COMPLETED SOURCE CHECKS
+
+Python: 211 tests passed.
+Command: python3 -m unittest discover -s tests
+This includes six new configuration-transaction tests and the existing plant,
+vehicle, sensor, chassis/HVAC, drive-cycle, diagnostic, scanner and API checks.
+
+Frontend: 173 interaction contracts passed, with no remaining failures:
+  Shared Session                   12  tests/test_session_v07.cjs
+  Application shell                12  tests/test_application_v07.cjs
+  Setup and WLTC                   12  tests/test_setup_cycle_v08.cjs
+  Start and shift assistance        8  tests/test_start_controls_v071.cjs
+  Staged workflow                  13  tests/test_workflow_v09.cjs
+  Cockpit and unit views           50  tests/test_cockpit_units_v07.cjs
+  Sensor purpose groups            9  tests/test_unit_purpose_v08.cjs
+  Scan tool                       19  tests/test_scan_tool_v07.cjs
+  Linked live data                  9  tests/test_live_data_v06.cjs
+  Guided diagnosis                11  tests/test_diagnosis_v06.cjs
+  Wiring and locations             18  tests/test_connection_v06.cjs
+Run each with node followed by its path. Older version suffixes identify the
+original test suite; these commands load the current product sources.
+
+The vehicle geometry and animation suite also passed:
+  node tests/test_vehicle.cjs
+It exercises the actual 225-node model, parser, wheel bindings, interpolation,
+reverse travel, pause/reset, absent measurements, view modes and themes.
+
+HTML structure: application index and current HTML guides have balanced element
+structure and unique IDs. JavaScript syntax checks passed for changed modules.
+The text and HTML user guides contain the same 31 local acceptance checks.
+
+NEW WORKFLOW BEHAVIOR EXERCISED
+
+1. Initial setup hides the simulation controls, operating tabs, unit tree,
+   object inspector, message dock and session status bar.
+2. Hidden navigation, shortcuts and direct operating commands cannot bypass
+   the vehicle and workspace stages.
+3. Editing a draft makes no vehicle mutation. A rejected draft stays visible
+   with an error and does not replace the previous model.
+4. Repeated Continue submissions commit one vehicle. A complete state/resource
+   response means there is no dependency on follow-up metadata GET requests.
+5. Back followed by unchanged Continue keeps the prepared vehicle without
+   another configuration request.
+6. Entering Drive or service does not recreate the vehicle.
+7. Switching workspaces preserves the same clock, history, faults, selected
+   object, recorded signals and diagnostic records.
+8. Unit map, signals, wiring and locations remain linked under service.
+9. Service's Vehicle configuration page shows the shared fitted hardware;
+   its Edit action opens the single global vehicle editor.
+10. Change vehicle pauses the run and releases held driving controls. Cancel
+    returns to the current session paused, retaining its data and selection.
+11. Cancelled draft values are discarded before reopening the editor.
+12. Applying changed settings resets once and returns to the previous activity.
+13. A lost configuration response blocks cancellation and operation until an
+    explicit retry confirms the vehicle, even if the draft matches the old one.
+
+The setup integration suite additionally enters Diagnostics & service directly,
+switches ignition on there at zero RPM, and then opens the same vehicle in Drive.
+
+CONFIGURATION TRANSACTION
+
+The local server validates candidate hardware and initial road conditions,
+builds the candidate state and all UI resources, and serializes that response
+before replacing the live session. Its resources match their GET counterparts
+for all six supported vehicle types. Invalid options, invalid conditions,
+resource preparation failure and serialization failure preserve the old model,
+history, fault memory, diagnostic trace and active drive-cycle objects.
+
+DOWNLOAD ACCEPTANCE PROCEDURE
+
+The release download is built with:
+  python3 tools/build_standalone.py --output ../OBDII_Release_0_9
+The built file is checked separately from this source tree with:
+  python3 tests/check_download.py --downloads ../OBDII_Release_0_9
+
+That checker verifies embedded file hashes and a flat editable source archive;
+launch from an otherwise empty directory with spaces; current application and
+guide assets; configured driving, sensor faults and diagnostics through the
+packaged API; a recorded WLTC run; repeated startup, port conflicts and cleanup.
+Its launcher uses a browser-handoff recorder, not a native GUI browser.
+
+VERIFICATION LIMITS
+
+Frontend checks use actual application JavaScript and actual Python model/API
+data with a parsed-node harness and CPU Canvas. They do not establish native
+browser layout, native event behavior or GPU rendering. Native browser launch
+was unavailable in this environment. The user's Linux Mint installation has
+not been tested directly. The 31 checks in START_HERE.txt and docs/WORKSPACE.html
+are the practical local acceptance sequence.
+
+The virtual vehicle remains a generic teaching model. Individual OEM ECU
+firmware, complete actuator circuits, real CAN bit timing and a real diagnostic
+adapter are not implemented by this workflow update.

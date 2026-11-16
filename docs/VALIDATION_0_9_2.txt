@@ -1,0 +1,93 @@
+OBD Lab 0.9.2 — dashboard warnings and service workspace validation
+10 November 2026
+
+COMPLETED SOURCE CHECKS
+
+Python: 248 tests passed in 123.397 seconds, exit status 0.
+Command: python3 -m unittest discover -s tests
+Includes 238 prior checks and 10 new model/HTTP body-warning checks.
+
+Frontend: 250 interaction checks passed.
+  Shared Session / command queue       15  tests/test_session_v07.cjs
+  Actual application / loopback API     13  tests/test_application_v07.cjs
+  Setup and WLTC                        12  tests/test_setup_cycle_v08.cjs
+  Start and shift assistance             8  tests/test_start_controls_v071.cjs
+  Staged workflow                       13  tests/test_workflow_v09.cjs
+  Cockpit and unit views                50  tests/test_cockpit_units_v07.cjs
+  Sensor purpose groups                  9  tests/test_unit_purpose_v08.cjs
+  Scan tool                            19  tests/test_scan_tool_v07.cjs
+  Linked live data                       9  tests/test_live_data_v06.cjs
+  Guided diagnosis                     11  tests/test_diagnosis_v06.cjs
+  Wiring and locations                  18  tests/test_connection_v06.cjs
+  Sensor characteristics and grouping   26  tests/test_sensor_map_v091.cjs
+  Schematic characteristics and faults  19  tests/test_schematic_characteristics_v091.cjs
+  New dashboard warnings               15  tests/test_dashboard_warnings_v092.cjs
+  New persistent service dashboard      13  tests/test_service_dashboard_v092.cjs
+Run each frontend suite with node followed by its path. The version suffixes
+identify the suite's origin; these tests load the current application sources.
+
+WHAT WAS VERIFIED
+
+- Actual UI -> serialized Session -> loopback HTTP -> VehicleSim. The command
+  queue still permits at most one concurrent mutation.
+- Petrol, diesel and BEV remain stationary with drive gear, accelerator and
+  parking brake applied. Explicit release preserves the gear and allows motion.
+  Reverse and manual gearbox warning conditions are exercised too.
+- Prominent parking tell-tales, a direct release button and current-gear advice
+  reflect actual state. No automatic parking-brake release was added.
+- Driver seat belt and driver door have strict boolean model controls, shared
+  snapshot/history/export state and changed-state-only BODY events. They do not
+  advance simulation time, invent emissions codes or add propulsion locks.
+- Lamps are illuminated only with ignition on. Reset restores a fastened driver
+  belt, closed driver door and applied parking brake.
+- Body controls remain usable during WLTC without overriding its virtual driver.
+- Full and compact RPM gauges start their red zone at the configured engine
+  redline. Diesel uses its own scale; BEV has a motor-power gauge without an
+  engine-RPM band. SVG visibility uses actual style/attributes.
+- The compact dashboard stays visible with scan tool, guided faults, unit map,
+  signals, wiring, locations and fitted-configuration summary. It is outside
+  the independently scrolling tools and uses no separate timer or simulation.
+- Ignition, automatic/manual assisted engine start or READY, stop, parking-brake
+  release and driver checks work while the service tools remain visible.
+- A crank sensor failure changes real engine state, warning lamp and compact
+  readings while the scan tool stays open. View changes preserve time and faults.
+- Full driver controls uses the same vehicle. Editing a new vehicle hides the
+  operating dashboard; cancelling returns to the same paused vehicle.
+- Start availability observes model interlocks. Inhibited engines are described
+  as inhibited instead of being told to start. Local notices clear on recovery.
+- Existing momentary pedals, keyboard release, sensor characteristics,
+  intermittent faults, diagnostics and recorded-log timing passed regression.
+
+VISUAL SCOPE
+
+The pictograms are original SVG paths. Source geometry was checked using CPU
+SVG rendering. Parsed-node UI tests verify data flow and attributes, not native
+browser layout or pointer/keyboard behavior. Responsive CSS gives diagnostic
+tools their own scrolling area. On short windows an expanded message dock
+appears over the lower tool area instead of shrinking it behind the dashboard.
+The text and HTML instructions contain 40 matching local acceptance checks.
+
+DOWNLOAD ACCEPTANCE
+
+Build:
+  python3 tools/build_standalone.py --output ../OBDII_Release_0_9_2
+Verify the actual standalone file in isolation:
+  python3 tests/check_download.py --downloads ../OBDII_Release_0_9_2
+
+The standalone acceptance includes the existing launch, checksum, paths with
+spaces, Python-only PATH, read-only download modes, port collision, driving,
+manual/HVAC/WLTC, diagnostics, sensor faults, Ctrl+C and temporary cleanup checks.
+It also verifies current compact dashboard assets, real parking hold/release,
+driver warnings and shared exported state across petrol, diesel and BEV.
+Only run.sh and START_HERE.txt belong in the Google Drive OBD download folder.
+
+LIMITS
+
+Native browser layout/input, WebGL GPU rendering and the user's particular
+Linux Mint installation remain unverified. The browser launch restriction was
+not bypassed. The 40 local checks are for the user's observations.
+Only the driver seat-belt buckle and driver door switch are represented here;
+there is no complete passenger-occupancy, restraint or four-door body model.
+Warning and driving responses are generic simulator assumptions. CAN remains
+a diagnostic lesson transcript, not a physical CAN-error/arbitration model.
+Earlier PDF books remain theory references with earlier UI screenshots.

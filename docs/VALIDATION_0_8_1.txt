@@ -1,0 +1,100 @@
+OBD LAB 0.8.1 — VALIDATION RECORD
+Date: 9 November 2026
+
+RESULTS
+Python model/API tests: 205 passed, 0 failed.
+Frontend interaction contracts: 172 passed, 0 failed.
+Vehicle geometry and animation suite: passed.
+
+COMMANDS AND FRONTEND COUNTS
+python3 -m unittest discover -s tests          205
+node tests/test_session_v07.cjs                 12
+node tests/test_application_v07.cjs             12
+node tests/test_setup_cycle_v08.cjs             12
+node tests/test_start_controls_v071.cjs          8
+node tests/test_unit_purpose_v08.cjs             9
+node tests/test_cockpit_units_v07.cjs           50
+node tests/test_scan_tool_v07.cjs               19
+node tests/test_live_data_v06.cjs                9
+node tests/test_diagnosis_v06.cjs               11
+node tests/test_connection_v06.cjs              18
+node tests/test_protocols_contract.cjs <fixture> 12
+node tests/test_vehicle.cjs              geometry suite
+
+The frontend total excludes Python tests and the geometry suite. Existing
+test filenames retain their original version suffixes; they load the
+current 0.8.1 product code and applicable current model fixtures.
+
+GAMING CONTROLS
+W / ArrowUp: accelerator, 100% while held.
+S / ArrowDown: foot brake, 100% while held.
+A / ArrowLeft and D / ArrowRight: steering; opposing directions cancel,
+and release of the last steering key returns the wheel to centre.
+C: manual clutch. Space: existing simulation Run/Pause shortcut.
+
+Each physical key owns its input independently. The tests exercise held
+aliases, code-first mapping, non-Latin key text, key-only fallback,
+modifier/composition exclusion, repeat handling, typing and native range/
+tab arrow behavior. Blur, hidden document, navigation, disposal, reset
+and opening Help release the relevant held controls. WLTC retains input
+ownership until takeover, including completion and fault states.
+
+The whole-application HTTP test verifies that keyboard inputs reach the
+actual VehicleSim, Help releases accelerator/steering, and a fresh brake
+press after closing Help reaches the model. The existing queued-command
+tests retain brake/gear interlocks and restore the newest desired inputs.
+
+PEDAL VISUALS
+The brake is left of the accelerator, with clutch at far left on manual
+vehicles. Each pedal shows its current percentage and has an adjacent
+vertical 0-100% spring-return control. Holding a gas/brake face applies
+35%; holding the clutch face applies 100%. Keyboard pedals apply 100%.
+This distinction is labelled on the faces and in the live help text.
+
+Actual product SVGs/styles were rendered on the CPU at 0%, 50% and 100%,
+and with the manual clutch/brake/accelerator at 100%/35%/60%. Readouts,
+depression transforms, position bars, ordering and labels were reviewed.
+Native HTML layout and native vertical range widgets were not rendered
+in a browser by these checks.
+
+ONE CONTROLLER AND DIRECT SENSOR ACTIONS
+The wiring view uses one continuous controller housing, internal
+connector banks and surrounding fitted sensor nodes. The actual generated
+1440 x 1965 extended-ECU SVG and focused diagrams were CPU-rendered and
+reviewed. Geometry contracts check bounded, nonoverlapping nodes and a
+single central housing. Selection preserves context and direct node
+buttons support keyboard activation.
+
+The whole-application test clicks the visible Crankshaft speed Disconnect
+button, advances 0.6 simulated seconds, and verifies engine_running=false,
+start_state=inhibited, invalid/null crank input, P0335 in pending/stored
+memory, the Unplugged/Reconnect labels and the stopped-engine explanation.
+It then clicks Reconnect, samples again and verifies a valid measurement.
+Simulation time continues; sensor loss does not freeze the physical plant.
+
+The sticky summary displays actual input quality, combustion/start state,
+physical shaft RPM and fault memory. Engine response is a read-only view
+of actual model outputs. It does not invent separate injector, ignition
+or fan circuits, their waveforms, or individual actuator unplug controls.
+
+PACKAGED DOWNLOAD VERIFICATION METHOD
+The standalone artifact is verified after building with:
+python3 tests/check_download.py --downloads ../OBDII_Release_0_8_1
+The checker writes its observed result to a separate JSON report. It
+launches run.sh alone in an empty folder with spaces in its path and
+checks payload hashes, source layout, included assets, actual vehicle/
+scanner/fault/export flows, manual transmission, WLTC/HVAC, repeated
+startup, Python-only PATH, read-only mode bits, occupied-port and corrupt-
+download failures, browser handoff, and SIGINT/SIGTERM cleanup.
+
+LIMITS
+Tests use actual Python model/API behavior, parsed-node UI callbacks and
+CPU Canvas/SVG as applicable. They do not establish native browser event/
+layout, GPU rendering or compatibility with a particular Linux Mint
+installation. The current guide includes 26 local acceptance checks.
+
+The simulator remains a generic teaching vehicle. ECU/sensor cavity
+assignments are illustrative. DLC standard roles, generated CAN/ISO-TP
+messages, explanatory electrical waveforms, physical values and sampled
+measurements are identified separately. No real vehicle adapter or OEM
+firmware was connected. Core runtime: Python 3.10+, standard library only.

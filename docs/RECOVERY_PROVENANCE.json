@@ -1,0 +1,40 @@
+{
+  "recovery_date": "2026-11-09",
+  "source_version": "0.3.2",
+  "reconstructed_version": "0.4.0",
+  "original_standalone_archive_matches_source_zip": true,
+  "source_manifest_all_148_entries_verified": true,
+  "inputs": [
+    {
+      "name": "EngDoc_Coolant_Sensor(2).json",
+      "bytes": 179141,
+      "sha256": "b89756a62794cc007880281e79aa274850381ccb331e90306322a6150c6ddb92"
+    },
+    {
+      "name": "OBDII_Beginner_Handbook(2).pdf",
+      "bytes": 492883,
+      "sha256": "b488dbfb42d413e77ef6d8db975da2e955ffe4fb3973a28953d067a5af1af667"
+    },
+    {
+      "name": "OBDII_Lab(2).zip",
+      "bytes": 4679023,
+      "sha256": "bd137a5d185d55e858cb98bf6086a6a36bf75d8f35aa9174e167fb90e042430c"
+    },
+    {
+      "name": "OBDII_Learning_Guide(2).pdf",
+      "bytes": 1217247,
+      "sha256": "58dbaed0c033be439901073eb9b681ce0029db7831045b240654fa4310300c9f"
+    },
+    {
+      "name": "OBDII_START_HERE(2).txt",
+      "bytes": 3553,
+      "sha256": "9d56decf8fd1101121c7599fac437905aa123ed499b5e409db329a465b8ea4c8"
+    },
+    {
+      "name": "run(2).sh",
+      "bytes": 6325370,
+      "sha256": "c95bd5c726494df7b7bb26691d86e2cf13927c16d682531153ddaf562f21a23d"
+    }
+  ],
+  "recovery_method": "Checksum-verified local attachments; rebuild described missing workbench features. Not a byte-for-byte recovery of the unavailable previous workbench build."
+}

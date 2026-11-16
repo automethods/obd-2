@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="650" viewBox="0 0 1200 650">
+<rect width="1200" height="650" fill="#f7faf8"/>
+<g font-family="DejaVu Sans, sans-serif" fill="#17343f">
+<text x="45" y="54" font-size="30" font-weight="bold">A temperature measurement needs a complete path</text>
+<rect x="40" y="90" width="555" height="490" rx="22" fill="#eef5f1" stroke="#91b9ab" stroke-width="3" stroke-dasharray="10 7"/>
+<text x="65" y="132" font-size="25" font-weight="bold">Engine computer</text>
+<text x="80" y="183" font-size="22">Reference supply</text>
+<path d="M280 170 V220 M280 305 V355 H730 M280 520 H1050 V435" fill="none" stroke="#376670" stroke-width="5"/>
+<circle cx="280" cy="170" r="8" fill="white" stroke="#008789" stroke-width="4"/>
+<rect x="260" y="220" width="40" height="85" fill="white" stroke="#376670" stroke-width="4"/>
+<text x="330" y="259" font-size="24">Fixed resistor</text>
+<text x="330" y="291" font-size="19" fill="#5c7874">Inside the computer</text>
+<circle cx="280" cy="355" r="7" fill="#008789"/>
+<path d="M280 355 V422" fill="none" stroke="#376670" stroke-width="5"/>
+<rect x="95" y="422" width="370" height="67" rx="12" fill="white" stroke="#91b9ab" stroke-width="3"/>
+<text x="130" y="464" font-size="25">Voltage measurement</text>
+<path d="M280 520 V544 M250 544 H310 M260 556 H300 M270 568 H290" fill="none" stroke="#376670" stroke-width="4"/>
+<text x="65" y="528" font-size="22">Sensor return</text>
+<text x="630" y="310" font-size="25" font-weight="bold">Connection switch</text>
+<circle cx="730" cy="355" r="8" fill="white" stroke="#008789" stroke-width="4"/>
+<circle cx="840" cy="355" r="8" fill="white" stroke="#008789" stroke-width="4"/>
+<path d="M738 355 H832 M848 355 H1050 V370" fill="none" stroke="#008789" stroke-width="5"/>
+<text x="650" y="403" font-size="21">Open it to disconnect</text>
+<rect x="920" y="125" width="240" height="125" rx="17" fill="#ffffff" stroke="#a6cfc2" stroke-width="3"/>
+<text x="946" y="165" font-size="23" font-weight="bold">Coolant sensor</text>
+<text x="946" y="198" font-size="20">Warmer sensor:</text>
+<text x="946" y="229" font-size="20">lower resistance</text>
+<rect x="1030" y="370" width="40" height="65" fill="white" stroke="#376670" stroke-width="4"/>
+<path d="M1014 448 L1086 356" fill="none" stroke="#376670" stroke-width="5"/>
+<text x="730" y="468" font-size="21">Temperature-sensitive</text>
+<text x="805" y="495" font-size="21">resistor</text>
+<text x="47" y="624" font-size="20" fill="#5c7874">Reference drawing. The worksheet controls recalculate the values; this picture does not animate.</text>
+</g></svg>

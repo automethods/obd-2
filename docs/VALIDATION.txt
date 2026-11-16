@@ -1,0 +1,91 @@
+HISTORICAL v0.3 VALIDATION RECORD
+For the recovered v0.4 build, read RECOVERY_VALIDATION.txt in this folder.
+The results below belong to the supplied baseline release.
+
+OBD-II Learning Lab - current validation record
+Date: 9 November 2026
+Environment: Python 3.12.14 on Linux; Node 24.22.1; jsdom 26.1.0
+
+DOWNLOAD AND STARTUP
+The standalone run.sh and flat OBDII_Lab.zip passed 14 focused checks.
+The standalone was copied alone into an otherwise empty folder with spaces
+in its path and launched from another working directory. It needed only
+Python on PATH, served the live book, ten reference documents, reader code
+and both PDFs, and ran a temperature-sensor fault experiment.
+Checks also covered repeat startup, custom port/no-browser, Ctrl+C/SIGTERM,
+closed sockets, temporary-folder cleanup, occupied ports, damaged downloads,
+help/invalid arguments, executable startup and the extracted source ZIP.
+The user's folder and launcher bytes stayed unchanged after the runs.
+Browser handoff used a recorder; an actual Linux Mint desktop and physical
+noexec shared-drive mount were not available. See LAUNCHER_VALIDATION.json.
+Reproduce from the source folder:
+python3 tools/build_standalone.py
+python3 tests/check_download.py
+
+The model, UI and document checks below were completed for the unchanged
+model, lesson and PDF content. They were not rerun for this packaging change.
+
+MODEL, DIAGNOSTICS, EXPLANATIONS AND REFERENCE BOOK
+python3 -m unittest discover -s tests -q
+Result: 77 tests passed in 5.021 seconds.
+Coverage: deterministic stepping, engine/battery invariants, ABS
+comparison, known OBD bytes, ISO-TP error handling, CLI/API/bridge, sensor
+circuit and ADC, diagnostic timers, sensor validity and held BMU reports.
+Additional coverage: state-derived ordinary-language explanations, restored inputs
+versus stored warning memory, latched battery protection, loss of wheel
+assistance, diagnostics scope, complete reference extraction, preserved MathML,
+images and headings, and distinct heading IDs with working local anchors.
+
+INTERACTIVE LEARNING BOOK AND INSTRUMENTS
+Optional command: python3 tests/run_ui_checks.py
+Requires Node 20+ and jsdom 26.1.0 for these development checks only.
+Result: two suites PASS; 53 actual local HTTP requests; zero captured errors.
+Instruments: 19 requests. Checked all five screens, 69 signals, guided ECT
+workflow, probe/scope controls, CSV/SVG exports, decoded diagnostics,
+VIN multi-frame response, stale BMU report and braking diagram.
+Learning book: 34 requests. Checked default book, ten chapters, ten complete
+reference documents, 30-term glossary, reading without resetting the model,
+named fault controls, debounce/fallback/confirmation, readable diagnosis,
+repair versus memory, pedal input, playback/view-change pause, physical wheel
+motion versus missing report, and BMU restore/restart after a latched shutdown.
+Canvas methods were mocked. These checks validate state and DOM interaction,
+not browser rendering, responsiveness or native save-dialog behavior.
+See UI_VALIDATION.json and the two test_*_dom.cjs scripts.
+
+PRINTABLE AND DRAWING ARTIFACTS
+Beginner handbook: 19 pages; complete learning/reference guide: 64 pages.
+Both contain hierarchical PDF bookmarks and open with the outline panel.
+Friendly engine, coolant fault, hybrid and braking diagrams were exported
+from real model snapshots as SVG and rendered to PNG with Inkscape.
+All PDF pages were rendered with Poppler and visually inspected, including
+chapter/table transitions, diagrams, equations and reference tables.
+The eight detailed circuit/connector SVGs were also rendered and reviewed;
+the corresponding model and drawing sources are unchanged.
+
+ENGDOC WORKSHEET
+examples/engdoc_coolant_sensor.json passed the actual uploaded native
+validateNativeDocument() after transpiling its TypeScript and local dependencies.
+The input file has 37 nodes and 29 values, with its own embedded circuit PNG.
+The supplied math adapter explicitly permits the used exp() and arithmetic.
+Every calculation was independently evaluated and matched to ect_circuit()
+for 54 boundary combinations, plus six curve rows. Reproduce arithmetic with:
+python3 tools/check_engdoc_math.py
+See ENGDOC_VALIDATION.json and ENGDOC_INTEGRATION.html for sources and limits.
+No full EngDoc editor import, widget operation, export workflow, or expression
+runtime execution was performed. No Wordcraft integration or live simulator
+synchronization is claimed.
+
+RECORDED CASES AND OPTIONAL CAN INTEGRATION
+Ten recorded vehicle runs are included. Their core equations, parameters and
+scheduling are unchanged. These are synthetic examples.
+The python-can 4.6.1 VirtualBus example passed with nine exchanged frames,
+two live RPM readings, VIN FF/FC/CF reassembly and invalid-flow-control rejection.
+That adapter is unchanged; core diagnostics were checked again above.
+
+LIMITS
+The available live browser environment could not reach the local server;
+browser pixel layout and actual browser interaction are not claimed as verified.
+No comparison with measured vehicles, OEM calibration, regulatory conformance
+or original firmware execution was performed. Core runtime is Python standard
+library only. Physical connector references are distinguished from illustrative
+sensor/ECU wiring. All vehicle outputs are synthetic educational model results.

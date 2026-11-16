@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Existing Bases</title>
+  
+<link rel="stylesheet" href="guide.css"></head>
+<body><header><a href="../START_HERE.html">OBD II Lab</a><a href="BEGINNER_HANDBOOK.html">Beginner book</a><a href="SCHEMATIC_WORKSPACE.html">Schematics</a><a href="CONNECTOR_REFERENCE.html">Connectors</a><a href="LEARNING_GUIDE.html">Concepts</a><a href="WORKED_CASES.html">Working cases</a><a href="PROTOCOL.html">Bytes</a><a href="FIRMWARE_ROADMAP.html">Firmware</a></header><main class="page">
+<header id="title-block-header">
+<h1 class="title">Existing Bases</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#existing-bases-what-to-reuse-and-where"
+id="toc-existing-bases-what-to-reuse-and-where">Existing bases: what to
+reuse and where</a>
+<ul>
+<li><a href="#selected-first-reuse-python-can-virtualbus"
+id="toc-selected-first-reuse-python-can-virtualbus">Selected first
+reuse: python-can VirtualBus</a></li>
+<li><a href="#other-useful-bases-and-their-boundaries"
+id="toc-other-useful-bases-and-their-boundaries">Other useful bases and
+their boundaries</a></li>
+<li><a href="#a-practical-reuse-order"
+id="toc-a-practical-reuse-order">A practical reuse order</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="existing-bases-what-to-reuse-and-where">Existing bases: what to
+reuse and where</h1>
+<p>The most useful existing base depends on the layer being simulated. A
+transport library, a scan-tool adapter emulator and a physical vehicle
+model solve different problems. This lab keeps those boundaries separate
+so existing tools can be adopted without replacing the learning
+plant.</p>
+<h2 id="selected-first-reuse-python-can-virtualbus">Selected first
+reuse: python-can VirtualBus</h2>
+<p>The optional <code>examples/python_can_demo.py</code> uses
+<strong>python-can 4.6.1</strong> as the CAN-message transport between a
+tester endpoint and an ECU endpoint in one Python process. The ECU uses
+this package’s live <code>DiagnosticServer</code>, so response values
+come from the simulated engine. The example demonstrates single-frame
+requests, a segmented reply, flow control and payload reassembly. It is
+a real library integration, not a claim that the whole lab is based on
+python-can.</p>
+<p>Install the optional dependency and run the demonstration from the
+package directory:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> pip install <span class="at">-r</span> requirements-optional.txt</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> examples/python_can_demo.py</span></code></pre></div>
+<p>The main dashboard, command-line scenarios and JSON bridge continue
+to run without this dependency. Installation needs an available Python
+package source; the dependency is not bundled into the archive.</p>
+<p>The upstream VirtualBus connects endpoints on the same channel
+<strong>within one process</strong>. It preserves ordering and delivery
+but does not model bitrate, identifier arbitration or priority under bus
+load. This makes it useful for protocol integration tests, not a CAN
+timing benchmark. The demo selects only the virtual backend; it does not
+detect or open a hardware adapter. python-can’s source license is GNU
+LGPL version 3. [S9]</p>
+<h2 id="other-useful-bases-and-their-boundaries">Other useful bases and
+their boundaries</h2>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Existing project or artifact</th>
+<th>Best use here</th>
+<th>Current integration status</th>
+<th>Boundary to preserve</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>python-can</td>
+<td>Virtual message transport now; supported backend abstraction for
+later adapters</td>
+<td>Optional executable example included</td>
+<td>VirtualBus is not cross-process SocketCAN and does not simulate
+physical arbitration</td>
+</tr>
+<tr class="even">
+<td>Linux SocketCAN + can-utils</td>
+<td>Later multi-process Linux virtual bus, capture, replay and kernel
+ISO-TP testing</td>
+<td>Researched extension; not configured by this release</td>
+<td>Requires the appropriate Linux interface/kernel setup; a replay
+trace does not respond to changing vehicle controls</td>
+</tr>
+<tr class="odd">
+<td>Ircama ELM327-emulator</td>
+<td>Later compatibility layer for software that expects ELM AT commands
+and a serial/TCP adapter</td>
+<td>Researched candidate; not installed, vendored or coupled</td>
+<td>Adapter/diagnostic emulation is separate from engine and battery
+physics; its license includes a noncommercial condition</td>
+</tr>
+<tr class="even">
+<td>Existing Prius Hybrid Lab in the user’s Drive</td>
+<td>Reference for a later Gen2 planetary and energy-flow plant</td>
+<td>Its model notes were read; source was not imported</td>
+<td>Prior 8.8 kWh PHEV is explicitly hypothetical; preserve its HEV/PHEV
+and evidence distinctions</td>
+</tr>
+<tr class="odd">
+<td>QEMU / Renode</td>
+<td>Target-specific firmware execution after hardware
+identification</td>
+<td>Roadmap candidates</td>
+<td>Need matching processor, memory, peripherals and startup
+environment</td>
+</tr>
+</tbody>
+</table>
+<p>can-utils provides tools such as <code>candump</code>,
+<code>canplayer</code>, <code>cansend</code> and ISO-TP utilities. It is
+a suitable second transport step when separate processes need to
+communicate over Linux virtual CAN. The inspected <code>candump.c</code>
+and <code>isotpsend.c</code> headers offer GPL-2.0-only OR BSD-3-Clause;
+other files and dependencies need their own license review before
+redistribution. No can-utils binary or source is copied into this
+package. [S10]</p>
+<p>ELM327-emulator already handles adapter commands and multiple
+simulated ECUs. Its Toyota preset is <strong>Auris Hybrid</strong>,
+selected with <code>scenario car</code>; its default preset is not a
+Prius. That dictionary can help test a scan application but does not
+establish factory behavior for another Toyota generation. The repository
+specifies <strong>CC BY-NC-SA 4.0</strong>, so its reuse terms differ
+from permissively licensed libraries. This release links to it as a
+candidate rather than incorporating its code or data. [S11]</p>
+<h2 id="a-practical-reuse-order">A practical reuse order</h2>
+<p>Start by understanding the built-in model and running the optional
+python-can example. Next, use a Linux virtual bus if separate ECU
+processes are needed. Add an ELM-compatible facade when a specific scan
+application requires it. Introduce the existing Prius planetary model
+only after defining a common signal, time and energy contract; validate
+the resulting combined model with repeatable scenarios. Treat
+source-level controller integration as a separate milestone from
+executing an original ECU binary.</p>
+<p>The existing Drive model notes give a useful starting interface and
+explicitly list assumptions. They report a 201.6 V HEV baseline and a
+hypothetical 8.8 kWh extension, with simplified efficiencies and
+supervisory logic. This is a candidate physical-model base, not a
+factory calibration dataset or a firmware emulator. [U2]</p>
+<p>Source links and evidence scope are in <strong>SOURCES.md</strong>;
+binary execution requirements are in
+<strong>FIRMWARE_ROADMAP.md</strong>. Each optional dependency should be
+pinned and its own tests run when introduced, so a future update does
+not silently change the simulator’s behavior.</p>
+<footer>OBD II Lab v0.3.0 · 9 November 2026 · Synthetic educational models. See Sources for evidence boundaries.</footer></main></body>
+</html>

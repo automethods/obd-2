@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Vehicle and model bindings</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+    /* CSS for syntax highlighting */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="guide.css" />
+</head>
+<body><main class="page">
+<header id="title-block-header">
+<h1 class="title">Vehicle and model bindings</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#transparent-vehicle-and-model-bindings"
+id="toc-transparent-vehicle-and-model-bindings">Transparent vehicle and
+model bindings</a>
+<ul>
+<li><a href="#use-the-view" id="toc-use-the-view">Use the view</a></li>
+<li><a href="#what-is-included" id="toc-what-is-included">What is
+included</a></li>
+<li><a href="#replace-the-model" id="toc-replace-the-model">Replace the
+model</a></li>
+<li><a href="#change-the-bindings" id="toc-change-the-bindings">Change
+the bindings</a></li>
+<li><a href="#connect-a-three.js-renderer"
+id="toc-connect-a-three.js-renderer">Connect a Three.js
+renderer</a></li>
+<li><a href="#technical-references"
+id="toc-technical-references">Technical references</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="transparent-vehicle-and-model-bindings">Transparent vehicle and
+model bindings</h1>
+<p>The vehicle view places the same components, connections and signals
+from the training panel inside an original contoured crossover. It reads
+the simulation snapshot; it does not run a second vehicle model.</p>
+<h2 id="use-the-view">Use the view</h2>
+<p>Drag to orbit, scroll to zoom, or use <strong>Top view</strong>,
+<strong>Side view</strong> and <strong>Reset view</strong>. Keyboard
+users can focus the vehicle canvas, use arrow keys to rotate, <strong>+
+/ −</strong> to zoom and <strong>Home</strong> to reset.
+<strong>Exterior</strong> shows the painted body and cabin glass.
+<strong>Cutaway</strong> exposes the components and wiring; the
+<strong>Body</strong> slider sets the transparency between these views.
+The compact vehicle in Live dashboard uses the same scene and state.
+Component buttons below the view provide an accessible alternative to
+picking the model.</p>
+<p>Select the coolant sensor, DLC socket, battery monitor or front-left
+wheel to disconnect the corresponding teaching connection. The effect
+belongs to the shared experiment. A physical wheel continues rotating
+when its measurement disappears. Opening the diagnostic CAN branch
+prevents scan-tool replies without stopping the vehicle controllers.</p>
+<p>Wire colors and moving dots help follow the selected path. Dots
+advance with simulation time and stop when the simulation is paused.
+They are conceptual information flow, not measured voltage pulses, an
+oscilloscope trace, CAN arbitration, bit timing or an ISO-TP timing
+visualization. The diagnostic CAN conductors do not claim continuous
+packet traffic. A gray dashed path and red cross show a disconnected
+path. The engine-stand profile leaves battery and wheel components
+unavailable; select a hybrid or braking experiment to use them.</p>
+<h2 id="what-is-included">What is included</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>web/models/training_vehicle.glb</code></td>
+<td>Original contoured crossover with curved body panels, cabin glass,
+alloy rims, seats, selectable modules and four physical wheel
+groups.</td>
+</tr>
+<tr class="even">
+<td><code>web/models/vehicle_bindings.json</code></td>
+<td>Maps named model nodes to component IDs, signals, wheel axes, wheel
+radius and connection IDs.</td>
+</tr>
+<tr class="odd">
+<td><code>tools/build_vehicle_model.py</code></td>
+<td>Rebuilds both sample files with Python’s standard library.</td>
+</tr>
+<tr class="even">
+<td><code>web/vehicle.js</code></td>
+<td>Offline WebGL2 renderer with a Canvas fallback, restricted GLB
+reader and live bindings.</td>
+</tr>
+<tr class="odd">
+<td><code>web/three-adapter.js</code></td>
+<td>ES module that drives a scene loaded by a separately supplied
+Three.js application.</td>
+</tr>
+</tbody>
+</table>
+<p>The default renderer uses WebGL2. If WebGL2 is unavailable, a Canvas
+2D projection keeps the component model and selection usable; the
+renderer badge tells you which path is active. It is not the Three.js
+renderer. No JavaScript package or network download is required to run
+this lab.</p>
+<h2 id="replace-the-model">Replace the model</h2>
+<p>Open <strong>Model &amp; simulation bindings</strong>, choose
+<strong>Load GLB</strong>, and select a local <code>.glb</code> file.
+Loading happens in the browser; the file is not uploaded to a service.
+Files are limited to 12 MB, 800 nodes, 400 meshes and one million
+vertices in this teaching viewer.</p>
+<p>The built-in reader supports glTF 2.0 GLB files with one embedded
+binary buffer, triangle geometry, float32 positions/normals, indexed or
+unindexed meshes, node transforms and material base-color factors. It
+calculates normals when they are absent. It does not support textures,
+external buffers, required extensions, Draco/compressed meshes, morph
+targets, skinning or stored animation clips. Unsupported files are
+rejected and the previous model remains displayed. A full Three.js
+application can use its own GLTFLoader for broader glTF support.</p>
+<p>For immediate simulation binding, give nodes the sample names:
+<code>engine</code>, <code>ecu</code>, <code>coolant_sensor</code>,
+<code>battery</code>, <code>bmu</code>, <code>abs</code>,
+<code>supervisor</code>, <code>dlc</code>, <code>scan_tool</code>,
+<code>wheel_fl</code>, <code>wheel_fr</code>, <code>wheel_rl</code> and
+<code>wheel_rr</code>. Each wheel should be a group whose pivot is at
+the axle center. Put tire, hub and spoke meshes inside that group. Keep
+wheel groups distinct so the physical wheel speeds can differ during
+braking.</p>
+<p>The sample coordinate convention is <strong>+Y up, −Z front, −X
+vehicle left</strong>, in illustrative metres. The geometry is a
+teaching layout, not a manufacturer service drawing. The renderer
+integrates the published physical wheel-speed samples using the model’s
+0.31 m physical wheel radius. During playback, intermediate animation
+frames interpolate between completed simulation samples. They do not
+predict future state or run a second simulation clock. Pausing snaps to
+the latest completed sample and holds. With large simulation steps,
+visible angle is an approximation to the rotation between snapshots;
+instantaneous physical and measured speeds remain separate. A user
+preference for reduced motion disables that interpolation.</p>
+<h2 id="change-the-bindings">Change the bindings</h2>
+<p>Download <strong>Bindings JSON</strong>, edit node names to match
+your GLB, then use <strong>Load bindings JSON</strong>. A wheel binding
+looks like this:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;node&quot;</span><span class="fu">:</span> <span class="st">&quot;wheel_fl&quot;</span><span class="fu">,</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;object_id&quot;</span><span class="fu">:</span> <span class="st">&quot;wheel_fl&quot;</span><span class="fu">,</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;signal_path&quot;</span><span class="fu">:</span> <span class="st">&quot;wheel_speeds_kph.0&quot;</span><span class="fu">,</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;measurement_path&quot;</span><span class="fu">:</span> <span class="st">&quot;sensors.wheel_speeds_kph.0&quot;</span><span class="fu">,</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;axis&quot;</span><span class="fu">:</span> <span class="st">&quot;x&quot;</span><span class="fu">,</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;direction&quot;</span><span class="fu">:</span> <span class="dv">-1</span><span class="fu">,</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;radius_m&quot;</span><span class="fu">:</span> <span class="dv">0</span><span class="er">.</span><span class="dv">31</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<p><code>signal_path</code> drives the physical wheel.
+<code>measurement_path</code> reports what the controller can see. A
+disconnected sensor produces a missing measurement; it does not force
+the physical wheel to stop. <code>direction</code> is −1 for the
+sample’s forward −Z direction and X axle; use +1 if your model’s axle
+convention requires the reverse. <code>body_nodes</code> identifies the
+meshes affected by the opacity slider. <code>components</code> binds
+model names to stable network object IDs, and <code>connections</code>
+maps those IDs to the four supported connection switches. Bindings are
+data; they do not contain executable code.</p>
+<p>Local model and binding imports live only in the current browser
+view. Each mounted view owns its own model, camera and selection; the
+shared experiment remains the source of physical state. To make a
+permanent project change, replace the sample files in the editable
+source package and rebuild the standalone launcher with
+<code>tools/build_standalone.py</code>.</p>
+<h2 id="connect-a-three.js-renderer">Connect a Three.js renderer</h2>
+<p>Three.js is deliberately supplied by the integrating application. Its
+GLTFLoader loads the scene, and the adapter receives the already loaded
+scene plus the binding JSON. Host the Three.js distribution and addons
+locally if the final application must remain offline. The lab does not
+automatically download either of them.</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode javascript"><code class="sourceCode javascript"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> <span class="op">*</span> <span class="im">as</span> THREE <span class="im">from</span> <span class="st">&#39;./vendor/three.module.js&#39;</span><span class="op">;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { GLTFLoader } <span class="im">from</span> <span class="st">&#39;./vendor/GLTFLoader.js&#39;</span><span class="op">;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> { createThreeSimulationBindings } <span class="im">from</span> <span class="st">&#39;./three-adapter.js&#39;</span><span class="op">;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> gltf <span class="op">=</span> <span class="cf">await</span> <span class="kw">new</span> <span class="fu">GLTFLoader</span>()<span class="op">.</span><span class="fu">loadAsync</span>(<span class="st">&#39;/web/models/training_vehicle.glb&#39;</span>)<span class="op">;</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> bindings <span class="op">=</span> <span class="cf">await</span> <span class="fu">fetch</span>(<span class="st">&#39;/web/models/vehicle_bindings.json&#39;</span>)<span class="op">.</span><span class="fu">then</span>(r <span class="kw">=&gt;</span> r<span class="op">.</span><span class="fu">json</span>())<span class="op">;</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">const</span> bridge <span class="op">=</span> <span class="fu">createThreeSimulationBindings</span>({</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  THREE<span class="op">,</span> <span class="dt">scene</span><span class="op">:</span> gltf<span class="op">.</span><span class="at">scene</span><span class="op">,</span> bindings</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>scene<span class="op">.</span><span class="fu">add</span>(gltf<span class="op">.</span><span class="at">scene</span>)<span class="op">;</span> <span class="co">// scene and renderer are owned by your application</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>bridge<span class="op">.</span><span class="fu">setBodyOpacity</span>(<span class="fl">0.20</span>)<span class="op">;</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co">// Use each existing lab update; do not create another simulation timer.</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="bu">window</span><span class="op">.</span><span class="fu">addEventListener</span>(<span class="st">&#39;lab:state&#39;</span><span class="op">,</span> <span class="bu">event</span> <span class="kw">=&gt;</span> {</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="kw">const</span> {state<span class="op">,</span> network} <span class="op">=</span> <span class="bu">event</span><span class="op">.</span><span class="at">detail</span><span class="op">;</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  bridge<span class="op">.</span><span class="fu">update</span>(state<span class="op">,</span> network)<span class="op">;</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  renderer<span class="op">.</span><span class="fu">render</span>(scene<span class="op">,</span> camera)<span class="op">;</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>})<span class="op">;</span></span></code></pre></div>
+<p>The example assumes your Three.js installation resolves the addons’
+<code>three</code> imports, commonly with a local import map. It is
+integration code, not a second runnable entry point.
+<code>bridge.warnings</code> identifies absent nodes.
+<code>setSelection(id)</code> highlights named components;
+<code>setBodyOpacity(value)</code> changes panels;
+<code>dispose()</code> restores original materials and wheel
+transforms.</p>
+<p>For custom wire geometry, pass
+<code>wires: [{id, line, marker, curve, phase}]</code>. <code>id</code>
+must match the network wire ID, such as <code>ect_signal</code>.
+<code>line</code> is a Three.js object, <code>marker</code> is an
+optional moving marker and <code>curve</code> implements
+<code>getPointAt()</code>. The adapter records live values in
+<code>userData.obdii</code>, dims disconnected lines and moves a marker
+only when the network reports activity. The positions remain visual
+aids, not simulated physical wires.</p>
+<h2 id="technical-references">Technical references</h2>
+<ul>
+<li><a href="https://threejs.org/docs/pages/GLTFLoader.html">Three.js
+GLTFLoader documentation</a>: loading glTF scenes in a full
+renderer.</li>
+<li><a href="https://threejs.org/docs/pages/Object3D.html">Three.js
+Object3D documentation</a>: named object lookup and scene
+transforms.</li>
+<li><a href="https://threejs.org/manual/pages/load-gltf.html">Three.js
+glTF loading manual</a>: inspecting named nodes and connecting animation
+to objects.</li>
+</ul>
+<p>The live model, geometry and adapter are original teaching code. They
+do not contain production ECU firmware or manufacturer vehicle
+assets.</p>
+</main></body>
+</html>

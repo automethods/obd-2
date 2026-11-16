@@ -1,0 +1,99 @@
+OBD Lab 0.9.1 — sensor characteristics and intermittent-fault validation
+10 November 2026
+
+COMPLETED SOURCE CHECKS
+
+Python: 238 tests passed.
+Command: python3 -m unittest discover -s tests
+Includes 8 new metadata tests, 14 intermittent-connection model tests and
+5 real HTTP tests, alongside the 211 existing checks.
+
+Frontend: 222 interaction contracts passed across the following suites:
+  Shared Session / command queue       15  tests/test_session_v07.cjs
+  Actual application / loopback API     13  tests/test_application_v07.cjs
+  Setup and WLTC                        12  tests/test_setup_cycle_v08.cjs
+  Start and shift assistance             8  tests/test_start_controls_v071.cjs
+  Staged workflow                       13  tests/test_workflow_v09.cjs
+  Cockpit and unit views                50  tests/test_cockpit_units_v07.cjs
+  Sensor purpose groups                  9  tests/test_unit_purpose_v08.cjs
+  Scan tool                            19  tests/test_scan_tool_v07.cjs
+  Linked live data                       9  tests/test_live_data_v06.cjs
+  Guided diagnosis                     11  tests/test_diagnosis_v06.cjs
+  Wiring and locations                  18  tests/test_connection_v06.cjs
+  Sensor characteristics and grouping   26  tests/test_sensor_map_v091.cjs
+  Schematic characteristics and faults  19  tests/test_schematic_characteristics_v091.cjs
+Run each frontend suite with node followed by its path. Version suffixes
+identify the original suite; these tests load current application sources.
+
+WHAT WAS EXERCISED
+
+- All 42 sensor definitions identify analogue, digital, pulse, discrete or
+  derived behavior. Six exact sample-rate groups match the actual sensor bank.
+- Solved coolant-divider voltage is distinguished from illustrative analogue
+  transfers. The brake switch's 0/5 V states and pulse-to-speed conversions
+  agree with runtime values. Calculated channels expose no wire voltage or
+  independent connector claim.
+- Grouping is a view operation. Sensor IDs, connector banks, cavity numbers,
+  selected objects and running model state remain unchanged. Changing RPM
+  changes pulse frequency, not sampling-group membership.
+- One central ECU/BMU housing is retained with surrounding sensor nodes.
+  New characteristics fit within the node and connector geometry bounds.
+- Direct Disconnect/Reconnect callbacks reach the shared connection API.
+  Invalid readings remain invalid rather than becoming a fabricated zero.
+- Regular and reproducibly irregular sensor-contact schedules use only the
+  2 ms simulation clock. Pause and read-only operations do not advance them.
+- Intermittent MAF loss gives missing measured input, the model's 70 percent
+  torque allowance, pending/stored P0102, signal recovery and 100 percent
+  allowance after recovery. Stored memory remains until cleared.
+- Crank loss inhibits engine operation. BMU pack-input loss removes torque
+  permission and records the declared module event. The coolant open circuit
+  retains its actual high input voltage and P0118 behavior.
+- Brief dropouts can occur between samples or fail the diagnostic debounce.
+  No forced diagnostic code or instantaneous recovery sample is invented.
+- Transition events, history, regular boundaries and irregular phase sequences
+  are invariant under different advance-call partitions. Multiple sensors
+  have independent reproducible schedules.
+- Invalid settings are atomic. Direct connection commands and Stop & reconnect
+  cancel the selected schedule. Code clearing leaves a running test active.
+- The actual application test clicks Start intermittent and Stop & reconnect,
+  follows the real HTTP response into the schematic, and freezes its countdown
+  while paused. Explicit sensor selection keeps the same fault-control target
+  when another sensor disconnects or recovers.
+- Saved-log deadlines remain anchored after an off-grid command. Actual final
+  snapshots can be recorded; the logger does not invent interpolated values.
+
+VISUAL AND DOCUMENT CHECKS
+
+Actual live-updated ECU and BMU SVG markup was rendered with CPU Canvas after
+resolving source CSS to SVG presentation attributes. The geometry was inspected
+for node, pin, badge and category placement. This is a source-diagram check,
+not a native browser rendering or typography comparison. The app index and HTML
+guides parse; the text and HTML instructions contain matching 34 local checks.
+
+DOWNLOAD ACCEPTANCE
+
+Build:
+  python3 tools/build_standalone.py --output ../OBDII_Release_0_9_1
+Verify the actual standalone file in isolation:
+  python3 tests/check_download.py --downloads ../OBDII_Release_0_9_1
+
+The download check covers manifest checksums, a flat embedded source archive,
+launch from an otherwise empty folder and paths with spaces, Python-only PATH,
+read-only download modes, correct current UI assets and guide, configured ICE
+and electric driving, diagnostic requests, permanent crank interruption,
+sensor metadata and intermittent MAF loss/recovery/retained memory, manual
+transmission and cabin loads, WLTC, port conflict, Ctrl+C and temporary cleanup.
+Only run.sh and START_HERE.txt belong in the user-facing OBD download folder.
+
+LIMITS
+
+No native browser layout/input, GPU rendering or particular Linux Mint install
+was verified for this release. No browser-launch restriction was bypassed.
+The parsed-node and CPU checks do not establish those platform behaviors.
+The 34 local checks are for the user's observations, not a pre-filled pass record.
+
+Sensor ranges, timing and fault responses are declared teaching assumptions.
+BMU coverage is pack voltage/current/temperature plus calculated SOC, not a
+full cell-monitor harness. Most electrical transfers and pulse previews are
+illustrative. Intermittent contact loss is not a vibration/corrosion/noise model.
+Older PDFs remain theory references with earlier UI screenshots.

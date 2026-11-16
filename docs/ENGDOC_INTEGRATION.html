@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Engdoc Integration</title>
+  
+<link rel="stylesheet" href="guide.css"></head>
+<body><header><a href="../START_HERE.html">OBD II Lab</a><a href="BEGINNER_HANDBOOK.html">Beginner book</a><a href="SCHEMATIC_WORKSPACE.html">Schematics</a><a href="CONNECTOR_REFERENCE.html">Connectors</a><a href="LEARNING_GUIDE.html">Concepts</a><a href="WORKED_CASES.html">Working cases</a><a href="PROTOCOL.html">Bytes</a><a href="FIRMWARE_ROADMAP.html">Firmware</a></header><main class="page">
+<header id="title-block-header">
+<h1 class="title">Engdoc Integration</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#engdoc-a-first-interactive-coolant-sensor-worksheet"
+id="toc-engdoc-a-first-interactive-coolant-sensor-worksheet">EngDoc: a
+first interactive coolant-sensor worksheet</a>
+<ul>
+<li><a href="#what-is-ready" id="toc-what-is-ready">What is
+ready</a></li>
+<li><a href="#open-and-try-the-worksheet"
+id="toc-open-and-try-the-worksheet">Open and try the worksheet</a></li>
+<li><a href="#the-small-calculation-underneath"
+id="toc-the-small-calculation-underneath">The small calculation
+underneath</a></li>
+<li><a href="#what-was-verified" id="toc-what-was-verified">What was
+verified</a></li>
+<li><a href="#how-this-grows-toward-the-users-workbench"
+id="toc-how-this-grows-toward-the-users-workbench">How this grows toward
+the user’s workbench</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="engdoc-a-first-interactive-coolant-sensor-worksheet">EngDoc: a
+first interactive coolant-sensor worksheet</h1>
+<p>OBD II Lab · Version 0.3.0 · 9 November 2026</p>
+<h2 id="what-is-ready">What is ready</h2>
+<p>The supplied EngDoc source has been inspected, and the lab now
+includes <strong>examples/engdoc_coolant_sensor.json</strong>, a native
+<code>engdoc-native-draft/0.3</code> worksheet. It brings a circuit
+explanation, an embedded diagram, adjustable inputs, calculated results,
+a small table and a line plot into one document. The file follows the
+actual uploaded native contract and its publishing example. <a
+href="https://drive.google.com/file/d/1KO5YVd2jsnmzEheObOkHf3jZeRNkIR6S/view">Native
+contract</a> · <a
+href="https://drive.google.com/file/d/1kMrxPzzJTQwF2bf1rARQQE_omSbNdhSK/view">Publishing
+example</a></p>
+<p>The question is deliberately small: <strong>What reaches the engine
+computer when the coolant gets warmer, and what changes if the sensor
+connection is broken?</strong> This is a useful first connection between
+a readable engineering document and the larger virtual vehicle. It does
+not require entering hexadecimal codes or writing a program.</p>
+<p>The worksheet recalculates a steady electrical circuit when an input
+changes. The browser OBD II Lab adds simulated time, changing physical
+temperature, computer decisions, fault timers and warning memory. The
+two tools explain different parts of the same measurement path.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Place to learn</th>
+<th>What you can change</th>
+<th>What you can observe</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>EngDoc coolant worksheet</td>
+<td>Actual temperature, connection state, reference supply, fixed
+resistor</td>
+<td>Sensor resistance, computer-side voltage, branch current and a
+temperature curve</td>
+</tr>
+<tr class="even">
+<td>Browser learning book</td>
+<td>Driver requests, starting conditions and a named fault</td>
+<td>Physical response, measured information, controller decisions,
+timing and diagnostic history</td>
+</tr>
+<tr class="odd">
+<td>PDF handbook</td>
+<td>Read the same explanations and exercises</td>
+<td>Reference pictures and worked reasoning; the PDF itself does not run
+the model</td>
+</tr>
+</tbody>
+</table>
+<h2 id="open-and-try-the-worksheet">Open and try the worksheet</h2>
+<p>Use the supplied EngDoc application’s native-document import or open
+workflow to select <strong>examples/engdoc_coolant_sensor.json</strong>.
+It requires the <code>/0.3</code> native draft capability because the
+document contains an embedded PNG. The exact menu label depends on the
+EngDoc build. A complete EngDoc application import and rendering session
+has not yet been run for this deliverable; the verification below covers
+the actual native validator and the calculation data. See the supplied
+<a
+href="https://drive.google.com/file/d/1hARjKZ9JbShr4k-nM1GEm7AtLjmrtrvv/view">EngDoc
+README</a> for that application’s startup instructions.</p>
+<p>Start with these settings:</p>
+<table>
+<colgroup>
+<col style="width: 30%" />
+<col style="width: 40%" />
+<col style="width: 30%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Control</th>
+<th style="text-align: right;">Initial value</th>
+<th>Plain meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Actual coolant temperature</td>
+<td style="text-align: right;">25 degrees Celsius</td>
+<td>The physical condition at the sensor</td>
+</tr>
+<tr class="even">
+<td>Sensor connection</td>
+<td style="text-align: right;">0</td>
+<td>Connected; choose 1 to disconnect</td>
+</tr>
+<tr class="odd">
+<td>Computer reference supply</td>
+<td style="text-align: right;">5 volts</td>
+<td>The supply used by this measurement circuit</td>
+</tr>
+<tr class="even">
+<td>Fixed resistor inside computer</td>
+<td style="text-align: right;">2,200 ohms</td>
+<td>One of the two parts that divide the voltage</td>
+</tr>
+</tbody>
+</table>
+<p>The connection control uses the choices <strong>0 =
+connected</strong> and <strong>1 = disconnected</strong> because the
+native contract stores scalar choices. The worksheet repeats that
+meaning beside the control and results. These numbers are switch
+positions, not diagnostic codes. The browser book provides named fault
+buttons for the same learning idea.</p>
+<p>Try the three experiments in order:</p>
+<ol type="1">
+<li><strong>Warm the connected sensor.</strong> Keep the connection at
+0. Change temperature from 25 to 90 degrees Celsius. The signal falls
+from about 2.660 to 0.610 volts. Warmer coolant lowers the sensor
+resistance, which lowers the measured junction voltage.</li>
+<li><strong>Break the information path.</strong> Return to 25 degrees
+Celsius, then select connection 1. The signal rises to 5.000 volts and
+sensor-branch current becomes zero. Move temperature again: the
+intrinsic sensor resistance changes, but the computer-side signal stays
+at the reference supply. The broken path hides the temperature
+change.</li>
+<li><strong>Repair the connection.</strong> Select 0 again. The signal
+returns to the value associated with the current physical temperature.
+This worksheet has no warning memory. In the browser lab, repair and
+clearing remembered warnings are separate actions.</li>
+</ol>
+<p>The six-row table uses fixed temperatures from −20 to 110 degrees
+Celsius. It follows your selected supply, fixed resistor and connection
+state, so it shows the wider relationship alongside the
+single-temperature control. The line chart joins those six points as a
+visual guide. The embedded circuit picture stays still; it is a
+reference drawing, not an animated switch or a vehicle connector
+pinout.</p>
+<h2 id="the-small-calculation-underneath">The small calculation
+underneath</h2>
+<p>The illustrative sensor is an NTC thermistor: its resistance
+decreases as it gets warmer. The worksheet uses the same illustrative
+beta approximation and default component values as the lab’s
+<code>ect_circuit()</code> function in
+<strong>obdii_lab/core.py</strong>. These are teaching parameters, not
+extracted Toyota calibration values.</p>
+<p>The equations are:</p>
+<ul>
+<li>Temperature for the calculation:
+<code>T_K = T_C + 273.15</code>.</li>
+<li>Sensor material resistance:
+<code>R = 2500 × exp(3500 × (1 / T_K − 1 / 298.15))</code> ohms.</li>
+<li>Connected signal voltage:
+<code>V_connected = V_reference × R / (R_pullup + R)</code>.</li>
+<li>Selected signal voltage:
+<code>V_signal = (1 − open) × V_connected + open × V_reference</code>.</li>
+<li>Branch current:
+<code>I_mA = (1 − open) × 1000 × V_reference / (R_pullup + R)</code>.</li>
+</ul>
+<p>Here, <code>open</code> is restricted by its selector to 0 or 1. The
+displayed resistance is the <strong>intrinsic sensor resistance if
+connected</strong>. The disconnected branch itself is open; it is not
+assigned that finite resistance. No inverse-temperature formula is
+applied to an open signal, so the worksheet does not manufacture a
+plausible temperature from a broken measurement path.</p>
+<p>The source adapter’s function allowlist includes <code>exp()</code>,
+and it permits the simple arithmetic and bound symbols used here. Values
+use the <code>float64</code> profile with units written in their labels.
+This avoids mixing absolute-temperature units with an exponential
+argument. It also means the worksheet does not perform unit conversion
+or dimensional checking: enter the units shown by each control. <a
+href="https://drive.google.com/file/d/14VPKVnIrzxcmEBjY4KGjCI_b6LHrfCWE/view">Uploaded
+expression adapter</a></p>
+<p>The circuit assumes an ideal reference supply and return, no wire
+resistance, no input leakage and no measurement noise. It has no
+analogue-to-digital quantization. The browser lab’s reported voltage
+includes its selected ADC rounding, so it can differ slightly from the
+worksheet’s ideal junction voltage. Compare the worksheet with the lab’s
+ideal circuit node when checking exact values.</p>
+<h2 id="what-was-verified">What was verified</h2>
+<p>The JSON passed the <strong>actual uploaded
+<code>validateNativeDocument()</code></strong> function after its
+TypeScript source and local dependencies were transpiled. This checked
+the <code>/0.3</code> schema, ownership of inputs and calculations,
+value references, table and chart references, embedded PNG structure and
+size limits. The document has 37 nodes and 29 values and is about 175
+KiB, including its own diagram.</p>
+<p>Every calculation expression was also evaluated by an independent,
+restricted arithmetic evaluator. Results were compared with the lab
+circuit for 54 combinations of temperature, supply voltage, fixed
+resistor and connection state, including the allowed input boundaries.
+All comparisons passed. The six table rows were checked separately
+against the same circuit function.</p>
+<table>
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 36%" />
+<col style="width: 36%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Healthy case, default circuit</th>
+<th style="text-align: right;">Signal voltage</th>
+<th style="text-align: right;">Sensor-branch current</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>−20 degrees Celsius</td>
+<td style="text-align: right;">4.507752 V</td>
+<td style="text-align: right;">0.223749 mA</td>
+</tr>
+<tr class="even">
+<td>0 degrees Celsius</td>
+<td style="text-align: right;">3.844623 V</td>
+<td style="text-align: right;">0.525172 mA</td>
+</tr>
+<tr class="odd">
+<td>25 degrees Celsius</td>
+<td style="text-align: right;">2.659574 V</td>
+<td style="text-align: right;">1.063830 mA</td>
+</tr>
+<tr class="even">
+<td>60 degrees Celsius</td>
+<td style="text-align: right;">1.243604 V</td>
+<td style="text-align: right;">1.707453 mA</td>
+</tr>
+<tr class="odd">
+<td>90 degrees Celsius</td>
+<td style="text-align: right;">0.610156 V</td>
+<td style="text-align: right;">1.995383 mA</td>
+</tr>
+<tr class="even">
+<td>110 degrees Celsius</td>
+<td style="text-align: right;">0.387639 V</td>
+<td style="text-align: right;">2.096528 mA</td>
+</tr>
+</tbody>
+</table>
+<p>At 25 degrees Celsius the sensor resistance is exactly 2,500 ohms in
+this model. With the connection open, every temperature case produces
+the selected reference voltage and zero branch current. These are useful
+known answers when first opening the worksheet.</p>
+<p><strong>Verification boundary:</strong> schema validation, numerical
+agreement and inspection of the expression adapter are complete. The
+full EngDoc expression runtime, editor rendering, interactive input
+widgets and export workflow have not been exercised here. A native
+document passing its contract does not by itself prove those application
+paths. The worksheet contains no document-supplied code and does not
+execute vehicle firmware.</p>
+<h2 id="how-this-grows-toward-the-users-workbench">How this grows toward
+the user’s workbench</h2>
+<p>The next useful step is to open this one worksheet in the supplied
+EngDoc build and verify its controls, table, chart and printed layout
+there. After that, the same pattern can be reused for a wheel-speed
+measurement or a battery-current measurement. A later bridge could pass
+explicitly named, unit-labelled values between an EngDoc worksheet and
+the running lab. Such a bridge needs defined ownership, update timing,
+validity flags and reset behavior before it can represent controller
+interactions reliably.</p>
+<p>The native worksheet is currently a separate, bounded document. No
+live EngDoc-to-simulator synchronization is implemented. Original
+firmware still needs a specified processor, memory and peripheral
+environment; neither this JSON nor the browser teaching controller
+supplies that environment. The firmware roadmap explains those later
+boundaries.</p>
+<p>The supplied <a
+href="https://drive.google.com/drive/folders/1InkrfSinOcs8MFvnQSOK73NMmhw6565U">EngDoc
+project</a> was used as the format reference. The separately named <a
+href="https://drive.google.com/drive/folders/1HltAm7bN7aSBeYkCqSR1RJxJ1an8yfag">Wordcraft
+upload folder</a> has not been evaluated as a running application for
+this release, and no Wordcraft integration is claimed. This first
+worksheet can be reviewed independently before choosing that integration
+boundary.</p>
+<footer>OBD II Lab v0.3.0 · 9 November 2026 · Synthetic educational models. See Sources for evidence boundaries.</footer></main></body>
+</html>

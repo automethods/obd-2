@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Protocol</title>
+  
+<link rel="stylesheet" href="guide.css"></head>
+<body><header><a href="../START_HERE.html">OBD II Lab</a><a href="BEGINNER_HANDBOOK.html">Beginner book</a><a href="SCHEMATIC_WORKSPACE.html">Schematics</a><a href="CONNECTOR_REFERENCE.html">Connectors</a><a href="LEARNING_GUIDE.html">Concepts</a><a href="WORKED_CASES.html">Working cases</a><a href="PROTOCOL.html">Bytes</a><a href="FIRMWARE_ROADMAP.html">Firmware</a></header><main class="page">
+<aside class="note" style="padding:15px 19px;background:#edf4fa;border-left:3px solid #3856b8;border-radius:0 7px 7px 0"><strong>Recovered v0.4.0 scope.</strong> This reference includes reconstructed connector behavior and the small UDS subset. See the <a href="VISUAL_WORKBENCH.html">current Visual Workbench addendum</a>. The original two PDF books are retained v0.3 reading copies.</aside>
+
+<header id="title-block-header">
+<h1 class="title">Protocol</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#obd-ii-and-iso-tp-the-diagnostic-lesson"
+id="toc-obd-ii-and-iso-tp-the-diagnostic-lesson">OBD-II and ISO-TP: the
+diagnostic lesson</a>
+<ul>
+<li><a href="#what-the-interface-does"
+id="toc-what-the-interface-does">1. What the interface does</a></li>
+<li><a href="#addresses-and-supported-requests"
+id="toc-addresses-and-supported-requests">2. Addresses and supported
+requests</a></li>
+<li><a href="#work-through-the-bytes" id="toc-work-through-the-bytes">3.
+Work through the bytes</a></li>
+<li><a href="#a-longer-message-vin-over-iso-tp"
+id="toc-a-longer-message-vin-over-iso-tp">4. A longer message: VIN over
+ISO-TP</a></li>
+<li><a href="#data-scales-and-monitor-flags"
+id="toc-data-scales-and-monitor-flags">5. Data scales and monitor
+flags</a></li>
+<li><a href="#extension-contracts" id="toc-extension-contracts">6.
+Extension contracts</a></li>
+<li><a href="#references-and-evidence-boundaries"
+id="toc-references-and-evidence-boundaries">References and evidence
+boundaries</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="obd-ii-and-iso-tp-the-diagnostic-lesson">OBD-II and ISO-TP: the
+diagnostic lesson</h1>
+<section id="recovered-uds"><h2>Recovered UDS and connection behavior</h2><p>The existing OBD request table remains valid. UDS examples use physical request ID <code>7E0</code>; functional OBD ID <code>7DF</code> does not run UDS.</p><table><thead><tr><th>UDS request</th><th>Teaching response</th></tr></thead><tbody><tr><td><code>10 01 / 10 03</code></td><td>Default / extended diagnostic session; illustrative timing fields.</td></tr><tr><td><code>22 F1 90</code></td><td>Synthetic VIN <code>LAB00000000000001</code>.</td></tr><tr><td><code>22 F1 87</code></td><td>Synthetic manufacturer spare-part number <code>LAB-ECU-0001</code>.</td></tr><tr><td><code>3E 00</code></td><td>Tester-present acknowledgement; refresh the session timer.</td></tr></tbody></table><p>The extended session expires after 5 seconds of simulation time without a physical diagnostic request. Physical UDS handling can return a negative response for an unsupported or invalid request. This does not provide programming, security access, actuator tests or complete UDS conformance.</p><p><code>Sim.set_connection(id, connected)</code> controls <code>ect</code>, <code>dlc</code>, <code>bmu</code> and <code>wheel_fl</code>. A disconnected DLC CAN branch prevents tester replies while the plant and internal network continue. BMU reconnection restores messages, but its shutdown latch needs a simulated ignition cycle or reset. Topology changes immediately; controller effects require simulation steps.</p></section>
+<h2 id="what-the-interface-does">1. What the interface does</h2>
+<p>OBD-II is the diagnostic window into an ECU. It does not calculate
+vehicle motion, manage the battery contactors, or execute the engine
+controller. In this lab the vehicle model produces a sensor snapshot;
+the diagnostic server encodes selected values into request/response
+messages. SAE J1979 describes emissions-related diagnostic services and
+distinguishes them from the transport and physical layers [R1].</p>
+<p>The separation is:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Layer</th>
+<th>Example in this lab</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Physical process</td>
+<td>Engine actually turning at 2,000 rpm</td>
+<td>A mathematical state of the simulated plant</td>
+</tr>
+<tr class="even">
+<td>Sensor/controller</td>
+<td>Crank-speed estimate and ECU state</td>
+<td>The ECU’s view of that process</td>
+</tr>
+<tr class="odd">
+<td>Diagnostic application</td>
+<td>Request <code>01 0C</code>; reply <code>41 0C 1F 40</code></td>
+<td>Ask for engine speed and encode the result</td>
+</tr>
+<tr class="even">
+<td>Transport</td>
+<td>ISO-TP single frame</td>
+<td>Add a length/control byte and, if necessary, split a large
+reply</td>
+</tr>
+<tr class="odd">
+<td>Data link</td>
+<td>CAN identifier <code>7E8</code>, eight data bytes</td>
+<td>Identify the sender/message on the configured network</td>
+</tr>
+<tr class="even">
+<td>Electrical network</td>
+<td>Explicit connector paths and CAN branches</td>
+<td>Connection state affects behavior; transceiver voltage, arbitration and bit timing are not simulated</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Implemented scope:</strong> one diagnostic ECU, Classical CAN,
+11-bit identifiers, normal ISO-TP addressing, selected OBD services and the small physical-address UDS subset above. The configured bitrate is 500 kbit/s, but the trace is not a
+timing or bus-load simulation. No physical adapter is opened. This is a
+learning implementation, not an ISO/SAE conformance claim.</p>
+<p>An optional working integration,
+<code>examples/python_can_demo.py</code>, reuses the existing
+<strong>python-can 4.6.1 VirtualBus</strong> transport. Two same-process
+endpoints exchange live requests and responses through real library
+queues. The example validates flow control before sending consecutive
+frames, and reassembles the reply. It is a bounded cooperative lesson
+rather than a complete asynchronous ECU server. See
+<code>EXISTING_BASES.md</code> for installation, reuse choices, and the
+next integration stages.</p>
+<p><strong>Toyota boundary:</strong> the identifiers and data values
+below describe this lab configuration. They are not a claim that every
+Toyota, Prius generation, powertrain ECU, battery ECU, or gateway uses
+the same arrangement. Generic emissions requests do not automatically
+expose every vehicle subsystem. An actual vehicle needs the correct
+model/year/network specification and supported diagnostic services.</p>
+<h2 id="addresses-and-supported-requests">2. Addresses and supported
+requests</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Address</th>
+<th>Role in the lab</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>0x7DF</code></td>
+<td>Functional emissions request: addressed to potential responders</td>
+</tr>
+<tr class="even">
+<td><code>0x7E0</code></td>
+<td>Physical request to this lab’s engine ECU</td>
+</tr>
+<tr class="odd">
+<td><code>0x7E8</code></td>
+<td>Response from that ECU</td>
+</tr>
+</tbody>
+</table>
+<p>These are conventional 11-bit OBD-on-CAN examples documented by Elm
+Electronics [R3]. A real functional query can receive more than one ECU
+reply. This release intentionally creates one responder. Requests to
+other identifiers produce no response.</p>
+<p>Enter application bytes such as <code>01 0C</code>, without the CAN
+identifier, ISO-TP length byte, or padding. This interface does not
+implement an ELM327 serial command interpreter: <code>AT Z</code>,
+<code>AT SP</code>, and other AT commands are not accepted.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Application request</th>
+<th>Reply content</th>
+<th>Lab behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>01 00</code></td>
+<td>Supported Mode 01 PID bitmap</td>
+<td><code>41 00 98 1B 80 00</code></td>
+</tr>
+<tr class="even">
+<td><code>01 01</code></td>
+<td>MIL, DTC count, limited monitor flags</td>
+<td>Only a simplified comprehensive-component monitor is advertised</td>
+</tr>
+<tr class="odd">
+<td><code>01 04</code></td>
+<td>Calculated engine load</td>
+<td>Model’s load proxy</td>
+</tr>
+<tr class="even">
+<td><code>01 05</code></td>
+<td>Engine coolant temperature</td>
+<td>ECU sensor reading, which can differ from true plant
+temperature</td>
+</tr>
+<tr class="odd">
+<td><code>01 0C</code></td>
+<td>Engine speed</td>
+<td>Quarter-rpm encoding</td>
+</tr>
+<tr class="even">
+<td><code>01 0D</code></td>
+<td>Vehicle speed</td>
+<td>Whole km/h encoding</td>
+</tr>
+<tr class="odd">
+<td><code>01 0F</code></td>
+<td>Intake-air temperature</td>
+<td>Ambient-temperature proxy in this model</td>
+</tr>
+<tr class="even">
+<td><code>01 10</code></td>
+<td>Mass air flow</td>
+<td>Model’s air-flow estimate</td>
+</tr>
+<tr class="odd">
+<td><code>01 11</code></td>
+<td>Throttle position</td>
+<td>Model’s throttle signal</td>
+</tr>
+<tr class="even">
+<td><code>03</code></td>
+<td>Confirmed emissions DTCs</td>
+<td>CAN-format count followed by two-byte codes</td>
+</tr>
+<tr class="odd">
+<td><code>07</code></td>
+<td>Pending emissions DTCs</td>
+<td>Same count-and-code structure</td>
+</tr>
+<tr class="even">
+<td><code>04</code></td>
+<td>Clear simulated emissions diagnostic memory</td>
+<td>Requires a connected clearing callback; an active fault is detected
+again</td>
+</tr>
+<tr class="odd">
+<td><code>09 00</code></td>
+<td>Supported Mode 09 bitmap</td>
+<td><code>49 00 40 00 00 00</code></td>
+</tr>
+<tr class="even">
+<td><code>09 02</code></td>
+<td>Synthetic VIN field</td>
+<td><code>LAB00000000000001</code>, exactly 17 characters</td>
+</tr>
+</tbody>
+</table>
+<p>The synthetic VIN is a teaching identifier, not an OEM-issued or
+registration-valid identity. No real user’s VIN is included.</p>
+<p>Unsupported OBD services/PIDs and unsupported OBD request shapes produce no
+reply. This intentionally avoids inventing a UDS negative response to a
+functional J1979 request. Modes 02, 06, 08, and 0A, multi-PID requests,
+ECU discovery, and manufacturer-specific requests are outside this
+release. Although the core can retain a first-fault snapshot for
+teaching, Mode 02 freeze-frame transport is not implemented.</p>
+<h2 id="work-through-the-bytes">3. Work through the bytes</h2>
+<h3 id="example-a---2000-rpm">Example A - 2,000 rpm</h3>
+<p>The requested mode is <code>01</code> and the engine-speed PID is
+<code>0C</code>.</p>
+<pre><code>Application request: 01 0C
+Application reply:   41 0C 1F 40</code></pre>
+<p>The positive-response mode is the request mode plus hexadecimal
+<code>40</code>. The two data bytes are A=<code>1F</code> (31 decimal),
+B=<code>40</code> (64 decimal).</p>
+<pre><code>rpm = (256 × A + B) / 4
+    = (256 × 31 + 64) / 4
+    = 2,000</code></pre>
+<p>The quarter-rpm representation is described in the manufacturer’s
+diagnostic interpreter datasheet [R3]. The exact numerical example above
+is calculated for this lab.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Direction</th>
+<th>CAN ID</th>
+<th>Eight data bytes</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Tester → ECU</td>
+<td><code>7DF</code></td>
+<td><code>02 01 0C 00 00 00 00 00</code></td>
+<td><code>02</code> means two application bytes follow</td>
+</tr>
+<tr class="even">
+<td>ECU → tester</td>
+<td><code>7E8</code></td>
+<td><code>04 41 0C 1F 40 00 00 00</code></td>
+<td><code>04</code> means four application bytes follow</td>
+</tr>
+</tbody>
+</table>
+<p>The zero bytes at the end are padding. They are not additional sensor
+values.</p>
+<h3 id="example-b---coolant-at-90-c-then-an-open-sensor">Example B -
+coolant at 90 °C, then an open sensor</h3>
+<pre><code>T_coolant = A − 40
+A = 90 + 40 = 130 decimal = 82 hexadecimal
+Reply = 41 05 82</code></pre>
+<p>An open NTC sensor circuit can be represented as a high signal
+voltage and an implausibly cold sensed temperature. In the lab’s fault
+case:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Quantity</th>
+<th>Illustrative value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>coolant_c</code></td>
+<td>90 °C</td>
+<td>True mathematical plant temperature</td>
+</tr>
+<tr class="even">
+<td><code>sensors.ect_c</code></td>
+<td>−40 °C</td>
+<td>Faulted sensor reading</td>
+</tr>
+<tr class="odd">
+<td><code>sensors.ect_used_c</code></td>
+<td>80 °C after detection</td>
+<td>Toy ECU fallback for control</td>
+</tr>
+<tr class="even">
+<td><code>01 05</code> reply</td>
+<td><code>41 05 00</code></td>
+<td>Encoded faulted sensor reading: 0 − 40 = −40 °C</td>
+</tr>
+<tr class="odd">
+<td>Emissions fault memory</td>
+<td><code>P0118</code> after debounce</td>
+<td>The demonstration’s engine-coolant high-input fault</td>
+</tr>
+</tbody>
+</table>
+<p>The specific fallback temperature, detection delay, and reported
+fault value are teaching choices. Production diagnostics may report
+different substituted values and require different enable conditions and
+drive cycles. They must be verified against the actual ECU
+specification.</p>
+<h3 id="example-c---supported-pids">Example C - supported PIDs</h3>
+<p><code>01 00</code> returns a 32-bit bitmap, not a list of 32 values.
+The most significant bit represents PID 01; the least significant bit
+represents PID 20. A set bit advertises support. The lab advertises
+precisely the requests in the table above, and its tests compare every
+bit against the implemented service. No higher PID range is
+advertised.</p>
+<h3 id="example-d---diagnostic-trouble-codes">Example D - diagnostic
+trouble codes</h3>
+<p>For Classical-CAN OBD, the Mode 03 payload includes a count byte
+before the encoded codes [R3]:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Payload bytes</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>43</code></td>
+<td>Positive response to Mode 03</td>
+</tr>
+<tr class="even">
+<td><code>01</code></td>
+<td>One DTC follows</td>
+</tr>
+<tr class="odd">
+<td><code>01 18</code></td>
+<td>P0118 in its two-byte representation</td>
+</tr>
+</tbody>
+</table>
+<p>The four families use two high bits: powertrain <code>P</code>,
+chassis <code>C</code>, body <code>B</code>, and network <code>U</code>.
+The next two bits encode the first numeric digit (0-3), and the
+remaining 12 bits encode the last three hexadecimal digits. Examples
+computed by this lab:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Human-readable DTC</th>
+<th>Two encoded bytes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>P0118</code></td>
+<td><code>01 18</code></td>
+</tr>
+<tr class="even">
+<td><code>P0300</code></td>
+<td><code>03 00</code></td>
+</tr>
+<tr class="odd">
+<td><code>C1234</code></td>
+<td><code>52 34</code></td>
+</tr>
+<tr class="even">
+<td><code>U0100</code></td>
+<td><code>C1 00</code></td>
+</tr>
+</tbody>
+</table>
+<p>An empty confirmed-DTC list returns <code>43 00</code>. A code’s
+valid binary format does not prove that its definition is assigned or
+applicable to a particular ECU. The simulated module fault list is
+separate from the emissions <code>dtcs</code> list. ABS/ESP/BMU warnings
+should not be indiscriminately inserted into the engine ECU’s generic
+Mode 03 reply.</p>
+<h3 id="example-e---clearing-does-not-repair-the-sensor">Example E -
+clearing does not repair the sensor</h3>
+<ol type="1">
+<li>Run the ECT open-circuit scenario until P0118 appears.</li>
+<li>Read <code>03</code>; the response contains P0118.</li>
+<li>Send <code>04</code>; the simulator clears its emissions diagnostic
+memory and returns <code>44</code>.</li>
+<li>The underlying injected fault remains active. Advance simulation
+time; the monitor can detect it again.</li>
+<li>Remove the injected fault and clear the memory to observe a
+fault-free monitor run.</li>
+</ol>
+<p>The toy monitor uses compressed persistence times so the lesson is
+visible quickly. It does not reproduce regulatory confirmation, healing,
+permanent-code, warm-up-cycle, or readiness rules. Real Mode 04 has
+broader semantics than the implemented teaching memory [R3].</p>
+<h2 id="a-longer-message-vin-over-iso-tp">4. A longer message: VIN over
+ISO-TP</h2>
+<p>ISO-TP distinguishes physical and functional addressing and supports
+single-frame and multi-frame transfers. In a multi-frame transfer, the
+receiver sends flow control that specifies block size and minimum
+separation time before the sender continues [R2].</p>
+<p>The 20-byte application payload here consists of
+<code>49 02 01</code> followed by the 17 VIN characters. It cannot fit
+into the seven application bytes available in one normally addressed
+Classical CAN frame.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Step</th>
+<th>CAN ID</th>
+<th>Frame bytes</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td><code>7DF</code></td>
+<td><code>02 09 02 00 00 00 00 00</code></td>
+<td>Functional VIN request</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td><code>7E8</code></td>
+<td><code>10 14 49 02 01 4C 41 42</code></td>
+<td>First frame: payload length <code>014</code> hex = 20 bytes; begins
+<code>LAB</code></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td><code>7E0</code></td>
+<td><code>30 00 00 00 00 00 00 00</code></td>
+<td>Flow control to the responding ECU’s physical address</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td><code>7E8</code></td>
+<td><code>21 30 30 30 30 30 30 30</code></td>
+<td>Consecutive frame, sequence number 1</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td><code>7E8</code></td>
+<td><code>22 30 30 30 30 30 30 31</code></td>
+<td>Consecutive frame, sequence number 2</td>
+</tr>
+</tbody>
+</table>
+<p><code>30</code> is Continue To Send. The chosen block size is zero
+(no intermediate block limit), and STmin is zero. The lesson trace
+inserts this ideal peer response automatically. It is not waiting for an
+actual tester. The original request can be functional, but the flow
+control goes to <code>7E0</code>, the physical request address of the
+ECU that sent the first frame.</p>
+<p>The low-level <code>segment_payload()</code> helper only produces the
+single/first/consecutive frame bytes; it does not implement a
+transmitting protocol state machine. <code>isotp_trace()</code> adds the
+explanatory flow-control step. <code>IsoTpReceiver</code> is a genuine
+stateful parser for one already-filtered stream: it rejects bad sequence
+numbers, insufficient data, invalid lengths, optional padding
+mismatches, and simulated receive timeouts. Sequence numbers wrap after
+15 to 0. Missing frames are rejected rather than silently reordered.</p>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> obdii_lab.diagnostics <span class="im">import</span> DiagnosticServer, IsoTpReceiver</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>server <span class="op">=</span> DiagnosticServer(<span class="kw">lambda</span>: {<span class="st">&quot;rpm&quot;</span>: <span class="dv">2000</span>, <span class="st">&quot;coolant_c&quot;</span>: <span class="dv">90</span>})</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>reply <span class="op">=</span> server.request(<span class="st">&quot;09 02&quot;</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>receiver <span class="op">=</span> IsoTpReceiver(timeout_s<span class="op">=</span><span class="fl">1.0</span>, padding_byte<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>payload <span class="op">=</span> <span class="va">None</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> n, frame <span class="kw">in</span> <span class="bu">enumerate</span>(reply[<span class="st">&quot;frames&quot;</span>]):</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> frame[<span class="st">&quot;id&quot;</span>] <span class="op">==</span> <span class="st">&quot;7E8&quot;</span>:</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        payload <span class="op">=</span> receiver.feed(frame[<span class="st">&quot;data&quot;</span>], timestamp<span class="op">=</span>n <span class="op">*</span> <span class="fl">0.001</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(payload[<span class="dv">3</span>:].decode(<span class="st">&quot;ascii&quot;</span>))</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># LAB00000000000001</span></span></code></pre></div>
+<p>The receiver does not generate flow control itself, and it must be
+fed one ECU’s data frames only. Production implementations need complete
+receive/transmit state machines, negotiated timing, addressing options,
+and transport error handling. The Linux ISO-TP stack provides an
+established path for a later virtual-CAN or CAN interface [R2].</p>
+<h2 id="data-scales-and-monitor-flags">5. Data scales and monitor
+flags</h2>
+<p>In the formulas below A and B are unsigned bytes; two-byte values are
+big-endian. Encoding clips to the representable interval and rounds to
+the closest representable value. The readings are model-derived; correct
+byte scaling does not make the plant a calibrated production engine.</p>
+<table>
+<thead>
+<tr class="header">
+<th>PID</th>
+<th>Decoding</th>
+<th>Unit</th>
+<th>Representable interval</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>04</code></td>
+<td><code>100A / 255</code></td>
+<td>% calculated load</td>
+<td>0-100</td>
+</tr>
+<tr class="even">
+<td><code>05</code></td>
+<td><code>A − 40</code></td>
+<td>°C coolant</td>
+<td>−40-215</td>
+</tr>
+<tr class="odd">
+<td><code>0C</code></td>
+<td><code>(256A+B) / 4</code></td>
+<td>rpm</td>
+<td>0-16,383.75</td>
+</tr>
+<tr class="even">
+<td><code>0D</code></td>
+<td><code>A</code></td>
+<td>km/h</td>
+<td>0-255</td>
+</tr>
+<tr class="odd">
+<td><code>0F</code></td>
+<td><code>A − 40</code></td>
+<td>°C intake air</td>
+<td>−40-215</td>
+</tr>
+<tr class="even">
+<td><code>10</code></td>
+<td><code>(256A+B) / 100</code></td>
+<td>g/s air flow</td>
+<td>0-655.35</td>
+</tr>
+<tr class="odd">
+<td><code>11</code></td>
+<td><code>100A / 255</code></td>
+<td>% throttle</td>
+<td>0-100</td>
+</tr>
+</tbody>
+</table>
+<p>For Mode 01 PID 01, data byte A’s high bit is MIL and its lower seven
+bits count confirmed emissions codes. This lab’s byte B has
+comprehensive components supported (bit 2); bit 6 reports that
+simplified monitor incomplete until the core marks it complete. Other
+support bits and bytes C/D are zero. Therefore the response must never
+be interpreted as “this simulated vehicle has passed all emissions
+monitors.” Unsupported monitors were never run.</p>
+<h2 id="extension-contracts">6. Extension contracts</h2>
+<p>The public interface is intentionally independent of the physics
+implementation:</p>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>server <span class="op">=</span> DiagnosticServer(sim.snapshot, sim.clear_emissions_dtcs)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> server.request(<span class="st">&quot;01 0C&quot;</span>, can_id<span class="op">=</span><span class="bn">0x7DF</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># result: request_hex, response_hex (or None), meaning, frames, optional error</span></span></code></pre></div>
+<p><code>snapshot()</code> supplies sensor/controller readings and
+dedicated emissions memory. <code>clear_emissions_dtcs()</code> clears
+simulated diagnostic memory while preserving the physical cause. The
+embedding application decides whether the ECU is powered and reachable;
+this diagnostic object itself remains available whenever called.</p>
+<p>Reasonable next increments are:</p>
+<ol type="1">
+<li>Extend the optional python-can VirtualBus demonstration with
+scheduled delivery delays, dropped frames, and explicit bus-load
+estimates. Its existing ordered queues do not model arbitration or
+bitrate saturation.</li>
+<li>Replace the ideal transcript with a full ISO-TP sender/receiver
+pair, including flow-control timeouts and block-size/STmin
+behavior.</li>
+<li>Implement a gateway and additional ECU addresses from a documented
+target configuration.</li>
+<li>Extend beyond the current synthetic UDS identification DIDs with validated module-specific services and signal definitions. UDS service 0x22 is a different diagnostic application, not an extra Mode 01 PID.</li>
+<li>Add virtual CAN / SocketCAN as an explicit optional adapter; retain
+the deterministic in-process transport for repeatable tests.</li>
+<li>Feed diagnostics from a real firmware execution environment only
+after its CPU/peripherals, sensor interfaces, scheduling, and network
+stack work. A <code>.bin</code> file is not a diagnostic-service
+implementation by itself.</li>
+</ol>
+<p>No programming, security-access, immobilizer, or vehicle-flashing
+services are included. The current code is a local simulator with no
+hardware connector.</p>
+<h2 id="references-and-evidence-boundaries">References and evidence
+boundaries</h2>
+<p>Accessed 9 November 2026. These are primary publisher/manufacturer
+sources. The standards’ public scope pages are not substitutes for the
+complete normative documents.</p>
+<ul>
+<li><strong>[R1] SAE International, J1979_202505, E/E Diagnostic Test
+Modes.</strong> Public scope and layer mapping. <a
+href="https://saemobilus.sae.org/standards/j1979_202505-e-e-diagnostic-test-modes"
+class="uri">https://saemobilus.sae.org/standards/j1979_202505-e-e-diagnostic-test-modes</a></li>
+<li><strong>[R2] Linux Kernel documentation, ISO 15765-2
+(ISO-TP).</strong> Addressing, single/multi-frame transport, flow
+control, socket interface, and transport-error behavior. <a
+href="https://kernel.org/doc/html/latest/networking/iso15765-2.html"
+class="uri">https://kernel.org/doc/html/latest/networking/iso15765-2.html</a></li>
+<li><strong>[R3] Elm Electronics, ELM327DSL datasheet.</strong>
+Manufacturer’s examples for OBD requests, RPM/coolant scaling, CAN
+addressing, DTC count format, and ISO-TP frame types; particularly
+printed pages 33-37 and 43-46. <a
+href="https://elmelectronics.com/wp-content/uploads/2020/05/ELM327DSL.pdf"
+class="uri">https://elmelectronics.com/wp-content/uploads/2020/05/ELM327DSL.pdf</a></li>
+<li><strong>[R4] SAE International, J1979_201202 public scope.</strong>
+Identifies the J1979-DA and J2012-DA presentation-data references used
+for parameter and DTC definitions. Obtain the applicable normative
+editions when building a compliant implementation. <a
+href="https://saemobilus.sae.org/standards/j1979_201202-e-e-diagnostic-test-modes"
+class="uri">https://saemobilus.sae.org/standards/j1979_201202-e-e-diagnostic-test-modes</a></li>
+</ul>
+<p>The precise test vectors, Python implementation, fictional VIN,
+selected subset, and fault-demonstration timings are original lab
+choices. Toyota-specific supported PIDs, enhanced diagnostics,
+calibration identifiers, security/session requirements, and network maps
+have not been inferred from these generic references.</p>
+<footer>OBD II Lab v0.3.0 · 9 November 2026 · Synthetic educational models. See Sources for evidence boundaries.</footer></main></body>
+</html>

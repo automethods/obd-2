@@ -1,0 +1,41 @@
+{
+  "status": "passed",
+  "method": "restricted Python AST evaluation of every supplied expression, cross-checked against the lab ECT circuit; not the EngDoc UI runtime",
+  "values": 29,
+  "boundary_combinations": 54,
+  "baseline_resistance_ohm": 2500.0,
+  "baseline_signal_v": 2.6595744680851063,
+  "baseline_current_ma": 1.0638297872340425,
+  "curve": [
+    {
+      "temperature_c": -20,
+      "voltage_v": 4.507751834706283,
+      "current_ma": 0.22374916604259892
+    },
+    {
+      "temperature_c": 0,
+      "voltage_v": 3.844622511441237,
+      "current_ma": 0.5251715857085287
+    },
+    {
+      "temperature_c": 25,
+      "voltage_v": 2.6595744680851063,
+      "current_ma": 1.0638297872340425
+    },
+    {
+      "temperature_c": 60,
+      "voltage_v": 1.24360437330531,
+      "current_ma": 1.7074525575884956
+    },
+    {
+      "temperature_c": 90,
+      "voltage_v": 0.6101564483065867,
+      "current_ma": 1.9953834325879152
+    },
+    {
+      "temperature_c": 110,
+      "voltage_v": 0.3876390393681151,
+      "current_ma": 2.0965277093781296
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "checked": "2026-11-09",
+  "scope": "Teaching subset; no conformance claim",
+  "sources": [
+    {
+      "id": "1",
+      "role": "OBD application",
+      "title": "ISO 15031-5:2015 - Emissions-related diagnostic services",
+      "url": "https://www.iso.org/standard/66368.html"
+    },
+    {
+      "id": "2",
+      "role": "CAN diagnostic path",
+      "title": "ISO 15765-4:2021 - Requirements for emissions-related systems",
+      "url": "https://www.iso.org/standard/78384.html"
+    },
+    {
+      "id": "3",
+      "role": "ISO-TP transport",
+      "title": "Linux kernel documentation - ISO 15765-2",
+      "url": "https://docs.kernel.org/networking/iso15765-2.html"
+    },
+    {
+      "id": "4",
+      "role": "UDS application",
+      "title": "ISO 14229-1:2026 - Application layer",
+      "url": "https://www.iso.org/standard/87962.html"
+    },
+    {
+      "id": "5",
+      "role": "Connector and legacy interfaces",
+      "title": "Elm Electronics - ELM327 data sheet, v2.3; figures 8 and 9",
+      "url": "https://elmelectronics.com/wp-content/uploads/2020/05/ELM327DSL.pdf"
+    },
+    {
+      "id": "6",
+      "role": "Legacy ISO diagnostics",
+      "title": "ISO 9141-2:1994 - Digital information interchange",
+      "url": "https://www.iso.org/standard/16738.html"
+    },
+    {
+      "id": "7",
+      "role": "K-line physical layer",
+      "title": "ISO 14230-1:2012 - Diagnostic communication over K-Line",
+      "url": "https://www.iso.org/standard/55591.html"
+    },
+    {
+      "id": "8",
+      "role": "J1850 network",
+      "title": "SAE J1850_202212 - Class B Data Communications Network Interface",
+      "url": "https://saemobilus.sae.org/standards/j1850_202212-class-b-data-communications-network-interface"
+    },
+    {
+      "id": "9",
+      "role": "Diagnostics over IP",
+      "title": "ISO 13400-2:2025 - Transport protocol and network layer services",
+      "url": "https://www.iso.org/standard/13400-2"
+    },
+    {
+      "id": "10",
+      "role": "LIN physical layer",
+      "title": "ISO 17987-4:2025 - Electrical physical layer specification",
+      "url": "https://www.iso.org/standard/85128.html"
+    }
+  ]
+}

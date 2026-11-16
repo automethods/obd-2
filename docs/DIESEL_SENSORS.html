@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diesel sensors, timing and model scope · OBD II Lab</title>
+<style>
+:root{color-scheme:light;--ink:#16313b;--muted:#546b75;--accent:#087b79;--line:#d8e3e7;--soft:#f0f6f6}
+*{box-sizing:border-box}body{margin:0;background:#edf2f4;color:var(--ink);font:16px/1.65 system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:#142c37;color:white;padding:18px max(24px,calc((100vw - 1140px)/2));font-weight:600}header a{color:#b8e8df;text-decoration:none}
+main{max-width:1140px;margin:28px auto;background:white;border:1px solid var(--line);border-radius:12px;padding:42px 48px}
+h1{font-size:36px;line-height:1.18;letter-spacing:-.7px;margin:8px 0 18px}h2{font-size:25px;line-height:1.3;margin:42px 0 16px;padding-top:22px;border-top:1px solid var(--line)}h3{font-size:18px;line-height:1.35;margin:0 0 8px}
+p{margin:12px 0}a{color:var(--accent);overflow-wrap:anywhere}li{margin:8px 0}.eyebrow{font-size:12px;letter-spacing:1.4px;text-transform:uppercase;font-weight:700;color:var(--accent)}.lead{font-size:19px;color:var(--muted);max-width:920px}
+.notice{border-left:4px solid var(--accent);background:var(--soft);padding:16px 20px;margin:22px 0}.notice p{margin:7px 0}.scope{border-left-color:#b67b22;background:#fff7e9}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:22px 0}.card{border:1px solid var(--line);border-radius:9px;padding:18px;background:#f8fbfb}.count{font-size:30px;font-weight:750;color:var(--accent);line-height:1.2}.card p{font-size:14px;color:var(--muted)}
+.table-wrap{overflow-x:auto;margin:20px 0;border:1px solid var(--line);border-radius:9px}table{border-collapse:collapse;width:100%;font-size:13px;line-height:1.5;min-width:930px}caption{text-align:left;padding:14px;background:#f1f6f7;font-weight:600;font-size:14px}th,td{text-align:left;vertical-align:top;padding:12px 13px;border-top:1px solid var(--line)}thead th{background:#183947;color:white;border:0}tbody th{width:18%;font-weight:650}td:nth-child(2){width:28%}td:nth-child(3){width:18%}td:nth-child(4){width:11%;white-space:nowrap}tr:nth-child(even){background:#f6f9fa}small{display:block;font-size:12px;color:var(--muted);margin-top:4px}.extended{display:inline-block;background:#dfefea;color:#176653;border-radius:3px;padding:1px 5px;font-size:11px;margin-top:5px}code{font:12px/1.5 ui-monospace,Consolas,monospace;background:#edf3f4;border-radius:3px;padding:2px 4px}td code,th code{overflow-wrap:anywhere}.small{font-size:14px;color:var(--muted)}
+nav{padding:14px 18px;border:1px solid var(--line);border-radius:7px;background:#f8fbfb}nav a{display:inline-block;margin:3px 18px 3px 0;font-size:14px}.sources{font-size:14px}.sources li{margin:12px 0}footer{margin-top:32px;border-top:1px solid var(--line);padding-top:18px;color:var(--muted);font-size:13px}
+@media(max-width:750px){main{margin:0;border:0;border-radius:0;padding:28px 20px}header{padding:16px 20px}h1{font-size:29px}.grid{grid-template-columns:1fr}.lead{font-size:17px}}
+@media print{body{background:white}header,nav{display:none}main{max-width:none;border:0;margin:0;padding:0}.table-wrap{overflow:visible}table{min-width:0;font-size:10px}th,td{padding:7px}h2,h3{break-after:avoid}tr,.card,.notice{break-inside:avoid}a{color:inherit}.grid{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<header><a href="../">← Return to OBD II Lab</a></header>
+<main>
+<div class="eyebrow">Vehicle configuration · Diesel sensor reference</div>
+<h1>Diesel has an extended sensor set.</h1>
+<p class="lead">Choose <strong>Diesel · common-rail</strong> in vehicle setup. Its default engine detail is <strong>Extended sensors</strong>: 13 channels belong to the engine ECU. Each channel below has its own update period and a declared consequence when disconnected.</p>
+<div class="notice scope"><strong>What this configuration represents</strong><p>This is a generic common-rail turbo-diesel teaching vehicle. It is not a certified Euro 4, Euro 5 or Euro 6 engine, an OEM wiring diagram, or an emissions measurement. Choosing a sensor detail level changes the simulated inventory; it does not select an emissions certification.</p></div>
+<nav aria-label="On this page"><a href="#inventory">13 ECU channels</a><a href="#detail">Basic versus extended</a><a href="#timing">Signal type and timing</a><a href="#faults">Live fault experiments</a><a href="#euro">Euro stages and sensor counts</a><a href="#sources">Sources</a></nav>
+
+<section id="inventory">
+<h2>The current diesel ECU inventory</h2>
+<p>The table describes <strong>this lab’s implementation</strong>, including its simplified fault responses. The ranges are teaching signal ranges, not manufacturer specifications or engine speed limits. The default diesel redline is 4,500 rpm even though the common crank-channel display range extends to 7,000 rpm.</p>
+<div class="table-wrap" role="region" aria-label="Diesel ECU sensor characteristics" tabindex="0">
+<table>
+<caption>Diesel with Extended sensors · 13 ECU channels · periods follow simulation time</caption>
+<thead><tr><th scope="col">Channel / group</th><th scope="col">Role and simulated value</th><th scope="col">Signal in this lab / range</th><th scope="col">Update period</th><th scope="col">Effect of an open connector</th></tr></thead>
+<tbody>
+<tr data-sensor="crank_sensor" data-period-ms="20"><th scope="row">Crankshaft speed<small>Position and timing</small></th><td>Engine rotation and timing input; the held value follows physical engine rpm.</td><td>Pulse / frequency<br>0–7,000 rpm</td><td>20 ms<br>50 Hz</td><td>Inhibits the combustion engine and new starts. Teaching fault <code>P0335</code>.</td></tr>
+<tr data-sensor="cam_sensor" data-period-ms="20"><th scope="row">Camshaft speed<small>Position and timing</small><span class="extended">Extended only</span></th><td>Half the crankshaft speed, representing four-stroke cam rotation.</td><td>Pulse / frequency<br>0–3,500 rpm</td><td>20 ms<br>50 Hz</td><td>Limits available torque to 70%; <code>P0340</code>. Detailed phase synchronization is not simulated.</td></tr>
+<tr data-sensor="throttle_sensor" data-period-ms="20"><th scope="row">Throttle position<small>Driver demand</small></th><td>A pedal/actuator position proxy. The diesel uses the same simplified demand channel; a separate diesel air-doser actuator is not solved.</td><td>Illustrative analogue<br>0–100%</td><td>20 ms<br>50 Hz</td><td>Removes drive torque; a running engine may idle. Teaching fault <code>P0122</code>.</td></tr>
+<tr data-sensor="maf" data-period-ms="50"><th scope="row">Mass air flow<small>Air intake</small></th><td>Sample of the model’s air-flow estimate, expressed as air mass per second.</td><td>Illustrative analogue<br>0–250 g/s</td><td>50 ms<br>20 Hz</td><td>Limits available torque to 70%; <code>P0102</code>.</td></tr>
+<tr data-sensor="map" data-period-ms="50"><th scope="row">Manifold absolute pressure<small>Air intake</small></th><td>Pressure calculated from engine load. Intake manifold fluid dynamics are not solved.</td><td>Illustrative analogue<br>10–250 kPa</td><td>50 ms<br>20 Hz</td><td>Limits available torque to 70%; <code>P0107</code>.</td></tr>
+<tr data-sensor="boost_sensor" data-period-ms="50"><th scope="row">Boost pressure<small>Air intake</small><span class="extended">Extended only</span></th><td>A separate turbo/load pressure proxy. Its displayed value includes an approximately 100 kPa baseline.</td><td>Illustrative analogue<br>90–250 kPa</td><td>50 ms<br>20 Hz</td><td>Limits available torque to 70%; <code>P0237</code>.</td></tr>
+<tr data-sensor="intake_temp" data-period-ms="500"><th scope="row">Intake air temperature<small>Air intake</small></th><td>Ambient temperature plus a chosen heat-soak contribution from coolant temperature.</td><td>Illustrative analogue<br>−40–130 °C</td><td>500 ms<br>2 Hz</td><td>Records <code>P0113</code>; no additional torque correction is implemented.</td></tr>
+<tr data-sensor="rail_pressure" data-period-ms="50"><th scope="row">Fuel rail pressure<small>Fuel and combustion</small><span class="extended">Extended only</span></th><td>Load-dependent diesel pressure proxy. Pump, injector hydraulics and closed-loop rail regulation are not solved.</td><td>Illustrative analogue<br>0–1,600 bar</td><td>50 ms<br>20 Hz</td><td>Limits available torque to 70%; <code>P0190</code>.</td></tr>
+<tr data-sensor="ect" data-period-ms="10"><th scope="row">Coolant temperature<small>Cooling and lubrication</small></th><td>Physical coolant sampled through the solved NTC thermistor divider and ECU conversion.</td><td>Analogue NTC divider<br>−40–140 °C</td><td>10 ms<br>100 Hz</td><td>Uses the existing ECU temperature fallback and torque limit. Physical coolant does not disappear.</td></tr>
+<tr data-sensor="oil_pressure" data-period-ms="100"><th scope="row">Oil pressure<small>Cooling and lubrication</small><span class="extended">Extended only</span></th><td>A pressure estimate that increases with engine speed.</td><td>Illustrative analogue<br>0–6 bar</td><td>100 ms<br>10 Hz</td><td>Records <code>P0520</code>. Oil starvation, damage and an oil-pressure shutdown are not simulated.</td></tr>
+<tr data-sensor="lambda_sensor" data-period-ms="100"><th scope="row">Exhaust lambda<small>Exhaust</small></th><td>One load-dependent mixture-ratio illustration. This is not solved oxygen chemistry or an actual wideband sensor/controller.</td><td>Illustrative analogue<br>Ratio 0.7–2.5</td><td>100 ms<br>10 Hz</td><td>Records <code>P0130</code>; propulsion continues without an additional fallback.</td></tr>
+<tr data-sensor="nox_sensor" data-period-ms="1000"><th scope="row">Exhaust NOx proxy<small>Exhaust</small></th><td>One illustrative exhaust trend, calculated from load; not a measured or predicted emissions result.</td><td>Illustrative analogue<br>0–1,000 ppm</td><td>1,000 ms<br>1 Hz</td><td>Records <code>P2200</code>; propulsion continues without an additional fallback.</td></tr>
+<tr data-sensor="dpf_pressure" data-period-ms="500"><th scope="row">DPF differential pressure<small>Exhaust</small></th><td>One flow-dependent pressure-drop proxy. Soot accumulation, filter efficiency and regeneration are not simulated.</td><td>Illustrative analogue<br>0–30 kPa</td><td>500 ms<br>2 Hz</td><td>Records <code>P2452</code>; propulsion continues without an additional fallback.</td></tr>
+</tbody></table></div>
+<p class="small">The 13-channel count is for the <strong>engine ECU</strong>. Accelerator position belongs to the vehicle controller; transmission, brake/stability, body, instruments and cabin climate have their own channels. The fuel-level display is a calculated tank/consumption value with no independent level-sender connector in this model. Selecting more cylinders does not create additional lambda banks or extra exhaust probes.</p>
+</section>
+
+<section id="detail">
+<h2>What Basic and Extended actually change</h2>
+<p><strong>Extended is the diesel default.</strong> It includes all 13 ECU channels above. <strong>Basic has 9 ECU channels</strong>: it omits camshaft speed, fuel rail pressure, boost pressure and oil pressure. The four omitted channels are marked “Extended only” in the table.</p>
+<p>The current diesel filter keeps the NOx and DPF pressure teaching channels in both detail levels. This makes Basic a smaller teaching inventory, not a historical Euro 4 vehicle. Petrol knock sensing is not fitted to the diesel configuration. ABS, ESP, transmission and cabin equipment remain separately configurable.</p>
+<div class="notice"><strong>Use the intended distinction</strong><p>Choose Basic to inspect fewer inputs. Choose Extended to inspect the additional engine-control channels. A production engine’s equipment list requires a specific engine and aftertreatment architecture; the detail selector does not supply that information.</p></div>
+</section>
+
+<section id="timing">
+<h2>Signal type, sampling and logging are different</h2>
+<p><strong>Analogue in this table means the lab’s electrical representation.</strong> Coolant uses a solved thermistor circuit with a nominal 5 V reference. Other analogue channels map their declared range to an illustrative 0.5–4.5 V display. That mapping does not identify the real interface of a production lambda, NOx, pressure or temperature sensor.</p>
+<p><strong>Pulse frequency is not sampling frequency.</strong> The crank example uses 60 pulses per revolution, so its displayed pulse frequency in hertz equals the rpm value numerically. The cam example uses one pulse per cam revolution; at 1,200 engine rpm, the cam turns at 600 rpm and its example signal is 10 Hz. Both channels are sampled every 20 ms, or 50 times per simulated second. Individual edges, missing-tooth decoding and sensor voltage waveforms are not simulated.</p>
+<p><strong>Logging selects observations to save.</strong> Selecting one log entry per minute does not make a sensor or the ECU run once per minute. The plant advances every 2 ms; ECU tasks and the sensor scheduler run on the existing 10 ms schedule; individual channels retain the update periods shown above. Pausing the simulation also pauses sampling. CAN bitrate describes bits per second on the network and is separate from all of these rates.</p>
+</section>
+
+<section id="faults">
+<h2>Unplug a sensor and follow the consequence</h2>
+<ol>
+<li>Configure the diesel, switch on ignition and start the engine. Open its engine ECU in Diagnostics &amp; service and choose a sensor connector.</li>
+<li>Disconnect the connector, or select a timed intermittent disconnection. Run the simulation so the owning channel can take its next sample.</li>
+<li>Compare the <strong>physical value</strong>, <strong>sampled value/validity</strong>, <strong>engine response</strong> and <strong>fault memory</strong>. An open wire removes a measurement; it does not remove the physical temperature, shaft or pressure being represented.</li>
+<li>Reconnect and allow another sample. The present input can recover while stored fault memory remains available for diagnosis. Repair and clearing stored codes are separate actions.</li>
+</ol>
+<p>The generic sensor-bank faults use accelerated teaching persistence: a pending code after 0.2 s of missing sampled input and a stored code after 0.5 s. Detection first waits for that channel’s sampling period, so the 1 Hz NOx channel reacts later than the 50 Hz crank channel. The coolant channel follows its existing NTC/ECU fault path. These are simulator schedules, not regulatory monitor enable conditions or OEM diagnostic calibrations.</p>
+<p>An intermittent opening shorter than a channel’s sampling period can occur between samples and leave no recorded fault. A longer interruption can produce a missing sample, fallback or a stored code depending on its duration. Crank loss inhibits the engine; a missing exhaust-monitoring input can leave the engine running. “Still running” therefore does not by itself mean that disconnection failed.</p>
+</section>
+
+<section id="euro">
+<h2>Euro 4–6 does not give one universal sensor count</h2>
+<p>An emissions stage alone is insufficient to identify a vehicle’s lambda-sensor count. Engine design, exhaust layout and monitoring strategy also matter. The Euro 5/6 approval documentation in Regulation (EU) 2017/1151 asks manufacturers to identify oxygen/lambda, NOx and particulate sensors, their types and locations, and their OBD monitoring arrangements. It does not serve as one fixed sensor inventory for every vehicle. <a href="#source-eu">[1]</a></p>
+<p>For a concrete manufacturer example, Bosch’s double-injection SCR layout labels <strong>three NOx sensors</strong>, <strong>one lambda sensor</strong>, <strong>one particulate-matter sensor</strong> and <strong>one differential-pressure sensor</strong>, alongside two dosing modules. This is one documented system architecture, not a mandatory count for every Euro 6 diesel. <a href="#source-bosch">[2]</a></p>
+<div class="grid" aria-label="Exhaust sensor counts in this teaching model">
+<article class="card"><h3>Lambda in this lab</h3><div class="count">1 channel</div><p>A mixture-ratio proxy. No upstream/downstream pair, bank-specific oxygen monitoring or wideband controller model.</p></article>
+<article class="card"><h3>NOx in this lab</h3><div class="count">1 channel</div><p>A load-based trend. No SCR inlet/outlet comparison, reagent dosing or NOx conversion-efficiency model.</p></article>
+<article class="card"><h3>DPF pressure in this lab</h3><div class="count">1 channel</div><p>A pressure-drop trend. No separate particulate sensor, filter soot model or regeneration cycle.</p></article>
+</div>
+<p>A fuller Euro-era teaching variant would need an explicit engine and aftertreatment layout, the corresponding sensors and actuators, thermal/chemical behavior, and monitor logic. This release does not implement those variants or make a Euro-compliance claim. Use the real vehicle’s engine code, repair documentation and wiring diagrams to determine its actual probe count and connector assignments.</p>
+</section>
+
+<section id="sources" class="sources">
+<h2>Implementation and primary references</h2>
+<p>The channel table and fault behavior come from the supplied implementation: <code>obdii_lab/vehicle_systems.py</code> (<code>SENSOR_DEFINITIONS</code>, <code>installed()</code>, <code>_characteristics()</code>, <code>_function()</code> and <code>SensorBank</code>), with the diesel preset in <code>obdii_lab/vehicle.py</code>. The live <a href="/api/systems">vehicle-systems catalog</a> exposes the selected configuration’s inventory.</p>
+<ol>
+<li id="source-eu"><a href="https://eur-lex.europa.eu/eli/reg/2017/1151/2023-09-01/eng" target="_blank" rel="noopener">European Union: consolidated Regulation (EU) 2017/1151, 1 September 2023</a>. See the manufacturer information fields in Annex I, Appendix 3, points 3.2.12.2.2 and 3.2.12.2.7, and the OBD provisions in Annex XI. This reference concerns Euro 5/6 approval and monitoring, not a certification of the lab.</li>
+<li id="source-bosch"><a href="https://www.bosch-mobility.com/en/solutions/exhaust-gas-treatment/exhaust-gas-treatment-with-double-injection-technology/" target="_blank" rel="noopener">Bosch Mobility: exhaust-gas treatment with double-injection technology</a>. The “System layout” identifies NOx sensors D/G/J, lambda sensor K, particulate sensor E and differential-pressure sensor H. Used here as a concrete architecture example; its technology and control software are not bundled.</li>
+</ol>
+</section>
+<footer>Generic educational simulation. The signal interfaces, sampling schedules, selected faults and response strategies describe this release’s model. They are not a specification for servicing a production vehicle.</footer>
+</main>
+</body>
+</html>

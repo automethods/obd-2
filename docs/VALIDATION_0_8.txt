@@ -1,0 +1,88 @@
+OBD LAB 0.8.0 — VALIDATION RECORD
+Date: 9 November 2026
+
+MODEL AND ACTUAL LOOPBACK API
+python3 -m unittest discover -s tests
+Result: 205 passed, 0 failed.
+Includes the six vehicle configurations, ignition/crank/READY, automatic
+and manual transmission interlocks, clutch coupling/stall, driven-wheel
+selection, chassis parameters, cabin thermal/energy effects, sensor
+validity and fault memory, scanner availability, OBD/UDS, the official
+WLTC target trace and the automatic driver's physical inputs.
+
+FRONTEND INTERACTION CONTRACTS — 155 passed, 0 failed
+node tests/test_session_v07.cjs                 12
+node tests/test_application_v07.cjs             10
+node tests/test_setup_cycle_v08.cjs             12
+node tests/test_start_controls_v071.cjs          8
+node tests/test_unit_purpose_v08.cjs             9
+node tests/test_cockpit_units_v07.cjs           38
+node tests/test_scan_tool_v07.cjs               19
+node tests/test_live_data_v06.cjs                9
+node tests/test_diagnosis_v06.cjs               11
+node tests/test_connection_v06.cjs              15
+node tests/test_protocols_contract.cjs <fixture> 12
+
+The actual index, scripts and Python loopback HTTP server are used where
+applicable. A parsed-node harness and CPU Canvas exercise view callbacks;
+they do not emulate native browser layout or all native pointer events.
+Held HTTP requests test that background simulation updates do not disable
+Start or gear selection. Assisted commands obey real model interlocks and
+restore the newest desired pedal state without advancing simulation time.
+The final cockpit rerun corrected a stale test expectation for the ice
+road preset (0.12 -> 0.10); all 38 contracts then passed.
+
+The new end-to-end checks cover Setup before Drive, staged hardware,
+manual clutch/start, persistent road settings, cabin A/C and electric
+heating loads, automatic-cycle ownership and takeover, explicit engine
+shutdown through legacy inputs, and human-readable diagnostic messages.
+Capability replies show named PIDs and decimal/hex identifiers. An open
+DLC produces no-reply, with no invented response bytes.
+
+GEOMETRY AND ANIMATION
+node tests/test_vehicle.cjs — passed.
+Actual GLB parser and named bindings: 225 nodes, 2,965 vertices.
+Checks physical-wheel integration including reverse, interpolation,
+pause/reset, missing wheel measurement, view modes and themes. This is
+not GPU pixel validation.
+
+SCHEMATIC AND CONNECTOR VISUAL REVIEW
+Actual generated SVG trees were rendered with sharp/libvips CPU.
+Reviewed the complete extended-petrol ECU sheet (1180 x 3380), diagnostic
+group, selected MAF path, DLC connections, sixteen-pin connector and CAN
+differential reference diagram. Sensor and ECU endpoints share rows;
+selected paths retain surrounding connections. Native browser panel
+placement, scroll interaction and display scaling are not covered.
+
+DOWNLOAD VERIFICATION METHOD
+After building, the independent package checker is run with:
+python3 tests/check_download.py --downloads ../OBDII_Release_0_8
+The checker records its observed results in a separate JSON report. It
+starts the actual self-contained run.sh alone in an empty folder with
+spaces in its path. It checks payload hashes, flat source layout, bundled
+assets, model/scanner/export flows, Setup/manual/WLTC/HVAC integration,
+repeat startup, a Python-only PATH, read-only download location, occupied
+port and damaged-download errors, browser handoff and signal cleanup.
+This source record does not substitute for that packaged-download run.
+
+SCOPE AND LOCAL ACCEPTANCE
+The 26 user acceptance checks are in OBDII_START_HERE.txt and
+docs/WORKSPACE.html. Python 3.10 or newer is required; the core simulator
+needs no third-party Python packages. Development rendering and test
+tools are not needed to use the download.
+
+No native browser layout/event, GPU/WebGL output or particular Linux Mint
+installation was verified. This is a generic teaching vehicle, not OEM
+firmware or a validated complete chassis. HVAC is a lumped thermal/energy
+model; it does not solve refrigerant flow or low-voltage battery energy.
+ECU/sensor cavity assignments are illustrative; DLC standard pin roles
+are distinguished from them. CAN traffic is message-level simulation,
+not an electrical network solver. Individual CAN/power conductor faults
+are not claimed. WLTC uses the official Class 3b speed target through an
+automatic virtual driver; the result is not a certified WLTP test.
+
+WLTC SOURCE
+UN Regulation No. 154, Annex B1; Class 3b Tables A1/7, A1/9, A1/11,
+A1/12, with checks against A1/13. Official publication:
+https://www.legislation.gov.au/F2024L00446/asmade/2024-04-15/text/original/epub/OEBPS/document_1/document_1.html
+The bundled data/wltc_class3b.json retains source and trace metadata.

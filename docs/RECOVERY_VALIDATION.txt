@@ -1,0 +1,71 @@
+OBD-II LEARNING LAB 0.4.0 — RECOVERY VALIDATION
+Date: 9 November 2026
+
+RECOVERY BASELINE
+The six supplied attachments were read from this conversation's workspace.
+All 148 source manifest checksums passed. The archive embedded in the supplied
+standalone launcher is byte-for-byte identical to the supplied source ZIP.
+The baseline is version 0.3.2. The described newer visual workbench was rebuilt;
+this is not a byte-for-byte recovery of that unavailable previous release.
+Input hashes and provenance are in RECOVERY_PROVENANCE.json.
+
+PYTHON
+104 unittest cases pass, including all 77 original cases and 27 new cases.
+New coverage: independent connectors; physical versus measured wheel speed;
+ECT detection/repair and remembered faults; BMU stale messages, held readings
+and latched shutdown; diagnostic-branch timeouts; UDS identification, sessions,
+negative/suppressed replies and expiry; HTTP catalog/connection validation.
+Reproduce: python3 -m unittest discover -s tests -p 'test_*.py'
+
+JAVASCRIPT
+All 12 browser JavaScript files pass Node syntax checks. three-adapter.js is
+checked as an ES module. Node is used for development checks only and is not
+needed to run the delivered simulator.
+
+OPTIONAL FRONTEND CONTRACT CHECKS
+16 checks passed using real Python snapshot/network fixtures and actual
+workbench.js helper functions in a Node VM. Coverage includes supply/ground
+reference history, null connection ownership, missing signal gaps, available
+receiver-side measurements, fault detection stages, injected versus physical
+connections, pin selection/styling and uninstalled modules. These are logic
+and generated-text checks, not browser or DOM-layout tests.
+Reproduce: python3 tests/run_workbench_contract.py
+
+PACKAGING AND STARTUP
+All 14 standalone/source-package checks passed. The actual run.sh was placed
+alone in an empty folder, including a path with spaces. Checks covered
+checksums, isolated launch, all twelve in-app documents and all three PDFs,
+the network catalog and sample model, a live sensor fault, normal startup,
+custom/occupied ports, no-browser, browser handoff, corrupted downloads,
+repeated launch, Ctrl+C/SIGTERM, temporary cleanup and the flat source ZIP.
+Browser handoff was checked with a recorder; it does not prove browser pixels.
+Reproduce: python3 tests/check_download.py --downloads ../OBDII_Recovery
+Detailed results: LAUNCHER_VALIDATION.json
+
+VEHICLE AND GUIDE
+The original sample GLB parses: 54 nodes, 15 meshes, 516 vertices and all four
+wheel bindings. Truncated/invalid model input and invalid bindings are rejected.
+Native Canvas rendering of the actual fallback projection was reviewed.
+Wheel angles advance with simulated time, remain fixed while time is unchanged,
+and the physical front-left wheel keeps rotating when its measurement is null.
+The new PDF contains ten pages and ten bookmarks. All pages were rendered
+and visually reviewed. The two original PDFs and EngDoc worksheet remain
+byte-for-byte identical to the supplied attachments.
+
+VERIFICATION LIMITS
+This workspace cannot launch Chromium because the sandbox blocks its profile
+socket. The separate cloud browser cannot reach the workspace loopback server.
+Therefore full browser interaction/pixel verification and WebGL2 GPU rendering
+are not claimed. The existing jsdom suites remain optional development checks;
+jsdom was not available for this recovery run. Historical UI validation in
+UI_VALIDATION.json belongs to the supplied v0.3 baseline, not this new build.
+The user's Linux Mint installation and a physical shared/noexec mount were not
+tested. Runtime requirements remain Python 3.10+ and a modern web browser.
+
+SCOPE
+This is a deterministic generic teaching model, not OEM firmware, an
+instruction-set emulator, a real vehicle interface or a HIL environment.
+CAN probes are data/freshness observations, not electrical bit waveforms.
+The bundled renderer is WebGL2/Canvas; Three.js itself is not bundled.
+A documented adapter and sample GLB are provided. Import support is the
+rigid, uncompressed subset documented in VEHICLE_MODELS.md.

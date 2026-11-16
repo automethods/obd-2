@@ -1,0 +1,70 @@
+OBD LAB 0.7.0 — VALIDATION RECORD
+Date: 9 November 2026
+
+MODEL AND ACTUAL LOOPBACK API
+python3 -m unittest discover -s tests
+Result: 179 passed, 0 failed.
+Includes all six configurations; ignition/crank/READY; P/N/D/R torque and
+reverse; brake/parking interlocks; installed hardware; sensor cadence,
+validity, retained fault memory and repair; scanner ignition/DLC/module/
+bitrate gates; sampled PID replies; diesel monitor format; OBD/UDS;
+finite JSON and explicit missing-value CSV; rejected-command rollback;
+legacy model/API compatibility.
+
+FRONTEND INTERACTION CONTRACTS — 101 passed, 0 failed
+node tests/test_session_v07.cjs                 12
+node tests/test_application_v07.cjs             10
+node tests/test_cockpit_units_v07.cjs           21
+node tests/test_scan_tool_v07.cjs               17
+node tests/test_live_data_v06.cjs                9
+node tests/test_diagnosis_v06.cjs               11
+node tests/test_connection_v06.cjs               9
+node tests/test_protocols_contract.cjs <fixture> 12
+
+The shared-session and whole-application tests run the actual Python HTTP
+server on an ephemeral loopback port. The command queue is exercised with
+deferred requests and a controlled clock: at most one mutation is active.
+Polling uses actual 250 ms simulated intervals; one-minute log capture does
+not reduce controller sampling. Other tests generate fixtures from actual
+VehicleSim, SensorBank, ScannerSession or the retained legacy Sim.
+
+The application test loads the actual index and view scripts into a parsed
+node harness with CPU Canvas. It covers startup, accepted/rejected gears,
+driving, view/selection continuity, adapter connection, decoded replies,
+legacy reference choices, DLC failure, recording, BEV READY and a model-only
+inverter target. It does not emulate native browser layout or all DOM events.
+
+GEOMETRY AND ANIMATION
+node tests/test_vehicle.cjs — passed.
+Actual sample GLB parser and named bindings: 225 nodes, 2,965 vertices.
+Physical wheel integration, reverse direction, interpolated display,
+pause/reset, missing wheel measurement and cutaway/exterior checks pass.
+The physical wheel keeps moving if its measurement is unplugged.
+
+VISUAL REVIEW
+Actual cockpit and unit-map SVG trees, with their product styles, were
+rendered through sharp/libvips CPU. Reviewed for dial scale, D/GEAR 2,
+labels, contrast, unit card clipping and scanner/DLC state distinctions.
+The guide includes these graphics. They are component renderings, not
+screenshots of a verified browser window.
+
+DOWNLOAD VERIFICATION
+The release is checked after it is built with:
+python3 tests/check_download.py --downloads ../OBDII_Release_0_7
+The checker uses the actual self-contained run.sh in an empty folder whose
+path contains spaces. It verifies payload checksums, flat source layout,
+new assets and guide, actual petrol/BEV driver/scanner/fault/export flows,
+repeat startup, Python-only PATH, read-only download location, occupied
+port and damaged-download errors, browser handoff, and SIGINT/SIGTERM
+cleanup. The script records the observed results in its JSON report.
+
+LIMITS
+No native browser layout/event, GPU/WebGL output or user Linux Mint
+installation was verified here. Local acceptance checks are in
+OBDII_START_HERE.txt and docs/WORKSPACE.html. Core functionality needs
+Python 3.10 or newer, without third-party Python packages. Development
+Canvas/SVG tooling is not required to use the simulator.
+
+This record verifies teaching-model implementation, not measured production
+vehicle fidelity. No real vehicle adapter, OEM ECU firmware or diagnostic
+database was connected.

@@ -1,0 +1,22 @@
+OBD Lab 0.9.7+article.1 · original project verification · 14 November 2026
+
+PASS: 4 article experiment tests, 14 intermittent-contact tests, and
+10 instrumentation tests in the original source folder.
+PASS: actual page-controller checks with the recorded model output.
+PASS: startup-language regression; it detects the original error and passes
+with the fix that waits for the first vehicle state.
+
+PASS: rebuilt original run.sh launched the local simulator. Actual headless
+Chrome completed all 22 cases over HTTP, displayed 22 rows and five chart
+channels, changed selected cases, and downloaded complete JSON and summary
+CSV. The active vehicle was preserved. Desktop and 390 px mobile checks
+passed; the results table scrolls without page overflow. The Help entry,
+delayed initial vehicle request and UK/EN switching passed without JavaScript
+page errors. No external website files were changed.
+
+All 22 per-case CSV files, summary.csv and matrix.json are in
+source/article_results/ and in the source embedded in run.sh. Source ZIP
+integrity and all release/source checksums were checked.
+
+These checks establish software behavior, not physical ECU accuracy or
+student learning outcomes. The model's stated teaching assumptions apply.

@@ -1,0 +1,61 @@
+OBD LAB 0.9.7 — UKRAINIAN INTERFACE AND AUTOMETHODS LANGUAGE PREFERENCE
+13 November 2026
+
+Focused JavaScript checks: 50 passed, 0 failed.
+  test_language_v097.cjs             9
+  test_continuous_vehicle_v096.cjs   8
+  test_live_workspace_v094.cjs      14
+  test_scan_tool_v07.cjs            19
+
+The vehicle/scanner interaction suites use the actual Session, product views
+and production Python API handlers over JSON lines. See the prior 0.9.6 record
+for the engine/READY, cycle, scanner and physical-model baseline (104 checks).
+No model, diagnostic-address, protocol-byte or export-schema change is made
+by the language adapter.
+
+Language coverage and behavior:
+- English / Українська is available in setup and active workspaces.
+- Locale codes en/uk, HTML lang/data-language, motion-lab-language and the
+  automatic marker follow the inspected local AutoMethods language policy.
+- Query, saved manual preference, browser language and safe fallback tested.
+- Manual selection can replace a ?lang= link without the site event reversing it.
+- Storage denial, cross-view source text replacement, reversible translation,
+  dynamic values, technical identifiers and editable request preservation checked.
+- Ukrainian interface labels, sensor/module labels, live status templates,
+  accessibility text and in-app help are provided. Reference/PDF materials and
+  advanced source annotations without a catalog entry retain English.
+- Language changes preserve vehicle state and diagnostic records.
+- Component/signal text search includes original and Ukrainian names.
+
+Native browser observations:
+Headless local Chrome rendered the real application JS/CSS with frozen snapshots
+prepared from production handlers. No native browser model-dynamics or trusted
+physical-input claim is made. Reproduction helper:
+  python3 tests/prepare_browser_language.py --output /tmp/obd-language-browser
+
+Observed setup (1600x1000), Drive, Diagnostics, Unit map, Guided faults,
+Wiring and Help (1366x768), plus narrow service views (500 and 390 CSS pixels).
+The 390x844 check uses a native 390px iframe to bypass headless Chrome's minimum
+outer window width. No document horizontal overflow was observed. Gauges and
+pedals remain rendered. Narrow service pages scroll to the full tool viewport.
+At 1366x768 the service instrument panel was 165px high and the scan tool had
+197.5px of usable viewport, with separate scrolling.
+
+Native EN -> Українська button clicks preserved the same state object and record
+count, changed the workspace label and HTML language, and avoided horizontal
+page overflow. Screenshots and DOM measurements were inspected. The browser
+connector was unavailable, so these checks used isolated headless Chrome;
+the user's open browser session was not changed.
+
+Additional checks:
+- Changed JavaScript syntax and Python compilation pass.
+- Standalone launcher/ZIP identity, per-file checksums, source byte identity,
+  embedded v0.9.7 labels and English/Ukrainian assets verified.
+- bash run.sh --help validates and extracts the bundle.
+- START_HERE.txt matches the embedded OBDII_START_HERE.txt.
+
+Integration scope:
+The AutoMethods sources under Literature/Transport/My_books were read only to
+match the shared language convention. No website files were edited or published.
+The simulator remains offline Python stdlib + plain browser JS. No Vite/npm,
+translation service or runtime network dependency was introduced.

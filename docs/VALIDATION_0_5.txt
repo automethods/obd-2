@@ -1,0 +1,33 @@
+OBD-II Learning Lab 0.5.0 — validation scope
+2026-11-09
+
+Verified in this workspace:
+- 114 Python unit/API/model tests, including deterministic city and road routes,
+  manual overrides, fault consequences and all diagnostic definition examples.
+- 16 workbench helper contracts against actual Python Sim/network fixtures.
+- 12 protocol decode/ISO-TP contracts against actual Python diagnostic replies.
+- 11 dashboard interaction contracts, including real CPU Canvas chart rendering,
+  physical values versus decoded replies, connection loss, capture gaps, reset,
+  manual controls, nested vehicle controls and hidden-view polling suppression.
+- Vehicle parser/binding/animation contracts: all four physical wheel bindings,
+  interpolation of completed steps, pause/reset, missing-sensor motion, view
+  modes and themes. Original sample: 225 nodes, 2,965 parser-counted vertices.
+- Actual Canvas2D fallback vehicle rendering inspected in light/dark and cutaway.
+- JavaScript syntax and in-app guide links checked. 40 manual acceptance checks
+  included in START_HERE.txt and docs/LIVE_DASHBOARD.html.
+
+The dashboard test uses a bounded HTML-node harness with actual callbacks,
+not a native browser DOM. Canvas rendering uses a development-only CPU
+rasterizer; it is not required to run the downloaded application.
+
+Unverified here:
+Full browser layout, native browser interactions/accessibility tree, WebGL2
+GPU output and the user's particular Linux Mint/browser/GPU combination.
+Chromium launch was blocked by the execution environment's socket permission
+policy. No bypass was attempted. Use the included 40-point local checklist.
+
+The standalone builder creates file checksums and verifies them on extraction.
+The development check_download.py checks isolated launch/cleanup, routes,
+assets and diagnostic actions where local loopback process permissions allow.
+Books from v0.3 and v0.4 remain teaching references; the v0.5 HTML guide is the
+current operating guide. All vehicle results are synthetic teaching values.

@@ -1,0 +1,48 @@
+{
+  "kind": "DOM/API checks; canvas mocked; no browser pixel claim",
+  "suites": [
+    {
+      "status": "PASS",
+      "checks": [
+        "initial five-screen workspace",
+        "69-signal catalog",
+        "six-step ECT workflow",
+        "voltage/ADC/validity",
+        "pending and stored OBD bytes",
+        "repair and clear",
+        "SVG and scope CSV download triggers",
+        "tab navigation",
+        "signal filter and add-probe",
+        "VIN multi-frame request",
+        "BMU stale report",
+        "braking diagram selection"
+      ],
+      "requests": 19,
+      "download_names": [
+        "obdii_scope.csv",
+        "obdii_ect_circuit.svg"
+      ],
+      "console_errors": 0
+    },
+    {
+      "status": "PASS",
+      "checks": [
+        "default learning book",
+        "10 chapters and 10 full theory documents",
+        "reading preserves state",
+        "plain-language live explanation",
+        "ECT disconnect/debounce/substitution/confirmation",
+        "human-readable diagnostic answer with optional bytes",
+        "repair versus stored memory",
+        "manual pedal affects live model",
+        "playback and view-change pause",
+        "wheel sensor loss versus physical wheel motion",
+        "BMU timeout and restart after repair",
+        "full reference and 30-word glossary"
+      ],
+      "requests": 34,
+      "console_errors": 0
+    }
+  ],
+  "total_http_requests": 53
+}

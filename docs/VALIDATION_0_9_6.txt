@@ -1,0 +1,72 @@
+OBD LAB 0.9.6 — CONTINUOUS VEHICLE AND SELECTED MODULES
+13 November 2026
+
+Completed focused checks: 104 passed, 0 failed in the suites listed below.
+
+Python model / scanner checks (56):
+  test_vehicle_configuration.py     18
+  test_drive_cycles.py              11
+  test_scanner.py                   18
+  test_scanner_scope.py              5
+  test_live_parameters.py            4
+
+JavaScript interaction checks (48):
+  test_continuous_vehicle_v096.cjs    8
+  test_scan_tool_v07.cjs             19
+  test_live_workspace_v094.cjs       14
+  test_scanner_flow_v095.cjs          7
+
+The new v0.9.6 suite runs the production application controller, Setup,
+Cockpit, VehicleMonitor, ScannerView and AppSession. Production Python
+GET/POST handlers run over the existing tests/http_stdio.py transport.
+Parsed DOM nodes replace browser DOM/layout. Vehicle rendering and unrelated
+unit-map/scope/wiring views are stubs in this suite, not claimed as checked.
+
+Verified behavior:
+- Setup remains parked with no clock; opening a workspace starts one clock,
+  independently of ignition, engine/READY, diagnostic connection and logging.
+- Normal UI has no Run/Pause or Step controls; gauges have no Show/Hide action.
+- Sidebar transmission selection changes the scanner target, cards and named
+  Connect button. Dropdown selection updates the sidebar. Connection remains
+  explicit. Selected unit fault memory and whole-vehicle discovery stay distinct.
+- ECU + Add parameter includes fitted MAP, lambda, rail pressure, boost,
+  oil/knock/camshaft and sensor electrical probes, plus model fuel flow,
+  fuel used, torque and shaft power. Cards identify OBD versus model readings.
+- Mixed and model-only selections update without fabricating OBD requests.
+  Missing model measurements clear the current number; graphs preserve gaps.
+  Unfitted extended sensors are removed when hardware changes to Basic.
+- Petrol/diesel D/R selection requires running combustion, including after the
+  cranking interval. BEV/HEV/PHEV require READY, without requiring combustion.
+  Existing brake, stopped-direction-change and manual clutch rules remain.
+- Service pedals change actual RPM, speed and fuel/model readings. Disconnecting
+  OBD leaves the car clock live. Every fitted module keeps its own parameters,
+  Numbers/Graphs and add/remove controls; charging remains reference-only.
+- Start WLTC prepares a parked ignition-off car and drives the actual plant.
+  Moving/manual-transmission blockers are explained beside the task. Navigating
+  Drive/Diagnostics preserves the cycle; Drive manually/pedal takeover keeps
+  the clock live. Model cycle completion still ends with the brake hold.
+- Editing setup pauses the editor; apply/cancel resumes the workspace.
+
+Checks also completed:
+- Changed JavaScript syntax, Python compilation and whitespace checks.
+- START_HERE.txt agrees with the embedded OBDII_START_HERE.txt.
+- Standalone launcher payload matches the source ZIP, release version and
+  per-file manifest. Bundled files match their editable source byte-for-byte.
+- bash run.sh --help validates and extracts the bundle successfully.
+
+Environment limits:
+The separate legacy test_vehicle_api.py suite could not start its loopback
+server because socket creation is denied here (PermissionError). It ran zero
+checks; it is not included in the 104 passing checks. The production handlers
+were instead exercised by the stdio-backed suites above. Native browser
+layout/events, GPU rendering and the user's Firefox/Linux configuration were
+not rechecked for this revision. The current WORKSPACE guide provides local
+checks; earlier PDF screenshots describe older layouts.
+
+Model coverage:
+Basic/Extended are teaching detail levels, not Euro 5/6 certification.
+MAP is absolute pressure. No separate ambient-referenced inlet vacuum,
+fuel trims, injection duration/timing or per-bank lambda sensors are added.
+The new picker exposes existing model quantities; it does not add OEM PIDs.
+Runtime remains Python standard library plus plain browser JavaScript;
+Vite/npm/Node are not runtime dependencies.

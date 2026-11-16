@@ -1,0 +1,83 @@
+OBD LAB 0.6.0 — VALIDATION RECORD
+Date: 2026-11-09
+
+MODEL AND HTTP API
+python3 -m unittest discover -s tests
+114 checks passed. Covers plant/controller behavior, diagnostic encoding,
+connection semantics, the network/signal catalogs, drive cycles, diagnostic
+metadata, HTTP behavior and exports. The served-shell expectation was updated
+for the intentional replacement of the old page entrypoint.
+
+SHARED SESSION
+node tests/test_session_v06.cjs
+10 checks passed against the actual Python server on loopback. A controlled
+playback clock and deferred requests establish one timer and at most one
+concurrent state-changing request. Selection/navigation do not advance time.
+Explicit steps pause playback. Input overrides persist through BMU recovery.
+Errors pause the clock and subsequent valid commands still work.
+
+WHOLE APPLICATION
+node tests/test_application_v06.cjs
+14 checks passed. Actual index.html and view modules run in a parsed-node
+harness against the real Python HTTP API, with actual CPU Canvas rendering.
+The suite uses a VehicleView stub; the actual vehicle parser and animation
+are checked separately. It verifies the complete coolant workflow, shared
+selection and history, wire availability, live traces, message selection,
+DLC timeouts, retained state, drawer state/focus restoration and reset.
+
+LIVE DATA
+node tests/test_live_data_v06.cjs
+9 checks passed with real Python snapshot/validity fixtures and CPU Canvas.
+Includes physical versus invalid/reported values, missing and stale readings,
+exact signal selection/watch callbacks, stable search controls and held cursor.
+
+WIRING AND LOCATIONS
+node tests/test_connection_v06.cjs
+9 checks passed with actual Python network observations. All 16 DLC pins,
+wire endpoints, open ECT input, unavailable CAN branch, independent supply
+reference, missing wheel input and pin-to-component location selection checked.
+
+DIAGNOSIS WORKFLOW
+node tests/test_diagnosis_v06.cjs
+11 checks passed with actual Python snapshots and diagnostic responses.
+Checks four executable cases, retained memory versus repair, BMU ignition
+recovery, unsupported modules, stable request fields, and explicit selection
+before a front-left test can act while a different wheel is selected.
+A whole-application rerun after this guard also passed all 14 contracts.
+
+DIAGNOSTIC DECODING
+node tests/test_protocols_contract.cjs <fixture.json>
+12 checks passed using actual simulator replies and known encoding examples.
+Covers OBD value formulas, UDS identity/negative replies, ISO-TP segmentation,
+padding, timeout records and the declared pin roles.
+
+VEHICLE
+node tests/test_vehicle.cjs
+Passed actual GLB parser, bindings, geometry, physical wheel integration,
+interpolation, pause/reset, missing measurement, body modes and themes.
+Original model: 225 nodes and 2,965 vertices. Geometry and animation contracts
+do not establish the appearance of a particular WebGL GPU/browser combination.
+
+RESOURCE CHECK
+The current entrypoint has 70 unique DOM IDs and all 18 referenced local
+asset/document links resolve in the source tree. The old Workbench/Learning/
+Instruments shells are not loaded. The two START_HERE text copies match.
+
+PACKAGING
+The standalone is built with tools/build_standalone.py. The final artifact is
+validated separately with tests/check_download.py, which starts the actual
+bundled server from an otherwise empty folder with spaces and checks source
+checksums, embedded assets, physics/diagnostic calls, ports, startup/restart,
+Python requirements, shutdown and temporary-directory cleanup.
+
+LIMITS OF THESE CHECKS
+The parsed-node harness runs the actual application callbacks but is not a
+browser. Native layout, pointer/tab behavior, browser accessibility trees,
+WebGL GPU output and the user's Linux Mint installation remain unverified.
+The earlier restricted browser launch was not bypassed or retried. Use the
+18 checks in the current workspace guide on the target computer.
+
+DESIGN REVIEW
+The layout was reviewed for fixed application controls, panel scrolling,
+small center panes, wrapping component labels and consistent state/selection.
+The 3D scene is a linked component locator, not a second simulation engine.

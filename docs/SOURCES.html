@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Sources</title>
+  
+<link rel="stylesheet" href="guide.css"></head>
+<body><header><a href="../START_HERE.html">OBD II Lab</a><a href="BEGINNER_HANDBOOK.html">Beginner book</a><a href="SCHEMATIC_WORKSPACE.html">Schematics</a><a href="CONNECTOR_REFERENCE.html">Connectors</a><a href="LEARNING_GUIDE.html">Concepts</a><a href="WORKED_CASES.html">Working cases</a><a href="PROTOCOL.html">Bytes</a><a href="FIRMWARE_ROADMAP.html">Firmware</a></header><main class="page">
+<header id="title-block-header">
+<h1 class="title">Sources</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#sources-and-evidence-boundaries"
+id="toc-sources-and-evidence-boundaries">Sources and evidence
+boundaries</a>
+<ul>
+<li><a href="#public-primary-sources"
+id="toc-public-primary-sources">Public primary sources</a></li>
+<li><a href="#toyota-documents-read-from-the-users-google-drive"
+id="toc-toyota-documents-read-from-the-users-google-drive">Toyota
+documents read from the user’s Google Drive</a></li>
+<li><a href="#existing-user-research-read-for-continuity"
+id="toc-existing-user-research-read-for-continuity">Existing user
+research read for continuity</a></li>
+<li><a href="#evidence-labels-used-in-this-package"
+id="toc-evidence-labels-used-in-this-package">Evidence labels used in
+this package</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="sources-and-evidence-boundaries">Sources and evidence
+boundaries</h1>
+<p>Version 0.3.0 · Research date: 9 November 2026. The documentation
+paraphrases the sources; original documents remain in their existing
+locations. The simulator source code and tests are the authority for
+implemented behavior, not the source list below.</p>
+<h2 id="public-primary-sources">Public primary sources</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>ID</th>
+<th>Source</th>
+<th>What it supports</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>S1</td>
+<td>California Air Resources Board, <a
+href="https://ww2.arb.ca.gov/resources/fact-sheets/board-diagnostic-ii-obd-ii-systems-fact-sheet">On-Board
+Diagnostic II Systems Fact Sheet</a>, 19 September 2019</td>
+<td>OBD-II monitors emissions-related components and stores malfunction
+information. The document’s regulatory dates are jurisdiction-specific
+and are not used as a global applicability claim.</td>
+</tr>
+<tr class="even">
+<td>S2</td>
+<td>Linux kernel documentation, <a
+href="https://docs.kernel.org/networking/iso15765-2.html">ISO 15765-2 /
+ISO-TP</a></td>
+<td>Physical versus functional addressing, single/multi-frame transport,
+flow control, sequence handling and the Linux socket interface. It does
+not provide a Toyota message database.</td>
+</tr>
+<tr class="odd">
+<td>S3</td>
+<td>Toyota Motor Corporation, <a
+href="https://global.toyota/en/detail/220017">Toyota Develops New Hybrid
+System</a>, 17 April 2003</td>
+<td>Manufacturer overview of THS-II power splitting, propulsion modes
+and regenerative braking. Describes that historical system, not every
+later Toyota hybrid.</td>
+</tr>
+<tr class="even">
+<td>S4</td>
+<td>Modelica Association, <a
+href="https://fmi-standard.org/docs/3.0.2/">Functional Mock-up Interface
+specification 3.0.2</a>, 27 November 2024</td>
+<td>FMU packaging, Model Exchange, Co-Simulation, Scheduled Execution
+and clocks. FMI export is a proposed extension, not a delivered
+capability.</td>
+</tr>
+<tr class="odd">
+<td>S5</td>
+<td>Bosch Mobility, <a
+href="https://www.bosch-mobility.com/en/solutions/braking-systems/electronic-stability-program/">Electronic
+stability program</a></td>
+<td>Functional roles of wheel speed, steering and yaw measurements;
+propulsion reduction and individual-wheel braking. The lab does not
+implement Bosch software or calibration.</td>
+</tr>
+<tr class="even">
+<td>S6</td>
+<td>QEMU project, <a
+href="https://www.qemu.org/docs/master/system/target-arm.html">Arm
+System emulator</a></td>
+<td>A matching CPU architecture alone is insufficient; firmware depends
+on a supported board/machine and its devices. No assertion is made that
+QEMU supports an unidentified Toyota ECU.</td>
+</tr>
+<tr class="odd">
+<td>S7</td>
+<td>Renode project, <a
+href="https://renode.readthedocs.io/en/latest/advanced/writing-peripherals.html">Peripheral
+modeling guide</a></td>
+<td>Register/peripheral models and the relationship between CPU
+accesses, memory and the simulated system bus. No Renode peripheral
+implementation is included in this release.</td>
+</tr>
+<tr class="even">
+<td>S8</td>
+<td>MathWorks, <a
+href="https://www.mathworks.com/discovery/hardware-in-the-loop-hil.html">What
+Is Hardware-in-the-Loop?</a> and <a
+href="https://www.mathworks.com/help/sltest/sil-pil-and-hil-tests.html">SIL,
+PIL and HIL tests</a></td>
+<td>Terminology for model, compiled software, target processor and
+controller-hardware testing; equivalence testing. MathWorks products are
+not required by this lab.</td>
+</tr>
+<tr class="odd">
+<td>S9</td>
+<td>python-can project, <a
+href="https://python-can.readthedocs.io/en/stable/interfaces/virtual.html">Virtual
+interface documentation</a>, <a
+href="https://github.com/hardbyte/python-can">source repository</a>, <a
+href="https://github.com/hardbyte/python-can/blob/main/LICENSE.txt">license</a></td>
+<td>Same-process VirtualBus behavior and limitations; optional transport
+base. Stable documentation inspected identifies version 4.6.1;
+repository license is GNU LGPL version 3.</td>
+</tr>
+<tr class="even">
+<td>S10</td>
+<td>Linux-CAN, <a
+href="https://github.com/linux-can/can-utils">can-utils repository</a>,
+<a
+href="https://github.com/linux-can/can-utils/blob/master/candump.c">candump
+source</a>, <a
+href="https://github.com/linux-can/can-utils/blob/master/isotpsend.c">isotpsend
+source</a></td>
+<td>Capture/replay and ISO-TP utilities for a later Linux virtual-CAN
+workflow. Those two source headers specify GPL-2.0-only OR BSD-3-Clause;
+inspect individual files rather than assuming a uniform repository
+license.</td>
+</tr>
+<tr class="odd">
+<td>S11</td>
+<td>Ircama, <a
+href="https://github.com/Ircama/ELM327-emulator">ELM327-emulator
+repository</a>, <a
+href="https://github.com/Ircama/ELM327-emulator/blob/master/LICENSE">license</a></td>
+<td>Adapter/scan-client emulation and an optional Toyota Auris Hybrid
+request dictionary. It is not a Prius firmware/physical model. The
+repository identifies CC BY-NC-SA 4.0.</td>
+</tr>
+<tr class="even">
+<td>S12</td>
+<td>Texas Instruments, <a
+href="https://www.ti.com/lit/an/sbaa338a/sbaa338a.pdf">Monitoring NTC
+Thermistor Circuit With Single-Ended ADC, SBAA338A</a>, revised June
+2022</td>
+<td>NTC divider topology, beta resistance/temperature relationship and
+ratiometric ADC principle. The lab’s 5 V, 2,200 Ω, 2,500 Ω, 3,500 K and
+timing choices are synthetic; this source does not establish a Toyota
+sensor calibration or pin assignment. ADC settling and tolerances in the
+application note are not implemented here.</td>
+</tr>
+<tr class="odd">
+<td>S13</td>
+<td>Elm Electronics, <a
+href="https://elmelectronics.com/wp-content/uploads/2020/05/ELM327DSL.pdf">ELM327
+data sheet, version 2.3</a></td>
+<td>Printed p82, Figure 8: vehicle J1962 connector numbering and
+orientation. Printed p84, Figure 9: adapter reference circuit and
+protocol pin roles. Supports the DLC reference, not execution of an ELM
+adapter or analog CAN waveforms.</td>
+</tr>
+<tr class="even">
+<td>S14</td>
+<td>ScanTool.net / OBD Solutions, <a
+href="https://www.scantool.net/blog/which-obd-ii-protocol-is-supported-by-my-vehicle/">Which
+OBD-II protocol is supported by my vehicle?</a></td>
+<td>Vehicle-connector diagrams, ground/supply functions and
+protocol-dependent pin assignments. The CAN lesson uses pins 6/14;
+legacy pins are reference-only. Historical market/date statements are
+not used as current global applicability guidance.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="toyota-documents-read-from-the-users-google-drive">Toyota
+documents read from the user’s Google Drive</h2>
+<p>These titles and file identities were verified through Google Drive,
+and their readable content was inspected. The local package links to
+them rather than redistributing their full contents. Page references
+below are printed document pages.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>ID</th>
+<th>Document</th>
+<th>Specific evidence used</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>T1</td>
+<td><a
+href="https://drive.google.com/file/d/1sP19XACX-a4BFxGerztVRn3W4aIGDcty/view">Toyota_Course_071_Hybrid_System_Operation.pdf</a></td>
+<td>Page 2-2: control-system components; 2-7 to 2-8: 30/78 tooth counts
+and engine/carrier, MG1/sun, MG2/ring connections; 2-12 to 2-15:
+inverter, converters and HV ECU roles.</td>
+</tr>
+<tr class="even">
+<td>T2</td>
+<td><a
+href="https://drive.google.com/file/d/19PMbGTunAw-JCQ-0Jj0q9pgTOtDLz-Ia/view">Toyota_Course_071_High_Voltage_Battery.pdf</a></td>
+<td>Page 3-3: 28 modules and 201.6 V Gen2 pack; 3-4 to 3-5: battery
+monitoring; 3-6: resistor-assisted SMR energizing sequence.</td>
+</tr>
+<tr class="odd">
+<td>T3</td>
+<td><a
+href="https://drive.google.com/file/d/1kOvFoF1_Ms7ZuBtGFPSnH7tiXQs2fcgd/view">Toyota_2004_Prius_THSII_Features.pdf</a></td>
+<td>TH-4 to TH-6: planetary power splitting, operating modes and
+regenerative-brake cooperation.</td>
+</tr>
+</tbody>
+</table>
+<p>These documents are historical training/reference material. This lab
+does not reproduce servicing procedures or establish present-day repair
+instructions for any vehicle. Exact vehicle generation, market, hardware
+part numbers and calibration IDs would be required for a specific
+implementation.</p>
+<h2 id="existing-user-research-read-for-continuity">Existing user
+research read for continuity</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>ID</th>
+<th>Document</th>
+<th>How it was used</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>U1</td>
+<td><a
+href="https://drive.google.com/file/d/1BxVxB3-LT5IQJYzuwWgRdQJaOtuS2AhB/view">Prius_firmware_and_Ghidra_guide.html</a>,
+2 November 2026</td>
+<td>Prior research separates Toyota-labelled engine calibration images,
+absent authenticated HV/battery images, and open replacement firmware.
+Its stated uncertainties about MCU identity, memory mapping and
+compatibility are retained. This turn did not re-download or
+independently execute the binaries.</td>
+</tr>
+<tr class="even">
+<td>U2</td>
+<td><a
+href="https://drive.google.com/file/d/1CIxm2D7UZ2bdIesjmQIEDwPQyiiUKMRt/view">MODEL_NOTES.txt</a></td>
+<td>Prior quasi-static Prius model explicitly labels controller choices
+and the 8.8 kWh PHEV extension as hypothetical. It informs the
+separation between manufacturer specifications and illustrative
+strategy; its JavaScript model was not imported into this package.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="evidence-labels-used-in-this-package">Evidence labels used in
+this package</h2>
+<p><strong>Manufacturer fact</strong> means a scoped statement supported
+by a Toyota source, such as a historical gear connection or nominal
+battery voltage. <strong>Standard/protocol reference</strong> means a
+diagnostic or interoperability concept supported by its identified
+specification or official implementation documentation. <strong>Teaching
+assumption</strong> means a parameter, threshold, signal, control law or
+scenario chosen for learning. <strong>Verified implementation
+result</strong> means behavior observed by running this package; it does
+not imply measured vehicle fidelity.</p>
+<p>All generic hybrid parameters, control periods, fault debounces,
+synthetic network signals, torque policies and simplified tire/thermal
+behavior belong to the teaching-assumption category unless an individual
+item says otherwise. No Toyota CAN identifier, proprietary PID, DTC
+subcode, firmware compatibility or production protection threshold is
+inferred from a plausible-looking number.</p>
+<p>The new <a href="CONNECTOR_REFERENCE.html">connector reference</a>
+applies the same boundary to schematics: the DLC’s referenced positions
+and roles are distinct from fictional J-ECT and X1 lesson assignments.
+X1.1 is an internal reference test point, not a claimed physical ECU
+cavity. No real Toyota connector part number or harness layout is
+inferred. The 5 V ECT circuit and ideal 12-bit conversion are executable
+teaching models; their computed values are not recorded vehicle
+measurements. The <a href="SCHEMATIC_WORKSPACE.html">workspace guide</a>
+explains how invalid, substituted and stale values remain visible with
+their validity context.</p>
+<p>For a later vehicle-specific model, maintain a provenance record per
+parameter: symbol, unit, value or map, vehicle generation, source page
+or dataset, measurement conditions, uncertainty, software revision and
+license. A publicly visible file can still have redistribution
+restrictions. Reference source locations and preserve notices when
+including third-party firmware or model code.</p>
+<footer>OBD II Lab v0.3.0 · 9 November 2026 · Synthetic educational models. See Sources for evidence boundaries.</footer></main></body>
+</html>

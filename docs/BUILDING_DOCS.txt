@@ -1,0 +1,13 @@
+Optional authoring utility (not needed to run the learning lab)
+
+The editable Markdown and diagram SVGs are included. On a Linux authoring
+machine with Python, Pandoc, ReportLab, Matplotlib, Pillow and DejaVu fonts:
+
+python3 tools/build_docs.py
+
+This regenerates offline HTML, START_HERE.html, the beginner handbook and the
+complete guide. Four friendly schematic snapshots are supplied as SVG/PNG.
+Changing the model does not automatically regenerate these chosen snapshots;
+export new views and identify their simulation conditions when updating them.
+
+Python runtime code and browser assets have no external runtime packages.
