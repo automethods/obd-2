@@ -1,0 +1,598 @@
+{
+  "schema_version": "obdii-lab.diagnostic-definitions.v1",
+  "title": "Lab ECU and diagnostic service definitions",
+  "scope": "Original educational JSON schema describing the existing simulator. No OEM database, MCD/ODX import, ECU discovery, flashing or real vehicle connection.",
+  "transport": {
+    "name": "Classical CAN / normal ISO-TP",
+    "can_id_bits": 11,
+    "data_bytes_per_frame": 8,
+    "conceptual_bitrate": 500000,
+    "note": "Generated teaching frames; arbitration, electrical levels and transport timing are not emulated."
+  },
+  "modules": [
+    {
+      "id": "ecu",
+      "name": "Engine ECU",
+      "component_id": "ecu",
+      "kind": "diagnostic_ecu",
+      "profiles": [
+        "engine",
+        "phev",
+        "braking"
+      ],
+      "availability": "implemented",
+      "addressing": {
+        "physical_request_can_id": "7E0",
+        "functional_request_can_id": "7DF",
+        "response_can_id": "7E8"
+      },
+      "state_paths": [
+        "rpm",
+        "load_pct",
+        "sensors.ect_c",
+        "dtcs",
+        "pending_dtcs"
+      ],
+      "service_ids": [
+        "obd.supported_pids",
+        "obd.monitor_status",
+        "obd.load",
+        "obd.coolant",
+        "obd.rpm",
+        "obd.speed",
+        "obd.intake_air",
+        "obd.airflow",
+        "obd.throttle",
+        "obd.stored_dtcs",
+        "obd.clear_dtcs",
+        "obd.pending_dtcs",
+        "obd.supported_identification",
+        "obd.vin",
+        "uds.default_session",
+        "uds.extended_session",
+        "uds.vin",
+        "uds.part_number",
+        "uds.tester_present"
+      ],
+      "note": "The only diagnostic ECU endpoint implemented in this lab. OBD may expose vehicle-level values from the shared teaching state."
+    },
+    {
+      "id": "bmu",
+      "name": "Battery monitor",
+      "component_id": "bmu",
+      "kind": "simulated_module",
+      "profiles": [
+        "phev",
+        "braking"
+      ],
+      "availability": "state_only",
+      "addressing": null,
+      "state_paths": [
+        "bmu_report",
+        "sensors.bmu_message_age_ms",
+        "contactor",
+        "module_dtc.BMU"
+      ],
+      "service_ids": [],
+      "note": "Physical state and held BMU messages can be inspected; no diagnostic server/address is implemented."
+    },
+    {
+      "id": "phev_ecu",
+      "name": "Hybrid supervisor",
+      "component_id": "supervisor",
+      "kind": "simulated_module",
+      "profiles": [
+        "phev",
+        "braking"
+      ],
+      "availability": "state_only",
+      "addressing": null,
+      "state_paths": [
+        "mode",
+        "engine_requested",
+        "engine_power_kw",
+        "motor_power_kw",
+        "module_dtc.PHEV_ECU"
+      ],
+      "service_ids": [],
+      "note": "Supervisory decisions and model state only; no UDS/OBD service endpoint is assigned."
+    },
+    {
+      "id": "abs_esp",
+      "name": "ABS / yaw controller",
+      "component_id": "abs",
+      "kind": "simulated_module",
+      "profiles": [
+        "phev",
+        "braking"
+      ],
+      "availability": "state_only",
+      "addressing": null,
+      "state_paths": [
+        "abs_active",
+        "esp_active",
+        "wheel_speeds_kph",
+        "sensors.wheel_speeds_kph",
+        "module_dtc.ABS_ESP"
+      ],
+      "service_ids": [],
+      "note": "Braking state and modeled module faults only; this is not an ABS diagnostic address map."
+    }
+  ],
+  "services": [
+    {
+      "id": "obd.supported_pids",
+      "module_id": "ecu",
+      "protocol": "OBD",
+      "name": "Supported current-data PIDs",
+      "request_hex": "01 00",
+      "can_id": "7DF",
+      "allowed_can_ids": [
+        "7DF",
+        "7E0"
+      ],
+      "availability": "implemented",
+      "unit": "",
+      "positive_prefix_hex": "41 00",
+      "decode": {
+        "kind": "bitmask",
+        "data_offset": 2,
+        "data_length": 4,
+        "byte_order": "big",
+        "formula": "Most-significant bit = PID 01; least-significant bit = PID 20."
+      },
+      "note": "The supported mask describes only the implemented lab subset.",
+      "effect": "read"
+    },
+    {
+      "id": "obd.monitor_status",
+      "module_id": "ecu",
+      "protocol": "OBD",
+      "name": "Warning lamp and component monitor",
+      "request_hex": "01 01",
+      "can_id": "7DF",
+      "allowed_can_ids": [
+        "7DF",
+        "7E0"
+      ],
+      "availability": "implemented",
+      "unit": "",
+      "positive_prefix_hex": "41 01",
+      "decode": {
+        "kind": "bitfield",
+        "data_offset": 2,
+        "data_length": 4,
+        "formula": "A bit 7 = MIL; A bits 0–6 = confirmed emissions DTC count. B bit 2 = component monitor supported; B bit 6 = incomplete.",
+        "source_path": "mil"
+      },
+      "note": "Only a simplified comprehensive-component monitor is modeled; other emissions readiness monitors are absent.",
+      "effect": "read"
+    },
+    {
+      "id": "obd.load",
+      "module_id": "ecu",
+      "protocol": "OBD",
+      "name": "Calculated engine load",
+      "request_hex": "01 04",
+      "can_id": "7DF",
+      "allowed_can_ids": [
+        "7DF",
+        "7E0"
+      ],
+      "availability": "implemented",
+      "unit": "%",
+      "positive_prefix_hex": "41 04",
+      "decode": {
+        "kind": "linear",
+        "data_offset": 2,
+        "data_length": 1,
+        "byte_order": "big",
+        "factor": 0.39215686274509803,
+        "offset": 0,
+        "formula": "A × 100 / 255",
+        "source_path": "load_pct"
+      },
+      "note": "Teaching engine-load estimate.",
+      "effect": "read"
+    },
+    {
+      "id": "obd.coolant",
+      "module_id": "ecu",
+      "protocol": "OBD",
+      "name": "Reported coolant temperature",
+      "request_hex": "01 05",
+      "can_id": "7DF",
+      "allowed_can_ids": [
+        "7DF",
+        "7E0"
+      ],
+      "availability": "implemented",
+      "unit": "°C",
+      "positive_prefix_hex": "41 05",
+      "decode": {
+        "kind": "linear",
+        "data_offset": 2,
+        "data_length": 1,
+        "byte_order": "big",
+        "factor": 1,
+        "offset": -40,
+        "formula": "A − 40",
+        "source_path": "sensors.ect_c"
+      },
+      "note": "Sensor reading; an open input returns the invalid −40°C marker. Physical coolant and ECU fallback are separate.",
+      "effect": "read"
+    },
+    {
+      "id": "obd.rpm",
+      "module_id": "ecu",
+      "protocol": "OBD",
+      "name": "Engine speed",
+      "request_hex": "01 0C",
+      "can_id": "7DF",
+      "allowed_can_ids": [
+        "7DF",
+        "7E0"
+      ],
+      "availability": "implemented",
+      "unit": "rpm",
+      "positive_prefix_hex": "41 0C",
+      "decode": {
+        "kind": "linear",
+        "data_offset": 2,
+        "data_length": 2,
+        "byte_order": "big",
+        "factor": 0.25,
+        "offset": 0,
+        "formula": "(256 × A + B) / 4",
+        "source_path": "rpm"
+      },
+      "note": "A and B are the two data bytes after the response service and PID.",
+      "effect": "read"
+    },
+    {
+      "id": "obd.speed",
+      "module_id": "ecu",
+      "protocol": "OBD",
+      "name": "Vehicle speed",
+      "request_hex": "01 0D",
+      "can_id": "7DF",
+      "allowed_can_ids": [
+        "7DF",
+        "7E0"
+      ],
+      "availability": "implemented",
+      "unit": "km/h",
+      "positive_prefix_hex": "41 0D",
+      "decode": {
+        "kind": "linear",
+        "data_offset": 2,
+        "data_length": 1,
+        "byte_order": "big",
+        "factor": 1,
+        "offset": 0,
+        "formula": "A",
+        "source_path": "speed_kph"
+      },
+      "note": "The diagnostic value is quantized to 1 km/h; the physical model retains finer precision.",
+      "effect": "read"
+    },
+    {
+      "id": "obd.intake_air",
+      "module_id": "ecu",
+      "protocol": "OBD",
+      "name": "Intake-air temperature",
+      "request_hex": "01 0F",
+      "can_id": "7DF",
+      "allowed_can_ids": [
+        "7DF",
+        "7E0"
+      ],
+      "availability": "implemented",
+      "unit": "°C",
+      "positive_prefix_hex": "41 0F",
+      "decode": {
+        "kind": "linear",
+        "data_offset": 2,
+        "data_length": 1,
+        "byte_order": "big",
+        "factor": 1,
+        "offset": -40,
+        "formula": "A − 40",
+        "source_path": "sensors.iat_c"
+      },
+      "note": "Ambient temperature is used as the intake-air proxy in this lab.",
+      "effect": "read"
+    },
+    {
+      "id": "obd.airflow",
+      "module_id": "ecu",
+      "protocol": "OBD",
+      "name": "Mass airflow",
+      "request_hex": "01 10",
+      "can_id": "7DF",
+      "allowed_can_ids": [
+        "7DF",
+        "7E0"
+      ],
+      "availability": "implemented",
+      "unit": "g/s",
+      "positive_prefix_hex": "41 10",
+      "decode": {
+        "kind": "linear",
+        "data_offset": 2,
+        "data_length": 2,
+        "byte_order": "big",
+        "factor": 0.01,
+        "offset": 0,
+        "formula": "(256 × A + B) / 100",
+        "source_path": "maf_g_s"
+      },
+      "note": "Mean-value airflow derived by the teaching engine model.",
+      "effect": "read"
+    },
+    {
+      "id": "obd.throttle",
+      "module_id": "ecu",
+      "protocol": "OBD",
+      "name": "Throttle position",
+      "request_hex": "01 11",
+      "can_id": "7DF",
+      "allowed_can_ids": [
+        "7DF",
+        "7E0"
+      ],
+      "availability": "implemented",
+      "unit": "%",
+      "positive_prefix_hex": "41 11",
+      "decode": {
+        "kind": "linear",
+        "data_offset": 2,
+        "data_length": 1,
+        "byte_order": "big",
+        "factor": 0.39215686274509803,
+        "offset": 0,
+        "formula": "A × 100 / 255",
+        "source_path": "throttle_pct"
+      },
+      "note": "Modeled engine throttle position; distinct from accelerator demand in electric driving.",
+      "effect": "read"
+    },
+    {
+      "id": "obd.stored_dtcs",
+      "module_id": "ecu",
+      "protocol": "OBD",
+      "name": "Stored emissions trouble codes",
+      "request_hex": "03",
+      "can_id": "7DF",
+      "allowed_can_ids": [
+        "7DF",
+        "7E0"
+      ],
+      "availability": "implemented",
+      "unit": "",
+      "positive_prefix_hex": "43",
+      "decode": {
+        "kind": "dtc_list",
+        "data_offset": 2,
+        "data_length": null,
+        "formula": "Byte 1 is the DTC count; each following pair encodes one P/C/B/U code.",
+        "source_path": "dtcs"
+      },
+      "note": "Only the emissions list is returned; this is not an all-module scan.",
+      "effect": "read"
+    },
+    {
+      "id": "obd.clear_dtcs",
+      "module_id": "ecu",
+      "protocol": "OBD",
+      "name": "Clear emissions diagnostic memory",
+      "request_hex": "04",
+      "can_id": "7DF",
+      "allowed_can_ids": [
+        "7DF",
+        "7E0"
+      ],
+      "availability": "implemented",
+      "unit": "",
+      "positive_prefix_hex": "44",
+      "decode": {
+        "kind": "acknowledgement",
+        "data_offset": 1,
+        "data_length": 0,
+        "formula": "44 acknowledges the implemented memory-clear operation."
+      },
+      "note": "Changes simulated emissions memory. A present physical fault remains and can be detected again.",
+      "effect": "clear_emissions_memory"
+    },
+    {
+      "id": "obd.pending_dtcs",
+      "module_id": "ecu",
+      "protocol": "OBD",
+      "name": "Pending emissions trouble codes",
+      "request_hex": "07",
+      "can_id": "7DF",
+      "allowed_can_ids": [
+        "7DF",
+        "7E0"
+      ],
+      "availability": "implemented",
+      "unit": "",
+      "positive_prefix_hex": "47",
+      "decode": {
+        "kind": "dtc_list",
+        "data_offset": 2,
+        "data_length": null,
+        "formula": "Byte 1 is the DTC count; each following pair encodes one pending code.",
+        "source_path": "pending_dtcs"
+      },
+      "note": "Pending emissions warnings are separate from confirmed memory and module-specific faults.",
+      "effect": "read"
+    },
+    {
+      "id": "obd.supported_identification",
+      "module_id": "ecu",
+      "protocol": "OBD",
+      "name": "Supported identification PIDs",
+      "request_hex": "09 00",
+      "can_id": "7DF",
+      "allowed_can_ids": [
+        "7DF",
+        "7E0"
+      ],
+      "availability": "implemented",
+      "unit": "",
+      "positive_prefix_hex": "49 00",
+      "decode": {
+        "kind": "bitmask",
+        "data_offset": 2,
+        "data_length": 4,
+        "byte_order": "big",
+        "formula": "Most-significant bit = PID 01; PID 02 is supported."
+      },
+      "note": "Only the synthetic VIN identification item is implemented.",
+      "effect": "read"
+    },
+    {
+      "id": "obd.vin",
+      "module_id": "ecu",
+      "protocol": "OBD",
+      "name": "Synthetic vehicle identity",
+      "request_hex": "09 02",
+      "can_id": "7DF",
+      "allowed_can_ids": [
+        "7DF",
+        "7E0"
+      ],
+      "availability": "implemented",
+      "unit": "",
+      "positive_prefix_hex": "49 02 01",
+      "decode": {
+        "kind": "ascii",
+        "data_offset": 3,
+        "data_length": 17,
+        "formula": "Decode the 17 bytes after 49 02 01 as ASCII."
+      },
+      "note": "LAB00000000000001 is a synthetic teaching identifier; ISO-TP carries the long response.",
+      "effect": "read"
+    },
+    {
+      "id": "uds.default_session",
+      "module_id": "ecu",
+      "protocol": "UDS",
+      "name": "Default diagnostic session",
+      "request_hex": "10 01",
+      "can_id": "7E0",
+      "allowed_can_ids": [
+        "7E0"
+      ],
+      "availability": "implemented",
+      "unit": "",
+      "positive_prefix_hex": "50 01",
+      "decode": {
+        "kind": "session",
+        "data_offset": 2,
+        "data_length": 4,
+        "byte_order": "big",
+        "formula": "P2 = bytes 2–3 in ms; P2* = bytes 4–5 × 10 ms."
+      },
+      "note": "Lab timing values: P2=50 ms, P2*=5000 ms. Extended session expires after 5 s of simulation time without an applicable request; physical bus timing is not scheduled.",
+      "effect": "session_control"
+    },
+    {
+      "id": "uds.extended_session",
+      "module_id": "ecu",
+      "protocol": "UDS",
+      "name": "Extended diagnostic session",
+      "request_hex": "10 03",
+      "can_id": "7E0",
+      "allowed_can_ids": [
+        "7E0"
+      ],
+      "availability": "implemented",
+      "unit": "",
+      "positive_prefix_hex": "50 03",
+      "decode": {
+        "kind": "session",
+        "data_offset": 2,
+        "data_length": 4,
+        "byte_order": "big",
+        "formula": "P2 = bytes 2–3 in ms; P2* = bytes 4–5 × 10 ms."
+      },
+      "note": "Lab timing values: P2=50 ms, P2*=5000 ms. Extended session expires after 5 s of simulation time without an applicable request; physical bus timing is not scheduled.",
+      "effect": "session_control"
+    },
+    {
+      "id": "uds.vin",
+      "module_id": "ecu",
+      "protocol": "UDS",
+      "name": "Read synthetic VIN",
+      "request_hex": "22 F1 90",
+      "can_id": "7E0",
+      "allowed_can_ids": [
+        "7E0"
+      ],
+      "availability": "implemented",
+      "unit": "",
+      "positive_prefix_hex": "62 F1 90",
+      "decode": {
+        "kind": "ascii",
+        "data_offset": 3,
+        "data_length": 17,
+        "formula": "Decode bytes after the echoed F190 identifier as ASCII."
+      },
+      "note": "Synthetic LAB00000000000001 identity; physical request address 7E0 only.",
+      "effect": "read"
+    },
+    {
+      "id": "uds.part_number",
+      "module_id": "ecu",
+      "protocol": "UDS",
+      "name": "Read lab spare-part number",
+      "request_hex": "22 F1 87",
+      "can_id": "7E0",
+      "allowed_can_ids": [
+        "7E0"
+      ],
+      "availability": "implemented",
+      "unit": "",
+      "positive_prefix_hex": "62 F1 87",
+      "decode": {
+        "kind": "ascii",
+        "data_offset": 3,
+        "data_length": 12,
+        "formula": "Decode bytes after the echoed F187 identifier as ASCII."
+      },
+      "note": "LAB-ECU-0001 is a synthetic teaching part number, not an OEM identity.",
+      "effect": "read"
+    },
+    {
+      "id": "uds.tester_present",
+      "module_id": "ecu",
+      "protocol": "UDS",
+      "name": "Tester present",
+      "request_hex": "3E 00",
+      "can_id": "7E0",
+      "allowed_can_ids": [
+        "7E0"
+      ],
+      "availability": "implemented",
+      "unit": "",
+      "positive_prefix_hex": "7E 00",
+      "decode": {
+        "kind": "acknowledgement",
+        "data_offset": 2,
+        "data_length": 0,
+        "formula": "7E 00 acknowledges the simulated session keep-alive."
+      },
+      "note": "Refreshes the simulated session timer. Suppress-positive-response bit is also implemented for 10 and 3E, but the listed requests ask for a visible reply.",
+      "effect": "session_control"
+    }
+  ],
+  "sources": [
+    {
+      "title": "mcd-diag-rs — inspiration for metadata-driven diagnostic views",
+      "url": "https://github.com/bri3d/mcd-diag-rs",
+      "relationship": "Architectural reference only. Independently authored lab JSON; no third-party code or OEM definition data copied."
+    }
+  ]
+}

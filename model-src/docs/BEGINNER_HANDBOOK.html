@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Beginner Handbook</title>
+  
+<link rel="stylesheet" href="guide.css"></head>
+<body><header><a href="../START_HERE.html">OBD II Lab</a><a href="BEGINNER_HANDBOOK.html">Beginner book</a><a href="SCHEMATIC_WORKSPACE.html">Schematics</a><a href="CONNECTOR_REFERENCE.html">Connectors</a><a href="LEARNING_GUIDE.html">Concepts</a><a href="WORKED_CASES.html">Working cases</a><a href="PROTOCOL.html">Bytes</a><a href="FIRMWARE_ROADMAP.html">Firmware</a></header><main class="page">
+<aside class="note" style="padding:15px 19px;background:#edf4fa;border-left:3px solid #3856b8;border-radius:0 7px 7px 0"><strong>Recovered v0.4.0 scope.</strong> The original text and numerical examples are retained. The two original PDF books remain v0.3 reading copies. The <a href="VISUAL_WORKBENCH.html">Visual Workbench guide</a> and <a href="../OBDII_Visual_Workbench.pdf">new PDF</a> are the v0.4 addendum. The app opens the visual Workbench; Learning book and Instruments remain available.</aside>
+
+<header id="title-block-header">
+<h1 class="title">Beginner Handbook</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#a-beginners-book-of-vehicle-signals"
+id="toc-a-beginners-book-of-vehicle-signals">A beginner’s book of
+vehicle signals</a>
+<ul>
+<li><a href="#how-to-use-this-book" id="toc-how-to-use-this-book">How to
+use this book</a></li>
+<li><a href="#start-here-change-one-thing"
+id="toc-start-here-change-one-thing">1. Start here: change one
+thing</a></li>
+<li><a href="#an-engine-responds-gradually"
+id="toc-an-engine-responds-gradually">2. An engine responds
+gradually</a></li>
+<li><a href="#how-the-computer-knows-the-temperature"
+id="toc-how-the-computer-knows-the-temperature">3. How the computer
+knows the temperature</a></li>
+<li><a href="#what-happens-when-a-sensor-is-disconnected"
+id="toc-what-happens-when-a-sensor-is-disconnected">4. What happens when
+a sensor is disconnected?</a></li>
+<li><a href="#the-battery-computer-sets-limits"
+id="toc-the-battery-computer-sets-limits">5. The battery computer sets
+limits</a></li>
+<li><a href="#the-engine-and-motor-work-together"
+id="toc-the-engine-and-motor-work-together">6. The engine and motor work
+together</a></li>
+<li><a href="#why-abs-watches-the-wheels"
+id="toc-why-abs-watches-the-wheels">7. Why ABS watches the
+wheels</a></li>
+<li><a href="#turn-off-one-wheel-speed-signal"
+id="toc-turn-off-one-wheel-speed-signal">8. Turn off one wheel-speed
+signal</a></li>
+<li><a href="#ask-the-computer-what-happened"
+id="toc-ask-the-computer-what-happened">9. Ask the computer what
+happened</a></li>
+<li><a href="#from-a-small-lesson-to-a-virtual-vehicle"
+id="toc-from-a-small-lesson-to-a-virtual-vehicle">10. From a small
+lesson to a virtual vehicle</a></li>
+<li><a href="#three-guided-fault-exercises"
+id="toc-three-guided-fault-exercises">Three guided fault
+exercises</a></li>
+<li><a href="#read-the-results-without-being-misled"
+id="toc-read-the-results-without-being-misled">Read the results without
+being misled</a></li>
+<li><a href="#a-small-amount-of-mathematics-in-words"
+id="toc-a-small-amount-of-mathematics-in-words">A small amount of
+mathematics, in words</a></li>
+<li><a href="#glossary-ordinary-words-first"
+id="toc-glossary-ordinary-words-first">Glossary: ordinary words
+first</a></li>
+<li><a href="#references-and-evidence-boundaries"
+id="toc-references-and-evidence-boundaries">References and evidence
+boundaries</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="a-beginners-book-of-vehicle-signals">A beginner’s book of
+vehicle signals</h1>
+<p>OBD II Lab · Version 0.3.0 · 9 November 2026</p>
+<h2 id="how-to-use-this-book">How to use this book</h2>
+<p>The interactive browser workbench combines a chapter tree,
+plain-language explanation, a diagram and a small experiment. Choose a
+chapter on the left, start its lesson, change one input and read what
+happened. Detailed electrical values and message bytes are optional
+deeper references. You can learn the main cause-and-effect ideas without
+typing them.</p>
+<p>This PDF or printed copy contains the explanations and exercises. Its
+pictures and text are a reading reference. To move controls, disconnect
+a virtual sensor, advance time or collect a live trace, open the
+supplied browser workbench. A PDF viewer does not run the Python
+simulation.</p>
+<h3 id="the-four-questions-to-ask">The four questions to ask</h3>
+<ol type="1">
+<li>What did I change?</li>
+<li>What does the physical part actually do?</li>
+<li>What information reaches the computer?</li>
+<li>What does the computer decide, and why?</li>
+</ol>
+<h3 id="controls-in-ordinary-words">Controls in ordinary words</h3>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Control or display</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Start this experiment</td>
+<td>Begin a fresh experiment with its defined starting conditions.</td>
+</tr>
+<tr class="even">
+<td>Watch it run / Pause and inspect</td>
+<td>Let simulated time advance, or stop it so you can inspect the
+current state.</td>
+</tr>
+<tr class="odd">
+<td>One small step / Run five seconds</td>
+<td>Advance 0.1 seconds or five seconds of simulated time, then inspect
+the result.</td>
+</tr>
+<tr class="even">
+<td>Accelerator / Brake</td>
+<td>Change the driver request in an experiment that permits manual
+inputs.</td>
+</tr>
+<tr class="odd">
+<td>Disconnect the temperature sensor / Disconnect the front-left wheel
+sensor</td>
+<td>Break the named virtual measurement path. The physical part remains
+in the model.</td>
+</tr>
+<tr class="even">
+<td>Reconnect / restore the input</td>
+<td>Restore the currently injected measurement or communication
+fault.</td>
+</tr>
+<tr class="odd">
+<td>Restart after repair</td>
+<td>Restart the teaching controller after restoring its input; useful
+for the latched battery-message shutdown.</td>
+</tr>
+<tr class="even">
+<td>Stop the battery monitor reports</td>
+<td>Remove or restore the repeated information from the battery
+computer. This is a communication failure, not a removed battery.</td>
+</tr>
+<tr class="odd">
+<td>Read remembered engine warnings</td>
+<td>Ask for the condition remembered by the engine computer and read its
+meaning.</td>
+</tr>
+<tr class="even">
+<td>Clear remembered engine warnings</td>
+<td>Remove stored engine diagnostic history; it does not repair an
+active failure.</td>
+</tr>
+<tr class="odd">
+<td>Advanced detail</td>
+<td>Open the electrical values, signal identifiers, equations or
+protocol bytes when useful.</td>
+</tr>
+</tbody>
+</table>
+<p>Use the currently available controls in the chosen lesson. A scripted
+lesson supplies some driver actions itself. Open Choose the starting
+conditions to change a starting temperature or charge level, then choose
+Start this experiment to apply those settings as a new comparison. The
+current fault model selects one injected fault at a time.</p>
+<h3 id="what-is-simulated">What is simulated?</h3>
+<p>The engine, battery, hybrid coordination, four longitudinal wheels
+and simplified brake controllers are working teaching models. Their
+values and thresholds are chosen for learning. The models have not been
+calibrated against a specific vehicle. The Toyota reference documents
+describe real historical architectures separately. Original firmware, a
+detailed charger, the full vehicle network and production
+stability-control behavior remain later stages.</p>
+<h2 id="start-here-change-one-thing">1. Start here: change one
+thing</h2>
+<p><strong>Aim:</strong> Follow a change from the driver or a sensor to
+the computer and then to the vehicle.</p>
+<p>Think of this book as a workbench beside an explanation. The chapter
+tree stays on the left. On the right you can read, inspect a diagram,
+change one control and watch the result. You do not need to type
+computer commands or understand message codes to complete the
+lessons.</p>
+<p>A sensor measures something. A vehicle computer checks the
+measurement and makes a decision. An actuator carries out a request, for
+example by changing engine effort or brake force. The engine, battery or
+wheels then respond. That response is measured again, so the loop
+repeats.</p>
+<p>The drawing and the instruments describe the same running experiment.
+Start with the words: what changed, what the sensor reports, what the
+computer decided, and why. Ordinary measurements such as temperature and
+speed help you compare before and after. Detailed electrical values and
+message bytes are available when you want to look deeper.</p>
+<p>This is a teaching vehicle. Its engine, battery and braking models
+are deliberately small enough to understand. Toyota documents provide
+separate examples of real vehicle architecture; the lab is not Toyota
+production software. The PDF is the reading and printing copy. Run the
+browser workbench to operate the controls.</p>
+<h3 id="try-it">Try it</h3>
+<ol type="1">
+<li>Choose Start this experiment and leave the controls unchanged for a
+moment.</li>
+<li>Choose Watch it run, then Pause and inspect. Notice that simulation
+time stops when paused.</li>
+<li>Change one control, choose One small step and read the explanation
+of the result.</li>
+<li>Choose Start this experiment again before comparing another change,
+so both experiments start from the same conditions.</li>
+</ol>
+<h3 id="what-to-notice">What to notice</h3>
+<ul>
+<li>A command is a request, not an instant physical result.</li>
+<li>A measured value can be missing or wrong even when the physical part
+still exists.</li>
+<li>Faster playback advances simulated time faster on your screen; it
+does not change the model equations.</li>
+</ul>
+<p><strong>Explain it in your own words:</strong> When you change the
+pedal, what changes first and what takes longer?</p>
+<h2 id="an-engine-responds-gradually">2. An engine responds
+gradually</h2>
+<p><strong>Aim:</strong> See why engine speed and temperature respond on
+different timescales.</p>
+<figure>
+<img src="figures/beginner_engine.png"
+alt="Learning diagram: An engine responds gradually" />
+<figcaption aria-hidden="true">Learning diagram: An engine responds
+gradually</figcaption>
+</figure>
+<p>The request, computer decision, physical engine and returning
+measurement form a repeated loop. This picture is a reference snapshot;
+the browser controls run the model.</p>
+<p>The accelerator asks for more engine effort. The engine computer
+turns that request into a bounded command. The rotating parts have
+inertia: they resist a sudden change of speed. Engine speed therefore
+moves toward a new condition rather than jumping instantly.</p>
+<p>The engine also produces heat. Coolant and metal store some of that
+heat, while cooling removes some. Temperature rises when heating is
+greater than cooling. It falls when cooling is greater. This is why a
+brief pedal change does not instantly heat or cool the engine.</p>
+<p>This first experiment is an engine on a virtual test stand. There is
+no moving car attached to it. Engine speed can rise while vehicle speed
+stays at zero, and battery or wheel instruments are marked unavailable.
+That is an intentional smaller starting model.</p>
+<p>Engine speed means how many turns the crankshaft makes in one minute.
+Temperature tells us how warm the coolant is. Fuel flow tells us how
+quickly fuel is being used. Read the explanation beside a measurement
+before interpreting a larger number as better or worse.</p>
+<h3 id="try-it-1">Try it</h3>
+<ol type="1">
+<li>Choose Start this experiment for a fresh engine lesson.</li>
+<li>Choose Watch it run with a modest accelerator setting and watch
+engine speed settle.</li>
+<li>Increase the accelerator, then compare the immediate speed change
+with the slower temperature change.</li>
+<li>Pause and inspect the engine loop: request, computer decision,
+physical response and measurement.</li>
+</ol>
+<h3 id="what-to-notice-1">What to notice</h3>
+<ul>
+<li>A turning engine has stored motion; it does not stop or accelerate
+without a physical cause.</li>
+<li>Coolant warms gradually because the model includes heat
+storage.</li>
+<li>The engine stand intentionally has no installed battery controller
+or wheel controller.</li>
+</ul>
+<p><strong>Explain it in your own words:</strong> Why can engine speed
+change quickly while the coolant temperature changes slowly?</p>
+<h2 id="how-the-computer-knows-the-temperature">3. How the computer
+knows the temperature</h2>
+<p><strong>Aim:</strong> Separate the real temperature, the measurement
+and the value used for control.</p>
+<p>The computer cannot feel the coolant directly. A
+temperature-sensitive component changes its electrical resistance as it
+warms. In this circuit, warming reduces resistance. Together with a
+fixed resistor inside the computer, it makes a voltage that the computer
+can measure.</p>
+<p>The computer turns the measured voltage into a temperature estimate.
+In normal operation that estimate stays close to the actual coolant
+temperature. Small differences are expected because this model rounds an
+electrical measurement to a finite set of digital steps.</p>
+<p>Keep three ideas separate. Actual temperature is what the physical
+model says the coolant is doing. Reported temperature is what the sensor
+path lets the computer estimate. Control temperature is the value the
+computer chooses to use. They agree closely when healthy but can differ
+after a fault.</p>
+<p>The connector drawing shows a signal path and a return path. Opening
+the signal path breaks the measurement circuit; it does not remove heat
+from the coolant. The labels X1 and J-ECT are names chosen for this
+teaching harness, not the connector numbers of a particular Toyota.</p>
+<h3 id="try-it-2">Try it</h3>
+<ol type="1">
+<li>Start with the sensor connected.</li>
+<li>Change the starting temperature when the lesson offers that setting,
+then reset or apply the new starting condition.</li>
+<li>Compare the actual temperature with the reported temperature and the
+temperature used by control.</li>
+<li>Select the wire or sensor in the drawing and read its explanation
+before opening the advanced electrical details.</li>
+</ol>
+<h3 id="what-to-notice-2">What to notice</h3>
+<ul>
+<li>A healthy sensor report should follow the physical temperature.</li>
+<li>For this particular temperature-sensor circuit, warmer coolant
+produces a lower signal voltage.</li>
+<li>The actual wire voltage and the rounded computer representation are
+separate observations of the same circuit.</li>
+</ul>
+<p><strong>Explain it in your own words:</strong> If a sensor reading
+changes, must the real temperature have changed?</p>
+<h2 id="what-happens-when-a-sensor-is-disconnected">4. What happens when
+a sensor is disconnected?</h2>
+<p><strong>Aim:</strong> Explain a sensor fault without mistaking it for
+a sudden physical temperature change.</p>
+<figure>
+<img src="figures/beginner_coolant_fault.png"
+alt="Learning diagram: What happens when a sensor is disconnected?" />
+<figcaption aria-hidden="true">Learning diagram: What happens when a
+sensor is disconnected?</figcaption>
+</figure>
+<p>A broken measurement path changes what the computer knows, while the
+physical coolant remains in the model. This is a reference snapshot;
+disconnect the sensor in the browser to observe the timed response.</p>
+<p>Begin with a healthy engine, then disconnect the coolant sensor using
+the lesson fault control. The sensor branch no longer carries current.
+The computer input is pulled high by its internal resistor. That high
+input cannot be treated as a believable temperature measurement.</p>
+<p>The real coolant remains warm. The model shows an invalid cold
+reading in the sensor report, but its plain-language note explains that
+this is a failed measurement. A value marked invalid is not evidence
+that the physical engine reached that temperature.</p>
+<p>The engine computer waits briefly to see whether the bad input
+persists. In this lesson, after one fifth of a second it uses a
+substitute temperature and reduces its requested engine effort. After
+half a second it stores a confirmed warning and turns on the engine
+warning lamp. These short waiting times are teaching choices, not a
+manufacturer calibration.</p>
+<p>Reconnecting the sensor repairs the signal path. The current
+measurement can recover while the stored warning remains as a record of
+what happened. Clearing warning memory removes that record. Clearing
+memory while the sensor is still disconnected leaves the cause in place,
+so the warning can return.</p>
+<h3 id="try-it-3">Try it</h3>
+<ol type="1">
+<li>Choose Start this experiment, then Watch it run until you see a
+normal measurement.</li>
+<li>Choose Disconnect the temperature sensor, then One small step.</li>
+<li>Compare actual temperature, invalid sensor report and substitute
+control value as time advances.</li>
+<li>Read the stored warning in words. Repair the sensor connection, then
+clear the engine warning memory.</li>
+<li>For a second experiment, clear the warning while still disconnected
+and observe why it returns.</li>
+</ol>
+<h3 id="what-to-notice-3">What to notice</h3>
+<ul>
+<li>The failure begins in the measurement path, not in the physical
+coolant.</li>
+<li>The substitute is a chosen control value; it is not a new
+measurement.</li>
+<li>Repairing a cause and clearing its history are separate
+actions.</li>
+</ul>
+<p><strong>Explain it in your own words:</strong> Why should clearing a
+warning fail to repair a disconnected wire?</p>
+<h2 id="the-battery-computer-sets-limits">5. The battery computer sets
+limits</h2>
+<p><strong>Aim:</strong> Understand why the vehicle may refuse a request
+even when the driver keeps pressing the pedal.</p>
+<p>The battery stores energy, but it cannot provide or accept unlimited
+power. Its controller watches charge level, temperature and
+voltage-related inputs. It tells the rest of the vehicle how much
+battery power may be used for driving and how much may be returned
+during braking.</p>
+<p>Charge level is an estimate of how full the battery is. Low charge
+can make the hybrid controller request more engine use. A nearly full
+battery may have little room to accept recovered braking energy, so the
+friction brakes must do more of the stopping work.</p>
+<p>The battery computer sends repeated status reports to the hybrid
+controller. A report needs to be both believable and recent. If updates
+stop, the last received numbers may still look reasonable. The workbench
+marks them as old while the actual battery model can continue
+changing.</p>
+<p>Try stopping the battery status messages. In this model, a report
+older than roughly three tenths of a second causes the hybrid controller
+to inhibit driving effort and request disconnection of the high-voltage
+path. That stop is latched: restoring messages alone does not remove it.
+Restore the messages, then choose Restart after repair or start a fresh
+experiment. This is the selected teaching policy, not a promise about
+every real vehicle.</p>
+<h3 id="try-it-4">Try it</h3>
+<ol type="1">
+<li>Choose Start this experiment, then Watch it run, and observe when
+the engine is requested in this low-charge lesson.</li>
+<li>Compare the current physical battery state with the latest report
+received by the hybrid controller.</li>
+<li>Use the fault control to stop battery status updates, then advance
+the simulation.</li>
+<li>Watch the report become old and read why the controller stops
+allowing driving effort.</li>
+<li>Choose Reconnect / restore the input, then Restart after repair to
+clear the teaching shutdown latch.</li>
+</ol>
+<h3 id="what-to-notice-4">What to notice</h3>
+<ul>
+<li>A battery limit is permission, not a demand to use that much
+power.</li>
+<li>A held old value is different from a live measurement and different
+from zero.</li>
+<li>A stored shutdown condition can remain after the immediate
+communication problem is repaired.</li>
+</ul>
+<p><strong>Explain it in your own words:</strong> Can an old, believable
+battery report be trusted as a current report?</p>
+<h2 id="the-engine-and-motor-work-together">6. The engine and motor work
+together</h2>
+<p><strong>Aim:</strong> Explain how driver demand and battery limits
+change the use of engine, motor and brakes.</p>
+<figure>
+<img src="figures/beginner_hybrid.png"
+alt="Learning diagram: The engine and motor work together" />
+<figcaption aria-hidden="true">Learning diagram: The engine and motor
+work together</figcaption>
+</figure>
+<p>The hybrid coordinator shares a driver request between the engine and
+motor within battery limits. This is a reference snapshot; the browser
+experiment changes the values as it runs.</p>
+<p>The hybrid supervisor coordinates the engine, electric motor and
+battery. It receives the driver request and checks what the other
+components can provide. It can request electric driving, engine
+assistance, or a mode that tries to preserve the battery charge.</p>
+<p>During acceleration, stored battery energy and fuel energy can become
+motion. During braking, the motor can act as a generator and return some
+motion energy to the battery. This is regenerative braking. Some energy
+is still lost, and the battery has limits on how much power it can
+accept.</p>
+<p>Friction brakes turn motion energy mainly into heat. They provide the
+part of the requested braking that regeneration cannot supply. A fuller
+battery can therefore mean less recovered energy and more friction-brake
+work during the same braking request.</p>
+<p>The diagram separates requests, information and energy flow. A line
+carrying a power value does not necessarily represent a physical harness
+wire. This lab uses a generic parallel-hybrid arrangement. A Toyota
+Prius power-split arrangement is explained separately in the reference
+material.</p>
+<h3 id="try-it-5">Try it</h3>
+<ol type="1">
+<li>Choose Start this experiment, then Watch it run, and read the
+plain-language hybrid operating mode.</li>
+<li>Choose Pause and inspect during acceleration and identify the engine
+and motor contributions.</li>
+<li>Continue into braking and observe whether the battery is supplying
+energy or receiving it.</li>
+<li>Compare with the nearly-full-battery braking lesson in the
+experiment list.</li>
+</ol>
+<h3 id="what-to-notice-5">What to notice</h3>
+<ul>
+<li>The same pedal request can lead to a different decision when battery
+permission changes.</li>
+<li>Returned battery energy is smaller than the mechanical energy
+recovered because the model includes conversion losses.</li>
+<li>The motor and friction brakes must share a physically meaningful
+braking task.</li>
+</ul>
+<p><strong>Explain it in your own words:</strong> When the battery
+cannot accept more charging, where must the braking energy go?</p>
+<h2 id="why-abs-watches-the-wheels">7. Why ABS watches the wheels</h2>
+<p><strong>Aim:</strong> Compare vehicle motion with wheel motion and
+see the brake controller adjust its request.</p>
+<figure>
+<img src="figures/beginner_brakes.png"
+alt="Learning diagram: Why ABS watches the wheels" />
+<figcaption aria-hidden="true">Learning diagram: Why ABS watches the
+wheels</figcaption>
+</figure>
+<p>The brake controller compares wheel measurements with the vehicle
+motion and adjusts brake effort. This is a reference snapshot; use the
+browser for the moving wheel and braking experiment.</p>
+<p>A moving vehicle and a rotating wheel are related, but they are not
+the same thing. During hard braking a wheel can slow too much compared
+with the vehicle. It may slide across the road instead of rolling
+normally. The workbench calls this difference braking slip.</p>
+<p>The anti-lock brake controller watches the wheel-speed inputs and
+adjusts a brake multiplier. In this model it reduces braking on a wheel
+when slip becomes too large, then allows braking to build again. The
+multiplier is a relative command, not measured hydraulic pressure.</p>
+<p>The lesson begins with less grip on one side of the road than the
+other. The wheels therefore do not all respond alike. Compare each wheel
+with the vehicle body speed and watch which brake commands change.</p>
+<p>The lab also has a simplified yaw-assistance model. Yaw means the
+vehicle turning left or right around a vertical axis. The model
+demonstrates a feedback idea, but it does not reproduce a full vehicle
+stability-control system or all road conditions. Compare the supplied
+case carefully; it does not prove that ABS always makes every stopping
+distance shorter.</p>
+<h3 id="try-it-6">Try it</h3>
+<ol type="1">
+<li>Choose Start this experiment, then Watch it run, for the
+unequal-grip braking lesson.</li>
+<li>Choose Pause and inspect after braking begins and compare vehicle
+speed with each wheel speed.</li>
+<li>Inspect a wheel-speed signal and the corresponding brake
+multiplier.</li>
+<li>Choose Start this experiment for a fresh comparison, then use the
+next chapter to see what changes when a wheel signal is missing.</li>
+</ol>
+<h3 id="what-to-notice-6">What to notice</h3>
+<ul>
+<li>A wheel turning much too slowly can be sliding while the vehicle is
+still moving.</li>
+<li>The controller changes individual brake commands because the wheels
+can have different grip.</li>
+<li>A comparison is meaningful only when starting speed, road conditions
+and driver request are held consistent.</li>
+</ul>
+<p><strong>Explain it in your own words:</strong> Why does the
+controller need wheel speed as well as the driver brake request?</p>
+<h2 id="turn-off-one-wheel-speed-signal">8. Turn off one wheel-speed
+signal</h2>
+<p><strong>Aim:</strong> Distinguish a sensor failure from a physical
+wheel locking.</p>
+<p>Disconnect the front-left wheel-speed signal in the virtual lesson.
+The physical wheel remains in the vehicle model and may still be
+rotating. Its measured input becomes unavailable. The diagram and notes
+keep those two facts separate.</p>
+<p>The selected teaching policy disables both anti-lock modulation and
+the simplified yaw-brake assistance when that wheel input is missing.
+The driver brake request still produces friction braking. Losing
+assistance does not mean the model has removed every brake.</p>
+<p>A blank or missing sensor value must not be interpreted as a measured
+zero. Zero would mean the sensor successfully reported a stopped wheel.
+Missing means the controller does not have a usable report from that
+input.</p>
+<p>Reconnect the sensor and observe the measurement return. Assistance
+can resume when its speed and control conditions are met, while the
+module fault record remains part of the experiment history. Choose Start
+this experiment when you want to begin a new clean comparison.</p>
+<h3 id="try-it-7">Try it</h3>
+<ol type="1">
+<li>Start the wheel-sensor lesson with the vehicle already moving.</li>
+<li>Apply or keep a brake request and observe the healthy signals
+first.</li>
+<li>Choose Disconnect the front-left wheel sensor, then One small
+step.</li>
+<li>Compare the physical wheel speed, missing sensor report and changed
+brake-controller status.</li>
+<li>Choose Reconnect / restore the input, then Start this experiment
+before measuring a fresh before-and-after comparison.</li>
+</ol>
+<h3 id="what-to-notice-7">What to notice</h3>
+<ul>
+<li>The wheel can keep rotating after its sensor signal disappears.</li>
+<li>The missing input is shown as unavailable, not as a fabricated
+zero.</li>
+<li>In this model friction braking continues while the selected
+electronic assistance is disabled.</li>
+</ul>
+<p><strong>Explain it in your own words:</strong> What would go wrong if
+a missing sensor were silently displayed as a zero-speed wheel?</p>
+<h2 id="ask-the-computer-what-happened">9. Ask the computer what
+happened</h2>
+<p><strong>Aim:</strong> Read current measurements and stored warnings
+in ordinary words.</p>
+<p>A diagnostic tool asks a vehicle computer questions. Useful beginner
+questions are: What temperature do you currently report? Are you using a
+substitute value? Have you stored a warning? The workbench explains the
+answer before showing the underlying message representation.</p>
+<p>A stored trouble code names a condition the computer detected. It is
+evidence to investigate, not proof that one particular physical part
+must be replaced. A disconnected sensor, a broken wire or another
+input-circuit problem can be related to the same kind of detected
+condition.</p>
+<p>Current measurement, active failure and stored history are different.
+A repaired signal can give a normal reading while the computer still
+remembers the earlier fault. Clearing engine warning memory removes that
+record; it does not repair a connection or guarantee that every monitor
+has completed.</p>
+<p>Generic OBD-II mainly concerns emissions-related reporting. In this
+lab the engine scan questions do not automatically reveal every battery
+or brake-controller fault. Read those module explanations in their own
+lessons. The optional advanced view shows message bytes for people who
+want to learn the protocol later.</p>
+<h3 id="try-it-8">Try it</h3>
+<ol type="1">
+<li>Choose Start this experiment, then Watch it run, and read the
+explanation as the coolant-sensor fault develops.</li>
+<li>Ask for the current coolant reading and compare it with the physical
+temperature.</li>
+<li>Choose Read remembered engine warnings and compare the pending and
+stored history.</li>
+<li>Repair the sensor path, choose Clear remembered engine warnings, and
+check the current state again.</li>
+</ol>
+<h3 id="what-to-notice-8">What to notice</h3>
+<ul>
+<li>An invalid reading needs its validity note, even if it is displayed
+as a number.</li>
+<li>Stored history can outlast the immediate fault.</li>
+<li>Engine emissions diagnostics and other vehicle-module reports have
+different scopes.</li>
+</ul>
+<p><strong>Explain it in your own words:</strong> Does a stored warning
+identify the exact damaged part, or the problem the computer
+detected?</p>
+<h2 id="from-a-small-lesson-to-a-virtual-vehicle">10. From a small
+lesson to a virtual vehicle</h2>
+<p><strong>Aim:</strong> See how the workbench can grow while keeping
+each change understandable.</p>
+<p>A useful next step has one clear question. For example: Can a new
+battery model explain a measured current trace? Can a different engine
+controller react to the same temperature-sensor failure? Keep the
+surrounding experiment steady so the effect of the changed part is
+visible.</p>
+<p>For each new subsystem, write down what it measures, what it
+controls, the units, how often it updates and what happens when
+information is missing. Add a clear diagram and one reproducible healthy
+case before adding several interacting faults.</p>
+<p>The current workbench can exchange high-level driver and plant
+information through its supplied software interfaces. Original vehicle
+firmware is a later task. Such a program expects a particular processor,
+memory layout and hardware peripherals; a diagram or an arbitrary
+firmware file is not enough to run it correctly.</p>
+<p>The full theory and reference chapters remain available in the
+document tree, including equations, diagnostic bytes, existing software
+bases, Toyota examples and the firmware roadmap. The supplied EngDoc
+format has now been inspected. The separate native coolant worksheet
+lets you change a temperature and disconnect its measurement path;
+docs/ENGDOC_INTEGRATION.md explains its scope. It calculates a static
+circuit and does not replace the timed browser model or run vehicle
+firmware.</p>
+<h3 id="try-it-9">Try it</h3>
+<ol type="1">
+<li>Choose one component and one question to investigate.</li>
+<li>Record its inputs, outputs, units, update period and invalid-input
+behavior.</li>
+<li>Run a healthy baseline, change one assumption and compare the same
+measurements.</li>
+<li>Use the theory and reference chapters when you need the equations or
+implementation detail behind a result.</li>
+</ol>
+<h3 id="what-to-notice-9">What to notice</h3>
+<ul>
+<li>A more detailed model should explain an additional behavior, not
+merely add more blocks.</li>
+<li>A claimed real-vehicle parameter needs a source and vehicle-version
+context.</li>
+<li>The PDF can explain a lesson; the browser workbench is where its
+interactive controls run.</li>
+</ul>
+<p><strong>Explain it in your own words:</strong> What measurements and
+timing would a new controller need before it could replace this teaching
+block?</p>
+<h2 id="three-guided-fault-exercises">Three guided fault exercises</h2>
+<h3 id="exercise-a-disconnect-the-coolant-sensor">Exercise A: disconnect
+the coolant sensor</h3>
+<p><strong>Prediction:</strong> The real coolant should remain near its
+previous temperature, but the engine computer should lose a believable
+temperature measurement.</p>
+<ol type="1">
+<li>Start a healthy engine lesson and observe the three temperatures:
+physical, reported and used for control.</li>
+<li>Choose Disconnect the temperature sensor. Advance time with One
+small step.</li>
+<li>Read the invalid-measurement explanation. Continue until the
+substitute control value and stored warning appear.</li>
+<li>Choose Reconnect / restore the input. Check that the current reading
+recovers even if a warning remains stored.</li>
+<li>Clear engine warning memory. Repeat once without repairing the
+connection and explain why the warning returns.</li>
+</ol>
+<p><strong>Expected result in this model:</strong> An open sensor branch
+carries no current. Its input voltage reaches the reference level. The
+displayed sensor-temperature sentinel is invalid, while the physical
+coolant stays warm. The chosen fallback begins after 0.20 seconds of
+persistent high input; confirmation follows after 0.50 seconds. These
+timers and the substitute temperature are lesson settings. The detailed
+reference identifies the engine trouble code as P0118; learning the code
+is optional.</p>
+<h3 id="exercise-b-turn-off-a-wheel-speed-input">Exercise B: turn off a
+wheel-speed input</h3>
+<p><strong>Prediction:</strong> Losing the report should not physically
+remove or stop the wheel.</p>
+<ol type="1">
+<li>Start the moving-wheel lesson and observe the actual front-left
+wheel speed and its measured report.</li>
+<li>Apply a brake request and disconnect the front-left sensor
+signal.</li>
+<li>Compare the still-existing wheel state with the unavailable sensor
+input.</li>
+<li>Read the brake-controller decision. Friction braking remains, but
+this teaching policy disables anti-lock modulation and its simplified
+yaw assistance.</li>
+<li>Choose Reconnect / restore the input, then Start this experiment
+before measuring a new clean stopping comparison.</li>
+</ol>
+<p><strong>Expected result in this model:</strong> The missing measured
+speed is blank or unavailable, never a fabricated measured zero.
+Assistance can resume after reconnection when its normal speed/control
+conditions are met. The stored module record remains part of experiment
+history until reset.</p>
+<h3 id="exercise-c-stop-battery-status-reports">Exercise C: stop battery
+status reports</h3>
+<p><strong>Prediction:</strong> The last reported value can look normal
+while it becomes too old to trust.</p>
+<ol type="1">
+<li>Start a hybrid lesson and allow the vehicle to become ready.</li>
+<li>Compare the current physical battery value with the value received
+by the hybrid controller.</li>
+<li>Stop battery reports. Watch report age grow while the last received
+values remain held.</li>
+<li>Continue until the hybrid controller declares the reports too old
+and inhibits driving effort.</li>
+<li>Choose Reconnect / restore the input, then Restart after repair to
+remove the selected latched shutdown.</li>
+</ol>
+<p><strong>Expected result in this model:</strong> Reports older than
+about 0.30 seconds trigger the chosen communication-failure policy at
+the next supervising update. Restored communication alone does not
+unlatch that shutdown. This exercise removes a stream of information; it
+does not disconnect a real high-voltage connector or simulate a
+physically absent battery.</p>
+<h2 id="read-the-results-without-being-misled">Read the results without
+being misled</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>What you see</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Current and usable</td>
+<td>The model currently supplies a usable value for this signal.</td>
+</tr>
+<tr class="even">
+<td>Invalid measurement</td>
+<td>A value may still be displayed to explain the fault, but it is not a
+trustworthy measurement of the physical quantity.</td>
+</tr>
+<tr class="odd">
+<td>Substitute used</td>
+<td>The computer is using a documented replacement value after a
+detected problem.</td>
+</tr>
+<tr class="even">
+<td>Old report</td>
+<td>The last received value is held; no recent update has arrived.</td>
+</tr>
+<tr class="odd">
+<td>Unavailable</td>
+<td>There is no usable value, or the chosen lesson does not contain that
+subsystem.</td>
+</tr>
+<tr class="even">
+<td>Stored warning after repair</td>
+<td>The current input may be healthy while diagnostic history still
+records the earlier fault.</td>
+</tr>
+</tbody>
+</table>
+<p>The signal scope records samples every tenth of a second. Some
+controller decisions happen between those saved samples. Read the event
+explanation and current state when checking exactly when a fault was
+noticed. Curves help compare changes; they are not a recording of every
+wire voltage transition.</p>
+<h2 id="a-small-amount-of-mathematics-in-words">A small amount of
+mathematics, in words</h2>
+<p><strong>Engine motion:</strong> More turning effort than resistance
+makes engine speed rise. Greater rotational inertia makes the same extra
+effort change speed more slowly.</p>
+<p><strong>Temperature:</strong> Heating adds stored thermal energy.
+Cooling removes it. The temperature changes according to the difference
+and the amount of heat the modeled engine/coolant can store.</p>
+<p><strong>Battery charge:</strong> Current flowing out reduces the
+stored charge; current flowing in increases it. The model also accounts
+for internal electrical loss. Charge percentage is not a complete
+battery-health assessment.</p>
+<p><strong>Braking:</strong> The brakes must remove motion energy.
+Regeneration can return part of it to the battery within permission and
+efficiency limits; friction brakes supply the remainder.</p>
+<p><strong>Measurement:</strong> A physical quantity becomes an
+electrical input, then a digital representation, then an interpreted
+value. A fault or a rounding step can affect one layer without changing
+the others.</p>
+<p>The full <a href="LEARNING_GUIDE.html">Learning Guide</a> gives
+equations, units and worked calculations for these relationships. The <a
+href="WORKED_CASES.html">Working Cases</a> reports results generated by
+the supplied model.</p>
+<h2 id="glossary-ordinary-words-first">Glossary: ordinary words
+first</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Term</th>
+<th>Plain meaning</th>
+<th>More context</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Sensor</td>
+<td>A part that measures something.</td>
+<td>Examples are coolant temperature and wheel speed. A sensor report
+may be valid, missing or unreliable; the physical part being measured
+can still exist.</td>
+</tr>
+<tr class="even">
+<td>Engine computer / ECU</td>
+<td>The computer that checks inputs and requests engine actions.</td>
+<td>ECU means electronic control unit. In this lab, the engine ECU is a
+simplified software controller with a temperature-fault monitor.</td>
+</tr>
+<tr class="odd">
+<td>Actuator</td>
+<td>A part that carries out a control request.</td>
+<td>Examples include a brake mechanism or a motor. The requested action
+and the actual physical result can differ because of limits and
+delays.</td>
+</tr>
+<tr class="even">
+<td>Physical model / plant</td>
+<td>The simulated engine, battery, wheels and their physical
+behavior.</td>
+<td>The plant changes according to equations. It is distinct from the
+controller that makes decisions.</td>
+</tr>
+<tr class="odd">
+<td>Signal</td>
+<td>A value or state passed from one part of the model to another.</td>
+<td>A signal can mean a measurement, a request, a permission or a
+status. A line on a logical diagram is not automatically a physical
+wire.</td>
+</tr>
+<tr class="even">
+<td>Feedback</td>
+<td>Using the measured result to decide what to do next.</td>
+<td>The controller requests an action, the physical model responds, and
+a sensor reports the response. The loop repeats.</td>
+</tr>
+<tr class="odd">
+<td>Coolant</td>
+<td>The fluid represented by the engine temperature model.</td>
+<td>The lab uses one average temperature. It does not model each coolant
+passage, thermostat or local hot spot.</td>
+</tr>
+<tr class="even">
+<td>Thermistor / NTC</td>
+<td>A resistor whose resistance changes with temperature.</td>
+<td>For this NTC model, warming lowers resistance. The computer measures
+a voltage produced by that changing resistance.</td>
+</tr>
+<tr class="odd">
+<td>Voltage</td>
+<td>An electrical difference measured between two points.</td>
+<td>The lesson sensor signal is measured relative to the sensor return.
+A high voltage can mean a broken sensor path in this particular
+circuit.</td>
+</tr>
+<tr class="even">
+<td>Resistance</td>
+<td>How strongly a part opposes electrical current.</td>
+<td>A connected thermistor has a finite resistance. An open branch is
+shown as missing or invalid rather than a made-up very large
+reading.</td>
+</tr>
+<tr class="odd">
+<td>Current</td>
+<td>The rate of electrical charge flow.</td>
+<td>In the battery model, current flowing out supplies energy for the
+vehicle; current flowing in charges the battery. The display explains
+the direction.</td>
+</tr>
+<tr class="even">
+<td>ADC</td>
+<td>The computer input that turns a measured voltage into digital
+steps.</td>
+<td>ADC means analog-to-digital converter. Finite steps cause small
+rounding differences even in a healthy ideal measurement.</td>
+</tr>
+<tr class="odd">
+<td>Valid / invalid</td>
+<td>Whether a measurement is usable for its stated purpose.</td>
+<td>Invalid does not mean the number must disappear. It means the
+learner and controller must not treat it as a reliable measurement.</td>
+</tr>
+<tr class="even">
+<td>Unavailable</td>
+<td>No usable value is present for this signal here.</td>
+<td>A module may not be installed in the chosen lesson, or a sensor
+report may be missing. Unavailable is different from a measured
+zero.</td>
+</tr>
+<tr class="odd">
+<td>Fallback / substituted value</td>
+<td>A value the controller chooses when the normal measurement cannot be
+used.</td>
+<td>A substitute supports the selected failure response. It is not a
+fresh sensor measurement and does not change the actual physical
+temperature.</td>
+</tr>
+<tr class="even">
+<td>Stale / old report</td>
+<td>Information that has not been updated recently enough.</td>
+<td>A last received battery report can remain believable while it is too
+old to use for current power permission.</td>
+</tr>
+<tr class="odd">
+<td>Warning / trouble code</td>
+<td>A stored name for a condition the computer detected.</td>
+<td>It helps identify a problem area. It does not by itself prove which
+physical part caused the condition.</td>
+</tr>
+<tr class="even">
+<td>Battery computer / BMU</td>
+<td>The controller that reports battery condition and allowed
+power.</td>
+<td>BMU means battery management unit. BMS is another common
+battery-management name. This lab uses a simplified pack model.</td>
+</tr>
+<tr class="odd">
+<td>Charge level / SOC</td>
+<td>How full the battery is estimated to be.</td>
+<td>SOC means state of charge. It is commonly shown as a percentage; it
+is not the same as the battery voltage or total lifetime health.</td>
+</tr>
+<tr class="even">
+<td>Power</td>
+<td>How quickly energy is being transferred.</td>
+<td>A power limit is a permitted rate, not a request to use all of it.
+Battery power, mechanical motor power and recovered braking power can
+differ.</td>
+</tr>
+<tr class="odd">
+<td>Contactor</td>
+<td>A controlled switch in the high-voltage power path.</td>
+<td>The lab represents its state and a simplified precharge sequence. It
+does not simulate relay arcs or provide physical wiring
+instructions.</td>
+</tr>
+<tr class="even">
+<td>Hybrid supervisor</td>
+<td>The computer coordinating engine, motor, battery and braking
+requests.</td>
+<td>Its decision depends on driver demand and component permissions.
+This lab demonstrates a generic strategy rather than Toyota
+software.</td>
+</tr>
+<tr class="odd">
+<td>Regenerative braking</td>
+<td>Slowing the vehicle while returning some motion energy to the
+battery.</td>
+<td>The motor acts as a generator. Battery acceptance and conversion
+losses limit how much energy is recovered.</td>
+</tr>
+<tr class="even">
+<td>Friction braking</td>
+<td>Slowing the vehicle by turning motion energy mainly into heat at the
+brakes.</td>
+<td>It supplies braking that regeneration cannot provide. In the missing
+wheel-sensor lesson it remains present when electronic assistance is
+disabled.</td>
+</tr>
+<tr class="odd">
+<td>ABS</td>
+<td>Anti-lock braking assistance.</td>
+<td>ABS compares wheel behavior with vehicle motion and changes
+individual brake commands to reduce excessive braking slip in the
+teaching model.</td>
+</tr>
+<tr class="even">
+<td>Slip</td>
+<td>The difference between wheel rolling speed and vehicle speed during
+braking.</td>
+<td>A wheel turning too slowly for the vehicle speed may be sliding. The
+model uses a regularized ratio to express that difference.</td>
+</tr>
+<tr class="odd">
+<td>Yaw / ESC / ESP</td>
+<td>Vehicle turning motion and the assistance intended to influence
+it.</td>
+<td>Yaw is rotation left or right around a vertical axis. ESC and ESP
+are stability-control names; this lab includes only a simplified
+yaw-assistance demonstration.</td>
+</tr>
+<tr class="even">
+<td>OBD-II</td>
+<td>A standard way to inspect emissions-related vehicle
+information.</td>
+<td>The lab includes current engine readings and engine warning memory.
+Other module information may require separate manufacturer-specific
+diagnostics in a real vehicle.</td>
+</tr>
+<tr class="odd">
+<td>CAN</td>
+<td>A communication method used by vehicle computers.</td>
+<td>The lab can display diagnostic frames and exchange them in a
+virtual-bus example. Physical voltage waveforms, wire faults and real
+bus arbitration are not modeled.</td>
+</tr>
+<tr class="even">
+<td>Firmware</td>
+<td>The program intended to run inside a particular electronic
+controller.</td>
+<td>It depends on its processor and hardware environment. Running
+original firmware is a future integration task, not a current feature of
+this workbench.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="references-and-evidence-boundaries">References and evidence
+boundaries</h2>
+<p>The executable code and tests describe what this release actually
+does. The sources below support general principles and terminology; they
+do not validate the lab’s synthetic parameters or chosen failure
+policies. The complete source and Toyota-document inventory remains in
+<a href="SOURCES.html">Sources</a>.</p>
+<ul>
+<li>California Air Resources Board: <a
+href="https://ww2.arb.ca.gov/resources/fact-sheets/board-diagnostic-ii-obd-ii-systems-fact-sheet">On-Board
+Diagnostic II Systems Fact Sheet</a>. Supports the emissions-related
+scope of OBD-II.</li>
+<li>Texas Instruments: <a
+href="https://www.ti.com/lit/an/sbaa338a/sbaa338a.pdf">Monitoring NTC
+Thermistor Circuit With Single-Ended ADC, SBAA338A</a>. Supports the
+temperature-resistance-divider and ADC principles. The lesson values are
+selected separately.</li>
+<li>Toyota Motor Corporation: <a
+href="https://global.toyota/en/detail/220017">Toyota Develops New Hybrid
+System</a>, 17 April 2003. A historical manufacturer example of hybrid
+operation and power splitting, separate from this generic plant.</li>
+<li>Bosch Mobility: <a
+href="https://www.bosch-mobility.com/en/solutions/braking-systems/electronic-stability-program/">Electronic
+stability program</a>. Supports the role of wheel-speed, steering and
+yaw information in stability assistance. The lab’s reduced model is not
+Bosch software.</li>
+<li>QEMU: <a
+href="https://www.qemu.org/docs/master/system/target-arm.html">Arm
+System emulator</a>, and Renode: <a
+href="https://renode.readthedocs.io/en/latest/advanced/writing-peripherals.html">Peripheral
+modeling guide</a>. Explain why firmware needs a suitable processor and
+peripheral environment.</li>
+</ul>
+<p>Continue with <a href="SCHEMATIC_WORKSPACE.html">Schematic
+Workspace</a>, <a href="CONNECTOR_REFERENCE.html">Connector
+Reference</a>, <a href="PROTOCOL.html">Protocol</a>, <a
+href="EXISTING_BASES.html">Existing Bases</a>, and <a
+href="FIRMWARE_ROADMAP.html">Firmware Roadmap</a> when you are ready for
+more detail.</p>
+<footer>OBD II Lab v0.3.0 · 9 November 2026 · Synthetic educational models. See Sources for evidence boundaries.</footer></main></body>
+</html>

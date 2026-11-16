@@ -1,0 +1,11 @@
+{
+  "package": "pyodide",
+  "version": "314.0.8",
+  "source": "https://registry.npmjs.org/pyodide/-/pyodide-314.0.8.tgz",
+  "sha512": "74Wq1kXOC+CCEzAfxuRAO701nAcCMLjf8NrwvWpu8S41dVMXwXmLQ05dYB+F4e46AdnGo0oq7YHSVUpHsoarLQ==",
+  "purpose": "Browser-side Python runtime for the unchanged OBD simulation models",
+  "licenses": {
+    "LICENSE-PYODIDE.txt": "https://raw.githubusercontent.com/pyodide/pyodide/314.0.8/LICENSE",
+    "LICENSE-PYTHON.txt": "https://raw.githubusercontent.com/python/cpython/v3.14.2/LICENSE"
+  }
+}

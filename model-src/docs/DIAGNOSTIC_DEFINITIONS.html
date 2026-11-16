@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Lab diagnostic definitions</title>
+<style>body{font:17px/1.65 system-ui,sans-serif;color:#263748;background:#f4f7fa;margin:0}main{max-width:900px;margin:38px auto;padding:35px 44px;background:white;border:1px solid #dce5ed;border-radius:16px}h1,h2{line-height:1.2;color:#173b62}h1{font-size:36px}h2{margin-top:32px;font-size:23px}a{color:#1766aa}code,pre{font-family:ui-monospace,monospace;background:#eef4f8}pre{padding:20px;overflow:auto;font-size:14px;line-height:1.5;border-radius:8px}table{border-collapse:collapse;width:100%;font-size:15px}th,td{padding:10px 13px;border-bottom:1px solid #dce5ed;text-align:left;vertical-align:top}th{background:#edf4fa}.lead{font-size:19px;color:#536879}.tag{color:#14756e;font-size:13px;font-weight:700;letter-spacing:.08em}@media(max-width:650px){main{margin:0;padding:24px 18px;border-radius:0}h1{font-size:29px}}</style></head>
+<body><main><a href="/">← Return to the lab</a><p class="tag">MODULES · SERVICES · CONVERSIONS</p><h1>Inspectable diagnostic definitions</h1>
+<p class="lead">A small data file connects an ECU name, a request, a reply format and the units shown on screen.</p>
+<p>The lab describes its existing diagnostic subset in an original JSON schema. You can <a href="/web/models/diagnostic_definitions.json" download>download the definitions</a> or inspect the <a href="/api/diagnostic-definitions">catalog with current connection availability</a>. The catalog includes four modeled modules and 19 runnable service examples. Only the engine ECU implements a diagnostic endpoint.</p>
+<h2>What belongs to each module?</h2><table><thead><tr><th>Module</th><th>Available here</th><th>Diagnostic routing</th></tr></thead><tbody>
+<tr><td>Engine ECU</td><td>Implemented OBD current data, emissions DTCs and identification; a small UDS session/identification subset</td><td>OBD: 7DF or 7E0 request. UDS: 7E0 request. Reply: 7E8.</td></tr>
+<tr><td>Battery monitor</td><td>Physical state, last received packet, freshness, contactor and modeled faults</td><td>State inspection only; no assigned diagnostic address</td></tr>
+<tr><td>Hybrid supervisor</td><td>Mode, engine request and power allocation</td><td>State inspection only; no diagnostic services</td></tr>
+<tr><td>ABS / yaw controller</td><td>Wheel states, signal validity, modulation and modeled faults</td><td>State inspection only; no diagnostic services</td></tr></tbody></table>
+<h2>Example: engine speed</h2><pre>{
+  "id": "obd.rpm",
+  "module_id": "ecu",
+  "protocol": "OBD",
+  "request_hex": "01 0C",
+  "can_id": "7DF",
+  "allowed_can_ids": ["7DF", "7E0"],
+  "unit": "rpm",
+  "positive_prefix_hex": "41 0C",
+  "decode": {
+    "kind": "linear",
+    "data_offset": 2,
+    "data_length": 2,
+    "byte_order": "big",
+    "factor": 0.25,
+    "offset": 0,
+    "formula": "(256 × A + B) / 4",
+    "source_path": "rpm"
+  }
+}</pre><p>Offsets are zero-based positions in the <strong>reassembled application response</strong>, excluding CAN IDs, ISO-TP control bytes and frame padding. For <code>41 0C 1A F8</code>, the data bytes are <code>1A F8</code>: (26 × 256 + 248) / 4 = <strong>1726 rpm</strong>. Formula text is explanatory; the numeric helper uses the declared byte order, factor and offset without evaluating code.</p>
+<h2>Availability and effects</h2><p>The downloaded JSON records implementation support. The read-only API adds the current profile, whether each module is installed and whether the diagnostic branch is connected. Disconnecting the DLC makes diagnostic services unavailable; it does not erase the definitions or stop the vehicle plant. The engine ECU remains responsive with ignition off in this lab's chosen model.</p><p>Most entries read data. <code>obd.clear_dtcs</code> changes simulated emissions memory, while session-control entries change the simulated UDS session. Merely opening this catalog performs none of these actions. A name in a catalog does not add firmware behavior: the existing Python diagnostic server remains the implementation.</p>
+<h2>Validation and scope</h2><p>The loader validates unique identifiers, module/service relationships, supported addressing, canonical request bytes and decoder field shapes. A state-only module cannot acquire an invented CAN address or service list. Tests send all listed requests to the actual teaching ECU and compare response prefixes, lengths and decoded examples.</p><p>This schema is <strong>obdii-lab.diagnostic-definitions.v1</strong>. It is independent of MCD/ODX and is not an MCD database importer or an output format compatible with mcd-diag-rs. It contains no OEM data, module discovery, adaptations, reflashing, hardware access or real vehicle connection. Editing labels or conversion descriptions does not implement a new ECU service.</p>
+<h2>Architecture reference</h2><p>The user's <a href="https://github.com/bri3d/mcd-diag-rs" target="_blank" rel="noopener">mcd-diag-rs reference</a> demonstrates how diagnostic databases can feed readable definitions and a diagnostic interface. That metadata-driven organization informed this small teaching feature. The lab schema, definitions, loader and examples were independently authored; no code or OEM database from that project is bundled. The project's own licensing is documented in its <a href="https://github.com/bri3d/mcd-diag-rs/blob/main/LICENSE.md" target="_blank" rel="noopener">LICENSE.md</a>.</p>
+</main></body></html>

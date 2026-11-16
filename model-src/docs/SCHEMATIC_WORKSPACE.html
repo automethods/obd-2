@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Schematic Workspace</title>
+  
+<link rel="stylesheet" href="guide.css"></head>
+<body><header><a href="../START_HERE.html">OBD II Lab</a><a href="BEGINNER_HANDBOOK.html">Beginner book</a><a href="SCHEMATIC_WORKSPACE.html">Schematics</a><a href="CONNECTOR_REFERENCE.html">Connectors</a><a href="LEARNING_GUIDE.html">Concepts</a><a href="WORKED_CASES.html">Working cases</a><a href="PROTOCOL.html">Bytes</a><a href="FIRMWARE_ROADMAP.html">Firmware</a></header><main class="page">
+<aside class="note" style="padding:15px 19px;background:#edf4fa;border-left:3px solid #3856b8;border-radius:0 7px 7px 0"><strong>Recovered v0.4.0 scope.</strong> The original text and numerical examples are retained. The two original PDF books remain v0.3 reading copies. The <a href="VISUAL_WORKBENCH.html">Visual Workbench guide</a> and <a href="../OBDII_Visual_Workbench.pdf">new PDF</a> are the v0.4 addendum. The app opens the visual Workbench; Learning book and Instruments remain available.</aside>
+
+<header id="title-block-header">
+<h1 class="title">Schematic Workspace</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#work-through-one-fault-with-the-schematic-workspace"
+id="toc-work-through-one-fault-with-the-schematic-workspace">Work
+through one fault with the schematic workspace</a>
+<ul>
+<li><a href="#five-screens-one-running-experiment"
+id="toc-five-screens-one-running-experiment">Five screens, one running
+experiment</a></li>
+<li><a href="#the-six-step-ect-task" id="toc-the-six-step-ect-task">The
+six-step ECT task</a></li>
+<li><a href="#read-the-instruments-carefully"
+id="toc-read-the-instruments-carefully">Read the instruments
+carefully</a></li>
+<li><a href="#how-this-supports-later-expansion"
+id="toc-how-this-supports-later-expansion">How this supports later
+expansion</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="work-through-one-fault-with-the-schematic-workspace">Work
+through one fault with the schematic workspace</h1>
+<p>Version 0.3.0 · 9 November 2026</p>
+<p>In the Learning book, choose <strong>Instruments</strong> or
+<strong>Open detailed instruments</strong> to use these five screens.
+The learning book and instruments share the same experiment state.</p>
+<p>The task workspace follows one complete causal path: <strong>coolant
+temperature → thermistor resistance → input voltage → ADC measurement →
+ECU decision → OBD response</strong>. Its diagrams and instruments share
+the running simulation state. This makes it possible to probe a signal,
+interrupt the sensor path, advance time and see why a diagnostic code
+appears.</p>
+<p>The interface borrows the useful inspection pattern of a
+block-diagram environment: a system view, selected-object inspector,
+connector view and signal scope. This version has fixed, documented
+model connections. It does not provide arbitrary block placement, wire
+editing, code generation or a general numerical solver editor.</p>
+<h2 id="five-screens-one-running-experiment">Five screens, one running
+experiment</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Screen</th>
+<th>What to use it for</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>01 · Task workspace</strong></td>
+<td>Follow the six-step ECT exercise; inspect a system or circuit
+schematic, probe signals, compare traces and read controller events</td>
+</tr>
+<tr class="even">
+<td><strong>02 · Connectors</strong></td>
+<td>Select a physical DLC reference or illustrative J-ECT/X1 view;
+inspect pin orientation, function and live sensor values</td>
+</tr>
+<tr class="odd">
+<td><strong>03 · Signal list</strong></td>
+<td>Search 69 cataloged signals; inspect current value, units, validity
+and nominal update period; add one of 67 numerical/digital channels to
+the scope</td>
+</tr>
+<tr class="even">
+<td><strong>04 · Scan tool</strong></td>
+<td>Send an OBD application request and inspect the generated CAN/ISO-TP
+transcript and decoded result</td>
+</tr>
+<tr class="odd">
+<td><strong>05 · Dashboard</strong></td>
+<td>View vehicle, engine, battery and braking behavior across the
+existing lessons; export the complete run</td>
+</tr>
+</tbody>
+</table>
+<p>The schematic selector includes an engine sensor/ECU loop, the ECT
+electrical circuit, hybrid control and power, and ABS/braking signals.
+These are views of the model’s boundaries. A connection representing a
+controller request is not automatically a physical wire or a verified
+OEM CAN message. The connector reference documents the
+physical-versus-illustrative distinction separately.</p>
+<h2 id="the-six-step-ect-task">The six-step ECT task</h2>
+<ol type="1">
+<li><strong>Healthy baseline.</strong> Start the guided task and select
+<strong>ECT electrical circuit</strong>. The task runs for 1 s from a
+selected 25°C coolant initial condition. A powered 5 V reference feeds a
+2,200 Ω pull-up and the coolant thermistor returns to an ideal sensor
+ground. Near 25°C, resistance is about 2,500 Ω, physical node voltage is
+about 2.6596 V and ADC count is near 2178; small thermal changes during
+the baseline can move these values. These are model outputs, not
+measurements from a Toyota.</li>
+<li><strong>Open circuit.</strong> Disconnect the modeled sensor path.
+The ECU/harness side remains attached to the pull-up. Its physical
+voltage rises to 5.000 V, current becomes zero and ADC count reaches
+4095. Actual coolant temperature stays close to its previous value.
+Probe <code>coolant_c</code>, <code>sensors.ect_c</code> and
+<code>sensors.ect_used_c</code> to distinguish the plant, interpreted
+measurement and controller input.</li>
+<li><strong>+0.20 s.</strong> Advance the fault timer to the
+pending/fallback threshold. The teaching ECU marks P0118 pending,
+substitutes 80°C for control and applies a 0.65 torque multiplier. Its
+sensor report remains the invalid −40°C sentinel. The monitor checks an
+ADC input at or above 99% of the reference, or 4.95 V with the default 5
+V source.</li>
+<li><strong>+0.30 s.</strong> Advance to 0.50 s of persistent fault.
+P0118 becomes confirmed and the MIL turns on. These short timers support
+observation in a lesson; they are not a manufacturer calibration or
+regulatory trip-confirmation rule.</li>
+<li><strong>Read DTC.</strong> Inspect service <code>03</code> for the
+confirmed code. Compare <code>07</code> for pending codes and
+<code>01 05</code> for coolant data. In this model, the open sensor
+yields application reply <code>41 05 00</code>; the PID conversion
+<code>A − 40</code> gives −40°C. The event timeline explains when the
+controller changed state.</li>
+<li><strong>Repair &amp; clear.</strong> Reconnect the sensor path and
+clear diagnostic memory with service <code>04</code>. Check that the
+input returns to a plausible voltage, the fallback ends and fault memory
+clears. Clearing alone while the path is still open does not repair the
+cause: advance time and the monitor will set the fault again.</li>
+</ol>
+<p>The task controls create a controlled demonstration. The existing
+scripted <strong>ect_open</strong> lesson instead introduces the open at
+simulation time 3.00 s. Use that lesson for a reproducible unattended
+recording; use the task buttons to inspect each transition
+interactively.</p>
+<h2 id="read-the-instruments-carefully">Read the instruments
+carefully</h2>
+<p>The scope plots saved samples at <strong>100 ms</strong> intervals.
+Engine sensor/monitor updates occur every <strong>10 ms</strong>, while
+the plant advances in <strong>2 ms</strong> steps. UI playback speed
+changes wall-clock presentation, not those model periods. A transition
+may occur between plotted samples; the controller event timeline and
+current monitor timer are better evidence of its exact simulated
+timing.</p>
+<p>Each scope row has its own signal name and units, with up to six
+channels at once. Adding volts, ADC counts and degrees Celsius does not
+put them on one common physical scale. Click a trace to inspect a saved
+sample, choose a time window, and export selected traces as CSV. The
+signal catalog distinguishes valid, invalid, substituted, stale and
+unavailable values. Invalid, substituted and stale finite samples use
+dashed scope segments. An open-path resistance is <code>null</code>,
+marked invalid, because no finite measurement is reported; null samples
+leave gaps instead of drawing a fabricated resistance.</p>
+<p>Physical node voltage and ADC-reconstructed voltage should usually be
+close. At 25°C they are 2.659574 V and 2.659341 V respectively; the
+latter comes from count 2178. Their difference is expected quantization.
+The <a href="CONNECTOR_REFERENCE.html">connector reference</a> shows the
+hand calculation and identifies which probe belongs to which point.</p>
+<p>The diagnostic console models application data and in-memory
+classical CAN/ISO-TP frames. It does not simulate CAN bit timing or
+electrical waveforms. Consequently, clicking DLC CAN-H or CAN-L provides
+a protocol explanation rather than a made-up analog trace.</p>
+<h2 id="how-this-supports-later-expansion">How this supports later
+expansion</h2>
+<p>Keep each future subsystem explicit about its physical state,
+sensors, controller inputs, outputs, update period and validity rules. A
+BMU lesson can follow current integration into SOC and power limits; a
+braking lesson can follow wheel-speed validity into slip control and
+pressure requests. More detailed models can then replace a block without
+changing what a student probes at its boundary.</p>
+<p>Real firmware remains a future integration path. The current
+inspector is not a firmware editor or an ECU flashing tool. Executing
+firmware will require an appropriate processor/peripheral environment,
+input/output mapping and an agreed simulation clock. See <a
+href="FIRMWARE_ROADMAP.html">Firmware roadmap</a> for that progression
+and <a href="PROTOCOL.html">Protocol</a> for the implemented diagnostic
+subset.</p>
+<p>The numerical claims in this guide come from this release’s
+executable teaching model, primarily <code>obdii_lab/core.py</code> and
+<code>obdii_lab/instrumentation.py</code>. The physical connector claims
+are sourced in the <a href="CONNECTOR_REFERENCE.html">connector
+reference</a>; they do not validate the synthetic sensor parameters or
+lesson pin assignments.</p>
+<footer>OBD II Lab v0.3.0 · 9 November 2026 · Synthetic educational models. See Sources for evidence boundaries.</footer></main></body>
+</html>

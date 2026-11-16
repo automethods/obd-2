@@ -1,0 +1,9 @@
+#online-startup { position: fixed; inset: 0; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; background: #111a24; color: #dbe8ef; font: 16px/1.5 system-ui, sans-serif; }
+#online-startup[hidden] { display: none; }
+#online-startup::before { content: ''; width: 34px; height: 34px; border: 3px solid #314253; border-top-color: #59cbb8; border-radius: 50%; animation: online-loading 1s linear infinite; }
+#online-startup[data-failed="true"]::before { display: none; }
+#online-startup button { padding: 10px 16px; border: 1px solid #59cbb8; border-radius: 6px; background: #1a3337; color: #b9eee3; font: inherit; cursor: pointer; }
+.online-home { flex: none; color: #8dcfc5; text-decoration: none; font-size: 21px; line-height: 1; }
+.online-home:focus-visible { outline: 2px solid #8dcfc5; outline-offset: 4px; }
+@keyframes online-loading { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { #online-startup::before { animation: none; } }

@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Learning Guide</title>
+  
+<link rel="stylesheet" href="guide.css"></head>
+<body><header><a href="../START_HERE.html">OBD II Lab</a><a href="BEGINNER_HANDBOOK.html">Beginner book</a><a href="SCHEMATIC_WORKSPACE.html">Schematics</a><a href="CONNECTOR_REFERENCE.html">Connectors</a><a href="LEARNING_GUIDE.html">Concepts</a><a href="WORKED_CASES.html">Working cases</a><a href="PROTOCOL.html">Bytes</a><a href="FIRMWARE_ROADMAP.html">Firmware</a></header><main class="page">
+<aside class="note" style="padding:15px 19px;background:#edf4fa;border-left:3px solid #3856b8;border-radius:0 7px 7px 0"><strong>Recovered v0.4.0 scope.</strong> The original text and numerical examples are retained. The two original PDF books remain v0.3 reading copies. The <a href="VISUAL_WORKBENCH.html">Visual Workbench guide</a> and <a href="../OBDII_Visual_Workbench.pdf">new PDF</a> are the v0.4 addendum. The app opens the visual Workbench; Learning book and Instruments remain available.</aside>
+
+<header id="title-block-header">
+<h1 class="title">Learning Guide</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#obd-ii-and-virtual-vehicle-learning-lab"
+id="toc-obd-ii-and-virtual-vehicle-learning-lab">OBD-II and virtual
+vehicle learning lab</a>
+<ul>
+<li><a href="#what-you-are-learning" id="toc-what-you-are-learning">1.
+What you are learning</a></li>
+<li><a href="#your-first-learning-session"
+id="toc-your-first-learning-session">2. Your first learning
+session</a></li>
+<li><a href="#a-controller-does-not-create-the-physical-result-directly"
+id="toc-a-controller-does-not-create-the-physical-result-directly">3. A
+controller does not create the physical result directly</a></li>
+<li><a href="#what-sensors-and-signals-does-each-module-need"
+id="toc-what-sensors-and-signals-does-each-module-need">4. What sensors
+and signals does each module need?</a></li>
+<li><a href="#the-mathematics-one-component-at-a-time"
+id="toc-the-mathematics-one-component-at-a-time">5. The mathematics, one
+component at a time</a></li>
+<li><a href="#four-different-meanings-of-cycle"
+id="toc-four-different-meanings-of-cycle">6. Four different meanings of
+“cycle”</a></li>
+<li><a href="#working-cases-and-what-each-proves"
+id="toc-working-cases-and-what-each-proves">7. Working cases and what
+each proves</a></li>
+<li><a href="#how-the-toyota-material-fits"
+id="toc-how-the-toyota-material-fits">8. How the Toyota material
+fits</a></li>
+<li><a href="#from-a-lesson-to-a-credible-virtual-vehicle"
+id="toc-from-a-lesson-to-a-credible-virtual-vehicle">9. From a lesson to
+a credible virtual vehicle</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="obd-ii-and-virtual-vehicle-learning-lab">OBD-II and virtual
+vehicle learning lab</h1>
+<p>Version 0.3.0 • 9 November 2026</p>
+<h2 id="what-you-are-learning">1. What you are learning</h2>
+<p>This lab connects three ideas that are easy to confuse: a physical
+vehicle, the controllers that operate it, and the diagnostic interface
+used to inspect it. Start with one engine controller, then introduce a
+battery controller, a hybrid supervisor and brake controllers. The same
+plant and diagnostic boundaries can later host more detailed models or
+an external controller.</p>
+<p><strong>OBD-II is an onboard diagnostic framework concerned
+principally with emissions-related monitoring and reporting.</strong> An
+engine controller can report speed, temperature and faults through it. A
+vehicle contains many other controllers, and their manufacturer-specific
+data is not automatically available through the generic OBD-II PID set.
+A connector can carry both kinds of communication. The California Air
+Resources Board explains OBD-II’s emissions-monitoring purpose; Toyota’s
+training material separately identifies the engine, hybrid, battery and
+skid-control computers. [S1, T1]</p>
+<p>In this package, the plant and controllers are executable teaching
+models. Diagnostic values come from the current simulation state rather
+than a fixed list of canned replies. That makes it possible to change
+the throttle, inject a sensor fault, observe a controller response and
+then read the resulting diagnostic data.</p>
+<h3 id="the-boundary-of-this-version">The boundary of this version</h3>
+<p>The engine stand is a mean-value model: it calculates average torque,
+speed, fuel use and temperature. It does not simulate individual
+combustion events. The hybrid is a <strong>generic parallel hybrid
+teaching architecture</strong>, with a lumped battery, an idealized
+variable-ratio engine path and simplified engine/motor power allocation.
+Its PHEV label describes the intended vehicle class; grid charging and
+charger communication are future modules. It is not a calibrated Toyota
+Prius, Prius Plug-in or Prius Prime simulation. ABS uses individual
+wheel dynamics; the yaw/ESP demonstration remains an approximation
+rather than a full lateral tire and suspension model.</p>
+<p>The package does not run Toyota firmware. It does not connect to a
+vehicle, program an ECU, or reproduce a proprietary Toyota CAN database.
+The supplied examples are useful for learning, debugging interfaces and
+forming requirements; matching a particular vehicle requires
+measurements and model identification.</p>
+<h2 id="your-first-learning-session">2. Your first learning session</h2>
+<p>Unzip the package, open a terminal in its top-level directory, and
+start the dashboard:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> run.py <span class="at">--serve</span></span></code></pre></div>
+<p>Use the local address printed by the program. On Windows,
+<code>python</code> may be the installed interpreter command instead of
+<code>python3</code>. The lab uses the Python standard library; it does
+not require a paid modeling tool.</p>
+<h3 id="start-with-the-learning-book">Start with the learning book</h3>
+<p>The browser opens the visual Workbench. Choose <strong>Learning book</strong> to use the original guided lessons. Choose a beginner chapter on the
+left, read the explanation and select <strong>Start this
+experiment</strong>. Use <strong>Watch it run</strong>, <strong>Pause
+and inspect</strong> and <strong>One small step</strong> to follow the
+result. The fault buttons disconnect a named input; the live notes
+explain what changes and why. Reading another chapter keeps the current
+experiment. The <a href="BEGINNER_HANDBOOK.html">beginner handbook</a>
+contains the same learning sequence and a glossary.</p>
+<h3 id="open-the-schematic-instruments-when-ready">Open the schematic
+instruments when ready</h3>
+<p>Choose <strong>Instruments</strong> or <strong>Open detailed
+instruments</strong> to enter the focused diagnosis workspace. Its fixed
+block and circuit diagrams use the running model state; clicking a
+signal or lesson pin lets you inspect it and add a scope channel. This
+release does not implement free-form block editing, arbitrary rewiring,
+a SPICE solver or firmware execution.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Screen</th>
+<th>Learning purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Task workspace</strong></td>
+<td>Follow the ECT fault task with a schematic, inspector, six-channel
+scope, diagnostic reply and controller timeline</td>
+</tr>
+<tr class="even">
+<td><strong>Connectors</strong></td>
+<td>Inspect the J1962 vehicle-socket reference and the explicitly
+illustrative J-ECT/X1 lesson assignments</td>
+</tr>
+<tr class="odd">
+<td><strong>Signal list</strong></td>
+<td>Search 69 cataloged signals; inspect value, unit, source, validity
+and nominal update period; probe 67 numerical/digital channels</td>
+</tr>
+<tr class="even">
+<td><strong>Scan tool</strong></td>
+<td>Send an application request and inspect its generated CAN/ISO-TP
+frames</td>
+</tr>
+<tr class="odd">
+<td><strong>Dashboard</strong></td>
+<td>Compare engine, battery, vehicle and braking responses in the other
+lessons</td>
+</tr>
+</tbody>
+</table>
+<p>Start <strong>Healthy baseline</strong>, which runs the engine stand
+for 1 s from a selected 25°C initial coolant state. Choose <strong>ECT
+electrical circuit</strong>, then <strong>Open circuit</strong>,
+<strong>+0.20 s</strong>, <strong>+0.30 s</strong>, <strong>Read
+DTC</strong>, and <strong>Repair &amp; clear</strong>. Compare physical
+temperature, sensed temperature and the ECU fallback. The <a
+href="SCHEMATIC_WORKSPACE.html">workspace guide</a> explains each
+observation; the <a href="CONNECTOR_REFERENCE.html">connector
+reference</a> gives orientation, provenance and pin assignments. J-ECT
+and X1 are invented teaching labels, not a Toyota wiring diagram.</p>
+<p>Scope recordings are 100 ms apart. Invalid, substituted and stale
+finite values use dashed segments; missing or null values leave a gap.
+An open thermistor branch has a <code>null</code> resistance marked
+<strong>invalid</strong>, not a very large invented finite measurement.
+Use validity and the event timeline alongside the plotted numbers.</p>
+<h3 id="continue-through-the-vehicle-lessons">Continue through the
+vehicle lessons</h3>
+<p>Work through these repeatable scenarios in order:</p>
+<ol type="1">
+<li>Run <strong>engine_warmup</strong>. Watch engine speed, coolant
+temperature and fuel flow. Ask for <code>01 0C</code> and
+<code>01 05</code> in the diagnostic panel. Connect the physical value,
+encoded bytes and decoded result.</li>
+<li>Run <strong>ect_open</strong>. Compare the true coolant temperature
+with the faulty sensor signal. Notice that a diagnostic report describes
+a detected electrical fault, not necessarily an overheated engine.</li>
+<li>Run <strong>phev_city</strong>. Follow the path from driver request
+to engine/motor contribution, battery current and vehicle
+acceleration.</li>
+<li>Run <strong>regen_limit</strong>. Observe the brake demand that the
+battery can accept and the demand that friction brakes must supply.</li>
+<li>Run <strong>abs_split_mu</strong>. Compare four wheel speeds and
+slip values when left and right road friction differ.</li>
+<li>Run <strong>bmu_timeout</strong> and <strong>cell_low</strong>.
+Examine why a controller can deny a request even when the driver
+continues pressing the accelerator.</li>
+</ol>
+<p>The command line can reproduce a scenario and save data for
+inspection:</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> run.py <span class="at">--scenario</span> engine_warmup <span class="at">--duration</span> 120 <span class="at">--output</span> examples/my_warmup</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> run.py <span class="at">--scenario</span> phev_city <span class="at">--duration</span> 60 <span class="at">--output</span> examples/my_city</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> <span class="at">-m</span> unittest discover <span class="at">-s</span> tests <span class="at">-v</span></span></code></pre></div>
+<p>Use the shipped example results as a starting point. Re-run after
+changing a parameter and compare the same quantities over the same time
+interval. A successful test checks the specified implementation
+behavior; it does not establish agreement with a real vehicle.</p>
+<h2 id="a-controller-does-not-create-the-physical-result-directly">3. A
+controller does not create the physical result directly</h2>
+<figure>
+<img src="figures/control_loop.png"
+alt="The implemented feedback loop, diagnostic boundary, and future controller replacement point." />
+<figcaption aria-hidden="true">The implemented feedback loop, diagnostic
+boundary, and future controller replacement point.</figcaption>
+</figure>
+<p>Consider a temperature reading. The engine has a physical
+temperature. A sensor and its electrical interface transform that
+temperature into a measurement. Software checks plausibility, filters or
+substitutes the reading, and makes a decision. The OBD server encodes a
+reported value. These are four separate quantities, even when they
+happen to agree.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Layer</th>
+<th>Example</th>
+<th>Question to ask</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Plant</td>
+<td>Crankshaft inertia, coolant heat capacity, tire forces</td>
+<td>What changes according to physics?</td>
+</tr>
+<tr class="even">
+<td>Sensors</td>
+<td>RPM estimate, coolant signal, pack current</td>
+<td>What can the controller actually observe?</td>
+</tr>
+<tr class="odd">
+<td>Controller</td>
+<td>Idle control, battery power limit, brake-pressure request</td>
+<td>What decision is made from those observations?</td>
+</tr>
+<tr class="even">
+<td>Actuators</td>
+<td>Engine torque, inverter torque, contactor, brake torque</td>
+<td>How does the decision affect the plant?</td>
+</tr>
+<tr class="odd">
+<td>Network and diagnostics</td>
+<td>Periodic signals, request/response, DTCs</td>
+<td>What is transmitted, at which time, and in which units?</td>
+</tr>
+</tbody>
+</table>
+<p>The feedback loop repeats. A controller issues a bounded request; the
+plant responds; sensors sample that response; the next controller
+execution uses the new measurements. Holding one layer constant while
+changing another is a powerful experiment. For example, inject a coolant
+sensor fault while keeping actual coolant temperature unchanged.</p>
+<h3 id="a-vocabulary-for-the-virtual-vehicle">A vocabulary for the
+virtual vehicle</h3>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Role</th>
+<th>Status in this lab</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>ECU</td>
+<td>General term for an electronic control unit</td>
+<td>Multiple conceptual controllers within one process</td>
+</tr>
+<tr class="even">
+<td>ECM / engine ECU</td>
+<td>Engine torque, speed and thermal behavior; engine diagnostics</td>
+<td>Simplified working controller and plant</td>
+</tr>
+<tr class="odd">
+<td>BMU / BMS / battery ECU</td>
+<td>Estimate battery state; calculate charge/discharge permissions</td>
+<td>Working lumped-pack model and supervisory limits</td>
+</tr>
+<tr class="even">
+<td>PHEV-ECU / VCU / hybrid supervisor</td>
+<td>Select propulsion mode; coordinate engine, motor and battery</td>
+<td>Working generic supervisory model</td>
+</tr>
+<tr class="odd">
+<td>Inverter and motor controller</td>
+<td>Convert electrical power to torque and vice versa</td>
+<td>Average power/torque model; electrical switching and current loops
+absent</td>
+</tr>
+<tr class="even">
+<td>ABS</td>
+<td>Modulate braking when wheels approach lock</td>
+<td>Working four-wheel longitudinal demonstration</td>
+</tr>
+<tr class="odd">
+<td>ESP / ESC</td>
+<td>Compare intended and actual vehicle rotation; influence torque and
+wheel braking</td>
+<td>Approximate yaw-assist demonstration</td>
+</tr>
+<tr class="even">
+<td>OBC</td>
+<td>Onboard charger for grid-to-battery energy transfer</td>
+<td>Planned; no AC charge-port model in this release</td>
+</tr>
+<tr class="odd">
+<td>DC/DC and 12 V supply</td>
+<td>Power low-voltage loads and control electronics</td>
+<td>Auxiliary power allowance; detailed low-voltage network planned</td>
+</tr>
+<tr class="even">
+<td>TCU / transmission controller</td>
+<td>Gear, clutch or transmission coordination</td>
+<td>Transmission represented by simplified ratios; no separate TCU</td>
+</tr>
+<tr class="odd">
+<td>Gateway</td>
+<td>Route messages between networks; control diagnostic access</td>
+<td>Planned; current signal exchange is in process</td>
+</tr>
+<tr class="even">
+<td>BCM / body controller</td>
+<td>Lighting, doors, wake/sleep and cabin functions</td>
+<td>Planned</td>
+</tr>
+<tr class="odd">
+<td>EPS</td>
+<td>Electric power steering and steering assistance</td>
+<td>Steering is an input; EPS motor and rack dynamics planned</td>
+</tr>
+<tr class="even">
+<td>SRS / restraint controller</td>
+<td>Crash sensing and occupant restraint decisions</td>
+<td>Outside this release; needs a separate specialized model</td>
+</tr>
+<tr class="odd">
+<td>HVAC / thermal manager</td>
+<td>Cabin, battery, engine and power-electronics heat management</td>
+<td>Lumped engine/battery cooling only</td>
+</tr>
+<tr class="even">
+<td>Cluster / telematics / ADAS</td>
+<td>Displays, external communication, driver assistance</td>
+<td>Dashboard is a learning display; production functions planned</td>
+</tr>
+</tbody>
+</table>
+<p>Real manufacturers distribute these functions differently. Several
+functions may share a computer; one function can also span multiple
+computers. The module names are architectural teaching boundaries, not a
+claim about the exact ECU inventory of a particular car.</p>
+<h2 id="what-sensors-and-signals-does-each-module-need">4. What sensors
+and signals does each module need?</h2>
+<p>The following is a design checklist for extending the lab. Rates are
+<strong>suggested educational starting points</strong>, not OEM
+specifications. This release uses slower supervisory abstractions where
+electrical details are unnecessary. Its signal catalog carries a value,
+unit, snapshot timestamp, validity status, source and nominal update
+period for each registered signal. A snapshot timestamp is not a
+separately modeled sensor-acquisition or network-arrival timestamp; the
+BMU freshness model exposes its own message age.</p>
+<table>
+<colgroup>
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Controller</th>
+<th>Essential inputs</th>
+<th>Outputs</th>
+<th>Starting timing and failure behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Engine ECU</td>
+<td>Crank/cam position, pedal and throttle position, coolant and intake
+temperature, MAF or MAP; later lambda, knock and fuel pressure</td>
+<td>Torque/throttle request; later injection and ignition timing, fan
+and pump</td>
+<td>Implemented average controller: 10 ms. Real crank events need
+angle/event scheduling. Reject implausible temperature; use a documented
+fallback and diagnostic.</td>
+</tr>
+<tr class="even">
+<td>BMU</td>
+<td>Pack current A, pack voltage V, cell/block voltages V, temperatures
+°C; later isolation and contactor feedback</td>
+<td>SOC %, available charge/discharge power, cooling demand, HV
+permission</td>
+<td>Implemented supervisor: 100 ms. Fast hardware protection is a
+different layer. Stale or invalid limiting data must not grant unlimited
+power.</td>
+</tr>
+<tr class="odd">
+<td>Hybrid supervisor</td>
+<td>Driver request, vehicle speed, engine availability, BMU limits,
+gear/ready state, brake demand</td>
+<td>Engine and motor requests, mode, start/stop coordination</td>
+<td>Implemented supervisor: 20 ms. Hysteresis reduces rapid mode
+switching. Communication loss inhibits propulsion in the teaching
+policy.</td>
+</tr>
+<tr class="even">
+<td>Motor/inverter</td>
+<td>Torque request, DC voltage/current, speed; later resolver angle,
+phase currents and device temperatures</td>
+<td>Actual torque, power and limit flags; later PWM</td>
+<td>Implemented average model follows plant steps. A future electrical
+model may need microsecond-scale integration and current-control
+scheduling.</td>
+</tr>
+<tr class="odd">
+<td>ABS/ESC</td>
+<td>Four wheel speeds, brake demand/pressure, steering angle, yaw rate;
+later lateral/longitudinal acceleration</td>
+<td>Per-wheel brake modulation and requested torque reduction</td>
+<td>Implemented brake control: 10 ms. A wheel-sensor failure must be
+represented explicitly, not silently replaced by a perfect reading.</td>
+</tr>
+<tr class="even">
+<td>Charger / DC/DC</td>
+<td>Plug state, available AC power, HV and LV voltage/current, thermal
+state</td>
+<td>Charging current, contactor requests, low-voltage regulation</td>
+<td>Planned: choose supervisory and converter times separately. Inhibit
+traction during an accepted charging connection.</td>
+</tr>
+<tr class="odd">
+<td>Gateway / body</td>
+<td>Heartbeats, ignition/wake requests, network state, diagnostic
+sessions</td>
+<td>Routed frames, wake/sleep and access state</td>
+<td>Planned: model freshness deadlines and routing; message arrival is
+not proof of signal validity.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="choose-signal-units-before-choosing-a-bus">Choose signal units
+before choosing a bus</h3>
+<p>Use SI units inside a plant wherever practical: m/s, rad/s, N, N·m,
+A, V, W and seconds. Display conversions may use km/h, RPM, °C and kW.
+SOC is a fraction in equations and a percentage on the display. State
+which representation an interface uses.</p>
+<p>For each future CAN signal, record identifier, direction, payload
+length, bit position, endianness, signedness, scale, offset, range,
+invalid code, period, timeout and any counter/checksum. A plausible CAN
+identifier is not a verified Toyota identifier. Keep synthetic teaching
+messages in a clearly named database; introduce real messages only with
+source evidence and versioned vehicle applicability.</p>
+<h2 id="the-mathematics-one-component-at-a-time">5. The mathematics, one
+component at a time</h2>
+<p>These equations explain the model boundaries and provide
+hand-checkable exercises. Numeric values below are deliberately chosen
+examples. They are not measurements or calibration values from the
+supplied Toyota documents.</p>
+<h3 id="implemented-starting-values">Implemented starting values</h3>
+<p>The hand exercises use round numbers so they can be checked
+independently. The executable plant starts from the following separate
+teaching assumptions, available in <code>obdii_lab/core.py</code>.
+Scenario-specific initial conditions can override the defaults.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Quantity</th>
+<th>Implemented assumption</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Vehicle mass; wheel radius</td>
+<td>1,600 kg; 0.31 m</td>
+<td>Generic vehicle, no Toyota fit</td>
+</tr>
+<tr class="even">
+<td>Wheel inertia; wheelbase</td>
+<td>1.5 kg·m² per wheel; 2.70 m</td>
+<td>Four longitudinal wheel states; simplified yaw reference</td>
+</tr>
+<tr class="odd">
+<td>Battery capacity; internal resistance</td>
+<td>50 Ah; 0.12 Ω</td>
+<td>One lumped equivalent circuit</td>
+</tr>
+<tr class="even">
+<td>Open-circuit voltage</td>
+<td><code>300 + 100 × SOC</code> V</td>
+<td>SOC is a 0-1 fraction; synthetic linear curve</td>
+</tr>
+<tr class="odd">
+<td>Reported cell extrema</td>
+<td>Aggregate pack voltage divided by 96, with a small spread</td>
+<td>Illustrative signals, not 96 independent cell models</td>
+</tr>
+<tr class="even">
+<td>Nominal power ceilings</td>
+<td>80 kW discharge; 40 kW charge</td>
+<td>Further reduced by current, SOC, temperature and contactor
+state</td>
+</tr>
+<tr class="odd">
+<td>Charge taper</td>
+<td>90-98% SOC</td>
+<td>Teaching thresholds, not a battery manufacturer’s limits</td>
+</tr>
+<tr class="even">
+<td>Motor/inverter efficiency</td>
+<td>0.90 motoring; 0.88 regeneration</td>
+<td>Constant averages, not measured efficiency maps</td>
+</tr>
+<tr class="odd">
+<td>Precharge</td>
+<td>First-order time constant 0.12 s; minimum 0.4 s and 95% of
+open-circuit voltage before closure</td>
+<td>Behavioral sequence without switching arcs or a physical relay
+model</td>
+</tr>
+<tr class="even">
+<td>Engine stand inertia</td>
+<td>0.28 kg·m²</td>
+<td>Mean torque and virtual dynamometer load</td>
+</tr>
+<tr class="odd">
+<td>Coolant thermal capacity</td>
+<td>35,000 J/K</td>
+<td>One heat-storage state with simplified cooling</td>
+</tr>
+<tr class="even">
+<td>ECT reference; pull-up</td>
+<td>5.0 V; 2,200 Ω</td>
+<td>Ideal reference shared with ADC; no wiring resistance or settling
+model</td>
+</tr>
+<tr class="odd">
+<td>ECT thermistor</td>
+<td>2,500 Ω at 25°C; beta 3,500 K</td>
+<td>Selected NTC curve, not a Toyota sensor calibration</td>
+</tr>
+<tr class="even">
+<td>ECT ADC</td>
+<td>12 bits, counts 0-4095</td>
+<td>Ideal rounding and reconstruction, without conversion noise</td>
+</tr>
+</tbody>
+</table>
+<p>Read each configurable value’s unit before changing it. Some
+controller constants remain in source; they are not all dashboard
+controls. Increasing the UI playback speed advances more simulated time
+and does not change these physical parameters.</p>
+<p>Precharge voltage is a behavioral timing state: capacitor/resistor
+energy and low-voltage starter energy are not included in the battery
+ledger. The energy counters support component-level checks, including
+battery chemical power = terminal power + internal resistive loss. They
+do not establish complete vehicle energy closure.</p>
+<h3 id="engine-speed-and-mean-torque">5.1 Engine speed and mean
+torque</h3>
+<p>Rotational dynamics follow:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>J</mi><mfrac><mrow><mi>d</mi><mi>ω</mi></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>=</mo><msub><mi>T</mi><mrow><mi>e</mi><mi>n</mi><mi>g</mi><mi>i</mi><mi>n</mi><mi>e</mi></mrow></msub><mo>−</mo><msub><mi>T</mi><mrow><mi>l</mi><mi>o</mi><mi>a</mi><mi>d</mi></mrow></msub><mo>−</mo><msub><mi>T</mi><mrow><mi>f</mi><mi>r</mi><mi>i</mi><mi>c</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi></mrow></msub><mo>,</mo><mspace width="2.0em"></mspace><mi>R</mi><mi>P</mi><mi>M</mi><mo>=</mo><mi>ω</mi><mfrac><mn>60</mn><mrow><mn>2</mn><mi>π</mi></mrow></mfrac><mi>.</mi></mrow><annotation encoding="application/x-tex">
+J\frac{d\omega}{dt}=T_{engine}-T_{load}-T_{friction},
+\qquad RPM=\omega\frac{60}{2\pi}.
+</annotation></semantics></math></p>
+<p><code>J</code> is rotational inertia in kg·m². A controller cannot
+change engine speed instantly when inertia is represented. Suppose
+<code>J = 0.20</code>, engine torque is <code>30 N·m</code>, and load
+plus friction is <code>10 N·m</code>. Acceleration is
+<code>100 rad/s²</code>. During <code>0.01 s</code>, speed increases by
+<code>1 rad/s</code>, or about <code>9.55 RPM</code>.</p>
+<p>Mechanical power is <code>P = Tω</code>. At <code>100 N·m</code> and
+<code>2,000 RPM</code>, shaft power is <code>20.94 kW</code>. Fuel power
+must exceed useful shaft power. If an illustrative efficiency is
+<code>0.30</code>, fuel chemical power would be <code>69.81 kW</code>.
+At <code>8.9 kWh/L</code>, that corresponds to <code>7.84 L/h</code>.
+Idle is a special case: useful shaft output can be near zero while fuel
+is still consumed to overcome friction and maintain combustion.</p>
+<p>A simplified intake estimate can depend on displacement, air density,
+volumetric efficiency and engine speed. A four-stroke cylinder fills
+once every two revolutions, so total ideal intake volume flow is
+proportional to displacement times <code>RPM/120</code> when RPM is
+converted to revolutions per second through that factor. Real intake
+flow also depends on manifold pressure, valve timing and transients; an
+educational MAF estimate is not an identified airflow model.</p>
+<h3 id="temperature-requires-energy-storage">5.2 Temperature requires
+energy storage</h3>
+<p>Use a lumped thermal model:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>C</mi><mrow><mi>t</mi><mi>h</mi></mrow></msub><mfrac><mrow><mi>d</mi><mi>T</mi></mrow><mrow><mi>d</mi><mi>t</mi></mrow></mfrac><mo>=</mo><msub><mover><mi>Q</mi><mo accent="true">̇</mo></mover><mrow><mi>i</mi><mi>n</mi></mrow></msub><mo>−</mo><mi>h</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>T</mi><mo>−</mo><msub><mi>T</mi><mrow><mi>a</mi><mi>m</mi><mi>b</mi><mi>i</mi><mi>e</mi><mi>n</mi><mi>t</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
+C_{th}\frac{dT}{dt}=\dot Q_{in}-h(T-T_{ambient}).
+</annotation></semantics></math></p>
+<p>If heat capacity is <code>100,000 J/K</code> and net heating is
+<code>10,000 W</code>, temperature initially rises
+<code>0.10 °C/s</code>. A <code>60 °C</code> rise would take at least
+ten minutes if that net heat stayed constant. A realistic warm-up
+demonstration should therefore show gradual heating. Do not accelerate
+physical heating merely because the display is playing at a faster
+wall-clock speed.</p>
+<p>This one-node model cannot resolve coolant circulation, thermostat
+opening, cylinder-head hot spots or catalyst light-off. Add those states
+when the experiment needs them. Keep an ECT electrical fault separate
+from genuine overheating.</p>
+<h3 id="a-from-coolant-temperature-to-an-electrical-measurement">5.2a
+From coolant temperature to an electrical measurement</h3>
+<p>A thermistor changes resistance with temperature. A fixed pull-up and
+an NTC thermistor to return form a divider; increasing temperature
+lowers the NTC resistance and the input voltage. A shared divider/ADC
+reference makes the measurement ratiometric. Texas Instruments documents
+this circuit principle and the beta-model conversion; its component
+choices and acquisition circuit are not the lab’s chosen parameters.
+[S12]</p>
+<p>For absolute temperature <code>T</code> in kelvin, the implemented
+NTC law and divider are:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>T</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>R</mi><mn>25</mn></msub><mo>exp</mo><mrow><mo stretchy="true" form="prefix">[</mo><mi>B</mi><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mn>1</mn><mi>T</mi></mfrac><mo>−</mo><mfrac><mn>1</mn><mn>298.15</mn></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">]</mo></mrow><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>V</mi><mi>n</mi></msub><mo>=</mo><msub><mi>V</mi><mrow><mi>r</mi><mi>e</mi><mi>f</mi></mrow></msub><mfrac><mrow><mi>R</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>T</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><msub><mi>R</mi><mi>p</mi></msub><mo>+</mo><mi>R</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>T</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mi>.</mi></mrow><annotation encoding="application/x-tex">
+R(T)=R_{25}\exp\left[B\left(\frac{1}{T}-\frac{1}{298.15}\right)\right],
+\qquad V_n=V_{ref}\frac{R(T)}{R_p+R(T)}.
+</annotation></semantics></math></p>
+<p>The default values are <code>R25 = 2500 Ω</code>,
+<code>B = 3500 K</code>, <code>Rp = 2200 Ω</code> and
+<code>Vref = 5 V</code>. The branch current is
+<code>I = Vref / (Rp + R)</code>. A 12-bit ADC transforms the physical
+voltage into an integer count and reconstructs a measured voltage:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mo>round</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>4095</mn><mfrac><msub><mi>V</mi><mi>n</mi></msub><msub><mi>V</mi><mrow><mi>r</mi><mi>e</mi><mi>f</mi></mrow></msub></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>V</mi><mi>m</mi></msub><mo>=</mo><msub><mi>V</mi><mrow><mi>r</mi><mi>e</mi><mi>f</mi></mrow></msub><mfrac><mi>N</mi><mn>4095</mn></mfrac><mi>.</mi></mrow><annotation encoding="application/x-tex">
+N=\operatorname{round}\left(4095\frac{V_n}{V_{ref}}\right),
+\qquad V_m=V_{ref}\frac{N}{4095}.
+</annotation></semantics></math></p>
+<p>At exactly 25°C, <code>R = 2500 Ω</code>, so
+<code>Vn = 2.659574 V</code>, branch current is <code>1.06383 mA</code>,
+<code>N = 2178</code> and <code>Vm = 2.659341 V</code>. The inverse
+calculation uses <code>Rm = Rp × Vm / (Vref − Vm)</code> and
+<code>Tc = 1 / [1/298.15 + ln(Rm/R25)/B] − 273.15</code>. It returns
+about <strong>25.00477°C</strong>. That small difference follows from
+ideal ADC quantization; it is not thermal change or a drop along the
+wire.</p>
+<p>Opening the modeled sensor path makes current zero and brings the
+ECU/harness node to <strong>5.000 V</strong>, with ADC count
+<strong>4095</strong>. The branch resistance is <code>null</code>,
+marked invalid, because no finite resistance is reported. Validity
+checks prevent the inverse formula from dividing by zero. The lab shows
+<strong>−40°C</strong> for the invalid sensor report. At 0.20 s of high
+input it substitutes <strong>80°C</strong> for control; those are
+separate signals, neither a sudden physical temperature change.</p>
+<p>The high-input threshold is 99% of reference, or 4.95 V at defaults.
+P0118 becomes pending at 0.20 s and confirmed with MIL at 0.50 s. These
+are accelerated teaching thresholds, not statutory trip logic or OEM
+calibration. The ideal model omits connector resistance, sensor lag, ADC
+sample/hold settling, noise and supply transients. Version 0.2 replaces
+the previous linear sensor placeholder and 4.98 V open value with this
+divider/ADC model.</p>
+<h3 id="vehicle-acceleration-and-road-load">5.3 Vehicle acceleration and
+road load</h3>
+<p>For forward longitudinal motion:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><mover><mi>v</mi><mo accent="true">̇</mo></mover><mo>=</mo><msub><mi>F</mi><mrow><mi>d</mi><mi>r</mi><mi>i</mi><mi>v</mi><mi>e</mi></mrow></msub><mo>−</mo><msub><mi>F</mi><mrow><mi>b</mi><mi>r</mi><mi>a</mi><mi>k</mi><mi>e</mi></mrow></msub><mo>−</mo><msub><mi>F</mi><mrow><mi>r</mi><mi>o</mi><mi>l</mi><mi>l</mi></mrow></msub><mo>−</mo><msub><mi>F</mi><mrow><mi>a</mi><mi>e</mi><mi>r</mi><mi>o</mi></mrow></msub><mo>−</mo><mi>m</mi><mi>g</mi><mo>sin</mo><mi>θ</mi><mo>,</mo></mrow><annotation encoding="application/x-tex">
+m\dot v=F_{drive}-F_{brake}-F_{roll}-F_{aero}-mg\sin\theta,
+</annotation></semantics></math></p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>F</mi><mrow><mi>r</mi><mi>o</mi><mi>l</mi><mi>l</mi></mrow></msub><mo>=</mo><msub><mi>C</mi><mrow><mi>r</mi><mi>r</mi></mrow></msub><mi>m</mi><mi>g</mi><mo>cos</mo><mi>θ</mi><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>F</mi><mrow><mi>a</mi><mi>e</mi><mi>r</mi><mi>o</mi></mrow></msub><mo>=</mo><mfrac displaystyle="false"><mn>1</mn><mn>2</mn></mfrac><mi>ρ</mi><msub><mi>C</mi><mi>d</mi></msub><mi>A</mi><msup><mi>v</mi><mn>2</mn></msup><mi>.</mi></mrow><annotation encoding="application/x-tex">
+F_{roll}=C_{rr}mg\cos\theta,\qquad
+F_{aero}=\tfrac12\rho C_dA v^2.
+</annotation></semantics></math></p>
+<p>At <code>m = 1,500 kg</code>, <code>Crr = 0.01</code>,
+<code>ρ = 1.225 kg/m³</code>, <code>CdA = 0.60 m²</code>, and
+<code>v = 20 m/s</code> on level ground, rolling resistance is
+<code>147.15 N</code> and aerodynamic drag is <code>147 N</code>.
+Steady-speed wheel power is about <code>5.883 kW</code>. A 5% uphill
+grade adds approximately <code>735 N</code> at small angles, or another
+<code>14.7 kW</code> at that speed. Climbing can therefore dominate
+aerodynamic drag at moderate speeds.</p>
+<p>Wheel torque and force relate through <code>T = Fr</code>. With
+<code>r = 0.30 m</code>, a <code>3,000 N</code> drive force requires
+<code>900 N·m</code> at the driven wheels. Gear ratios and efficiency
+connect wheel torque to motor/engine shaft torque. A pure power divided
+by speed calculation becomes singular at zero speed; use a torque limit
+for launch and transition to a power limit as speed increases.</p>
+<h3 id="battery-equivalent-circuit-and-soc">5.4 Battery equivalent
+circuit and SOC</h3>
+<p>Adopt <strong>positive current and positive battery terminal power
+for discharge</strong>. For a simple open-circuit voltage and internal
+resistance model:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>V</mi><mi>t</mi></msub><mo>=</mo><msub><mi>V</mi><mrow><mi>o</mi><mi>c</mi></mrow></msub><mo>−</mo><mi>I</mi><mi>R</mi><mo>,</mo><mspace width="2.0em"></mspace><msub><mi>P</mi><mi>t</mi></msub><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>V</mi><mrow><mi>o</mi><mi>c</mi></mrow></msub><mo>−</mo><mi>I</mi><mi>R</mi><mo stretchy="true" form="postfix">)</mo></mrow><mi>I</mi><mi>.</mi></mrow><annotation encoding="application/x-tex">
+V_t=V_{oc}-IR,\qquad P_t=(V_{oc}-IR)I.
+</annotation></semantics></math></p>
+<p>For a feasible requested power, the physically useful lower-current
+branch is:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>I</mi><mo>=</mo><mfrac><mrow><msub><mi>V</mi><mrow><mi>o</mi><mi>c</mi></mrow></msub><mo>−</mo><msqrt><mrow><msubsup><mi>V</mi><mrow><mi>o</mi><mi>c</mi></mrow><mn>2</mn></msubsup><mo>−</mo><mn>4</mn><mi>R</mi><msub><mi>P</mi><mi>t</mi></msub></mrow></msqrt></mrow><mrow><mn>2</mn><mi>R</mi></mrow></mfrac><mi>.</mi></mrow><annotation encoding="application/x-tex">
+I=\frac{V_{oc}-\sqrt{V_{oc}^2-4RP_t}}{2R}.
+</annotation></semantics></math></p>
+<p>The expression under the square root must be nonnegative. Current,
+voltage, temperature and SOC limits usually impose tighter bounds than
+this mathematical maximum. Clip the <em>allowed power request</em>
+before updating energy; clipping SOC afterward does not repair an
+impossible power flow.</p>
+<p>With <code>Voc = 350 V</code>, <code>R = 0.15 Ω</code> and discharge
+power <code>20 kW</code>, current is approximately <code>58.62 A</code>;
+terminal voltage is <code>341.21 V</code>. Internal heating is
+<code>I²R ≈ 515 W</code>. Chemical battery power is terminal power plus
+this loss, about <code>20.515 kW</code>.</p>
+<p>Coulomb counting for capacity <code>Q_Ah</code> is:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mi>O</mi><msub><mi>C</mi><mrow><mi>k</mi><mo>+</mo><mn>1</mn></mrow></msub><mo>=</mo><mi>S</mi><mi>O</mi><msub><mi>C</mi><mi>k</mi></msub><mo>−</mo><mfrac><mrow><mi>I</mi><mi>Δ</mi><mi>t</mi></mrow><mrow><mn>3600</mn><msub><mi>Q</mi><mrow><mi>A</mi><mi>h</mi></mrow></msub></mrow></mfrac><mi>.</mi></mrow><annotation encoding="application/x-tex">
+SOC_{k+1}=SOC_k-\frac{I\Delta t}{3600Q_{Ah}}.
+</annotation></semantics></math></p>
+<p>At <code>60 A</code> for <code>10 s</code> with <code>40 Ah</code>,
+SOC falls by <code>0.004167</code>, or <strong>0.4167 percentage
+points</strong>. A fall from 60.0% to 59.5833% is not a 0.4167% relative
+reduction. During charging current is negative, so SOC rises. A future
+estimator should add sensor bias, temperature dependence, relaxation,
+capacity aging and an initial-SOC correction method.</p>
+<h3 id="brake-blending-and-energy-recovery">5.5 Brake blending and
+energy recovery</h3>
+<p>The driver asks for deceleration. The supervisor allocates some
+braking to generation, subject to motor, tire and battery constraints.
+Friction brakes provide the remainder:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>P</mi><mrow><mi>b</mi><mi>r</mi><mi>a</mi><mi>k</mi><mi>e</mi><mo>,</mo><mi>r</mi><mi>e</mi><mi>q</mi><mi>u</mi><mi>e</mi><mi>s</mi><mi>t</mi><mi>e</mi><mi>d</mi></mrow></msub><mo>=</mo><msub><mi>P</mi><mrow><mi>r</mi><mi>e</mi><mi>g</mi><mi>e</mi><mi>n</mi><mo>,</mo><mi>m</mi><mi>e</mi><mi>c</mi><mi>h</mi><mi>a</mi><mi>n</mi><mi>i</mi><mi>c</mi><mi>a</mi><mi>l</mi></mrow></msub><mo>+</mo><msub><mi>P</mi><mrow><mi>f</mi><mi>r</mi><mi>i</mi><mi>c</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi></mrow></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">
+P_{brake,requested}=P_{regen,mechanical}+P_{friction}.
+</annotation></semantics></math></p>
+<p>Regen mechanical power and battery charging power are different. If
+the generator/inverter path is <code>90%</code> efficient and the
+battery permits <code>10 kW</code> of terminal charging, it can accept
+at most about <code>11.11 kW</code> of mechanical recovery through that
+path, before considering auxiliary loads and other constraints. For a
+<code>30 kW</code> mechanical brake demand, at least
+<code>18.89 kW</code> becomes friction heat in this example.</p>
+<p>Available kinetic energy is <code>½mv²</code>. A
+<code>1,500 kg</code> car at <code>50 km/h</code> contains about
+<code>144.7 kJ</code>, or <code>0.0402 kWh</code>, of translational
+kinetic energy. Only part can reach the battery. Aerodynamic drag,
+rolling resistance, friction brakes, machine losses and battery losses
+all consume energy. SOC near its upper limit, a hot battery, low motor
+speed or ABS intervention can reduce recovery. Braking must still
+respond to the driver’s demand when charge acceptance disappears.</p>
+<h3 id="wheel-slip-abs-and-approximate-yaw-control">5.6 Wheel slip, ABS
+and approximate yaw control</h3>
+<p>A useful braking-slip definition is:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>=</mo><mfrac><mrow><mi>v</mi><mo>−</mo><mi>r</mi><msub><mi>ω</mi><mi>w</mi></msub></mrow><mrow><mo>max</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>v</mi><mo>,</mo><msub><mi>v</mi><mi>ϵ</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mi>.</mi></mrow><annotation encoding="application/x-tex">
+\lambda=\frac{v-r\omega_w}{\max(v,v_\epsilon)}.
+</annotation></semantics></math></p>
+<p>When vehicle speed is <code>20 m/s</code> and wheel peripheral speed
+is <code>16 m/s</code>, slip is <code>0.20</code>. A locked wheel gives
+slip near <code>1</code> while the vehicle is still moving. Near rest,
+the denominator safeguard and a low-speed ABS cutoff are essential.</p>
+<p>Wheel dynamics include brake torque and tire reaction:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>J</mi><mi>w</mi></msub><msub><mover><mi>ω</mi><mo accent="true">̇</mo></mover><mi>w</mi></msub><mo>=</mo><msub><mi>T</mi><mrow><mi>d</mi><mi>r</mi><mi>i</mi><mi>v</mi><mi>e</mi></mrow></msub><mo>−</mo><msub><mi>T</mi><mrow><mi>b</mi><mi>r</mi><mi>a</mi><mi>k</mi><mi>e</mi></mrow></msub><mo>−</mo><mi>r</mi><msub><mi>F</mi><mi>x</mi></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">
+J_w\dot\omega_w=T_{drive}-T_{brake}-rF_x.
+</annotation></semantics></math></p>
+<p>The sign of <code>Fx</code> follows the chosen wheel/vehicle
+convention. In braking, the ground reaction that slows the vehicle also
+tends to spin the wheel back toward rolling speed. The tire-force limit
+depends on friction and normal load. ABS reduces pressure when slip
+grows too large and reapplies it after wheel recovery. The best slip
+target varies with the tire and surface; a fixed teaching threshold is
+not a universal optimum.</p>
+<p>A small-angle bicycle reference for desired yaw is
+<code>r_ref ≈ v tan(δ)/L</code>. With speed <code>15 m/s</code>,
+road-wheel steering angle <code>0.03 rad</code>, and wheelbase
+<code>2.7 m</code>, the reference is <code>0.1667 rad/s</code>, about
+<code>9.55°/s</code>. The road-wheel angle is not necessarily the
+steering-wheel angle. A tire-friction bound also limits physically
+achievable yaw. Production ESC uses wheel speed, steering and inertial
+measurements and can reduce propulsion or brake individual wheels.
+[S5]</p>
+<p>This release can illustrate a yaw error and an intervention flag, but
+cannot validate cornering stability, spin prevention or
+stopping-distance performance. Those questions require a calibrated
+lateral tire model, load transfer, brake hydraulics and sensor/actuator
+delays.</p>
+<h2 id="four-different-meanings-of-cycle">6. Four different meanings of
+“cycle”</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Cycle</th>
+<th>Meaning</th>
+<th>What this release does</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Physical integration step</td>
+<td>The interval used to advance differential equations</td>
+<td>Fixed 2 ms plant steps</td>
+</tr>
+<tr class="even">
+<td>Controller task cycle</td>
+<td>How often software reads inputs and updates outputs</td>
+<td>Engine/brake 10 ms, hybrid 20 ms, BMU 100 ms</td>
+</tr>
+<tr class="odd">
+<td>Driving cycle</td>
+<td>A time series of driver or speed requests and environmental
+conditions</td>
+<td>Educational warm-up, city, fault and braking scripts</td>
+</tr>
+<tr class="even">
+<td>Engine combustion cycle</td>
+<td>Intake, compression, power and exhaust events</td>
+<td>Averaged; no cylinder pressure or angle-resolved combustion</td>
+</tr>
+</tbody>
+</table>
+<p>At <code>2,000 RPM</code>, a four-stroke cylinder completes its
+combustion cycle about <code>16.67</code> times per second. That has no
+direct relationship to a 10 ms diagnostic refresh or a 60-second driving
+example. Display refresh, simulation time, bus timestamps and controller
+scheduling should remain distinguishable.</p>
+<p>Integer task ticks make reproducible scheduling easier. The simulator
+applies scenario inputs and persistent user overrides, runs due BMU
+work, then hybrid supervision, then engine diagnostics and brake
+control, and finally advances the plant. It increments simulated time,
+records state-transition events and logs every 100 ms. Controller
+measurements consequently refer to the plant state available before that
+integration step. The precise order is part of the model contract. When
+adding another solver or external ECU, define who owns simulated time
+and what happens at a missed deadline.</p>
+<p>These examples are not WLTP, EPA certification or OBD
+monitor-completion procedures. A future imported speed trace needs its
+source, units, time grid, driver-tracking controller and measured
+tracking error recorded.</p>
+<h2 id="working-cases-and-what-each-proves">7. Working cases and what
+each proves</h2>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Case</th>
+<th>Setup and observation</th>
+<th>Learning result and important limit</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>engine_warmup</code></td>
+<td>Run the engine stand from a cold state; inspect RPM, fuel and
+coolant</td>
+<td>Links torque control, thermal inertia and OBD data; 120 seconds is a
+partial warm-up, without catalyst chemistry</td>
+</tr>
+<tr class="even">
+<td><code>ect_open</code></td>
+<td>Inject an open ECT signal after normal operation begins</td>
+<td>Separates physical temperature, sensor failure, fallback and P0118;
+short teaching debounce is not the real regulatory trip logic</td>
+</tr>
+<tr class="odd">
+<td><code>phev_city</code></td>
+<td>Repeat acceleration, cruise and braking requests</td>
+<td>Demonstrates propulsion allocation, battery discharge and
+regeneration; demonstration can exceed urban speeds, no Toyota eCVT or
+calibrated city cycle</td>
+</tr>
+<tr class="even">
+<td><code>low_soc</code></td>
+<td>Start with reduced SOC and request propulsion</td>
+<td>Shows reserve logic and engine use; engine engagement does not imply
+a detailed charge-sustaining optimization</td>
+</tr>
+<tr class="odd">
+<td><code>abs_split_mu</code></td>
+<td>Brake from speed with different left/right road friction</td>
+<td>Shows why wheel behavior differs; no claim of a vehicle-validated
+stopping distance</td>
+</tr>
+<tr class="even">
+<td><code>regen_limit</code></td>
+<td>Begin with restricted battery charge acceptance</td>
+<td>Demonstrates friction replacement when regeneration is limited;
+electrical converter waveforms absent</td>
+</tr>
+<tr class="odd">
+<td><code>bmu_timeout</code></td>
+<td>Stop fresh BMU updates while continuing driver demand</td>
+<td>Shows freshness checks, inhibition and event logging; no physical
+CAN arbitration or error frames</td>
+</tr>
+<tr class="even">
+<td><code>cell_low</code></td>
+<td>Inject a low-cell condition into the battery supervision</td>
+<td>Shows that a pack-level average can hide a limiting element;
+individual electrochemical cells are not modeled</td>
+</tr>
+</tbody>
+</table>
+<p>For each case, inspect both the time trace and event log. A single
+final value can conceal a transient violation. CSV export provides
+selected numerical traces; JSON also preserves events, final sensor
+state, energy counters and diagnostic transcripts. A command-line or
+dashboard input override persists over the scenario script until the
+simulation is reset. Record the input history, parameters, initial
+conditions and software version so that a result can be repeated.</p>
+<p>Try four useful comparisons: ABS enabled versus disabled on the same
+surface; normal versus high SOC for the same brake request; normal
+versus lost BMU updates; and the same engine load at two ambient
+temperatures. Change only one condition at a time until you can explain
+the result. If the result surprises you, first check units and signs,
+then saturation and validity rules, then scheduling.</p>
+<h2 id="how-the-toyota-material-fits">8. How the Toyota material
+fits</h2>
+<p>The user’s supplied Course 071 explains a more specific architecture:
+engine, MG1 and MG2 are mechanically coupled through a planetary unit,
+while the HV ECU coordinates the ECM, inverter, battery ECU and
+skid-control ECU. Its Gen2 example has a 201.6 V NiMH pack. Battery
+monitoring and a resistor-assisted main-relay sequence are useful
+architectural references. [T1, T2]</p>
+<p>For that planetary set, the ideal speed relationship is:</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>N</mi><mi>s</mi></msub><mo>+</mo><msub><mi>N</mi><mi>r</mi></msub><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>ω</mi><mrow><mi>c</mi><mi>a</mi><mi>r</mi><mi>r</mi><mi>i</mi><mi>e</mi><mi>r</mi></mrow></msub><mo>=</mo><msub><mi>N</mi><mi>s</mi></msub><msub><mi>ω</mi><mrow><mi>s</mi><mi>u</mi><mi>n</mi></mrow></msub><mo>+</mo><msub><mi>N</mi><mi>r</mi></msub><msub><mi>ω</mi><mrow><mi>r</mi><mi>i</mi><mi>n</mi><mi>g</mi></mrow></msub><mi>.</mi></mrow><annotation encoding="application/x-tex">
+(N_s+N_r)\omega_{carrier}=N_s\omega_{sun}+N_r\omega_{ring}.
+</annotation></semantics></math></p>
+<p>With <code>Ns = 30</code> and <code>Nr = 78</code>, engine/carrier
+speed <code>1,500 RPM</code> and ring/MG2 speed <code>3,000 RPM</code>,
+MG1/sun speed must be <code>−2,400 RPM</code>. A negative speed is a
+valid rotational direction; it does not by itself identify motor or
+generator power. Power also depends on torque sign. This kinematic
+exercise is an extension target, not an implemented drivetrain in this
+lab. [T1]</p>
+<p>The existing <code>MODEL_NOTES.txt</code> already separates a Prius
+II HEV baseline from a hypothetical plug-in extension and lists its own
+assumptions. Preserve that distinction when comparing projects: an
+earlier 8.8 kWh hypothetical pack is not evidence of a factory Gen2
+PHEV. The existing firmware guide also distinguishes static engine-image
+research from an authenticated, executable HV or battery ECU firmware
+model. Those prior artifacts are reference material; this package does
+not import or execute their binaries. [U1, U2]</p>
+<h2 id="from-a-lesson-to-a-credible-virtual-vehicle">9. From a lesson to
+a credible virtual vehicle</h2>
+<p>Add fidelity because an experiment requires it. For OBD encoding
+lessons, a stable mean-value engine is enough. For torque-response
+testing, add actuator delay and sensor filtering. For battery SOC
+estimation, use dynamic voltage relaxation and sensor errors. For ABS
+performance, add calibrated tires, load transfer, road geometry and
+hydraulics. For inverter firmware, model ADC sampling, PWM timing,
+current loops and the motor’s electrical equations.</p>
+<p>Keep a requirement table with an input condition, expected response,
+deadline, tolerance and evidence. For example: “When BMU data age
+exceeds the configured timeout, the hybrid supervisor shall stop issuing
+positive motor torque within one supervisor period.” The test must
+exercise the timing boundary, not merely confirm that the event text
+exists.</p>
+<p>Use three kinds of checks together: physical invariants (energy and
+force balance), behavioral requirements (fault response and state
+transitions), and comparison with measured data (accuracy). Record fuel
+chemical energy, battery terminal energy, battery internal losses,
+useful mechanical energy, friction braking and auxiliary consumption at
+declared boundaries. A numerically closed ledger is necessary, but it
+cannot prove that invented efficiencies or thresholds match a real
+car.</p>
+<p>The <a href="SCHEMATIC_WORKSPACE.html">workspace guide</a> explains
+the interactive task and instruments, and the <a
+href="CONNECTOR_REFERENCE.html">connector reference</a> distinguishes
+standard DLC roles from invented lesson pins. The firmware and
+virtual-vehicle integration path is described in
+<strong>FIRMWARE_ROADMAP.md</strong>. The exact diagnostic subset and
+frame examples are in <strong>PROTOCOL.md</strong>.
+<strong>EXISTING_BASES.md</strong> explains the existing software
+selected for reuse and the optional virtual-CAN adapter.
+<strong>SOURCES.md</strong> records the references and separates
+manufacturer evidence from teaching assumptions.</p>
+<footer>OBD II Lab v0.3.0 · 9 November 2026 · Synthetic educational models. See Sources for evidence boundaries.</footer></main></body>
+</html>
